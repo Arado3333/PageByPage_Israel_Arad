@@ -1,9 +1,10 @@
+import { getBooksFromDB, saveBookToDB, updateBookInDB, deleteBookFromDB } from "../config/books.db.js";
 
 export default class Book {
     constructor(title, author) {
         this.title = title;
         this.author = author;
-        this.createdAt = new Date();
+        this.createdAt = new Date().toString();
     }
 
     static async findAll() {
@@ -13,23 +14,7 @@ export default class Book {
             throw new Error("Error fetching books");
         }
     }
-
-    static async createBook(bookData) {
-        try {
-            return await saveBookToDB(bookData);
-        } catch (error) {
-            throw new Error("Error saving book");
-        }
-    }
-
-    static async update(id, bookData) {
-        try {
-            return await updateBookInDB(id, bookData);
-        } catch (error) {
-            throw new Error("Error updating book");
-        }
-    }
-
+    
     static async delete(id) {
         try {
             return await deleteBookFromDB(id);
@@ -37,4 +22,22 @@ export default class Book {
             throw new Error("Error deleting book");
         }
     }
+
+    async createBook() {
+        try {
+            return await saveBookToDB(this);
+        } catch (error) {
+            throw new Error("Error saving book");
+        }
+    }
+
+    async update(id) {
+        try {
+            return await updateBookInDB(id, this);
+        } catch (error) {
+            throw new Error("Error updating book");
+        }
+    }
+
+    
 }

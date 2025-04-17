@@ -19,6 +19,8 @@ export async function addBook(req, res) {
     }
 
     const newBook = new Book(title, author);
+    console.log(newBook);
+    
 
     //בקשה לשמירת ספר חדש
     try {
@@ -50,8 +52,8 @@ export async function updateBook(req, res) {
 
     //בקשה לעדכון ספר קיים
     try {
-        const result = await updatedBook.update(req.params.id, req.body);
-        return res.status(200).json(book);
+        const result = await updatedBook.update(id);
+        return res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: "Error while updating the book" });
     }

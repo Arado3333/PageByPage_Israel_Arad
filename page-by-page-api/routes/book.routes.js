@@ -1,11 +1,11 @@
-import { getBooks, createBook, updateBook, deleteBook } from "../controllers/book.controller.js";
+import { getBooks, addBook, updateBook, deleteBook } from "../controllers/book.controller.js";
 import { Router } from "express";
 
 const router = Router();
 
 router
     .get("/", getBooks)
-    .post("/", createBook)
+    .post("/", addBook)
     .put("/:id", updateBook)
     .delete("/:id", deleteBook);
 

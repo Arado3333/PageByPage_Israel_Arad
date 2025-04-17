@@ -3,7 +3,7 @@ import "dotenv/config"; //הגדרת השרת לקבלת משתני סביבה �
 import express from "express";
 import router from "./routes/book.routes.js";
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5500;
 
 const server = express();
 server.use(express.json());
@@ -13,5 +13,5 @@ server.use(express.urlencoded({ extended: true })); //תמיכה בכתובת ב
 server.use("/api/books", router);
 
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port http://localhost:${PORT}`);
 });
