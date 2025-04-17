@@ -1,0 +1,16 @@
+{
+    "name": "page-by-page-api",
+    "version": "1.0.0",
+    "main": "server.js",
+    "type": "module",
+    "scripts": {
+        "dev": "node --watch server.js",
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "dotenv": "^10.0.0",
+        "express": "^4.17.1",
+        "mongodb": "^6.15.0"
+    },
+    "devDependencies": {}
+}
