@@ -1,0 +1,29 @@
+GET http://localhost:5500/api/users/
+
+###
+
+GET http://localhost:5500/api/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODBhODExN2VmYmI0NmMwMDc4NDc1OGMiLCJyb2xlIjoiYWRtaW4iLCJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiJDJiJDE1JFdZSDZDU3dZdmxXUi9QVmpSaWI2M3U5b1lOUnVkOTZYUEJDTUc1czNnZlZIWEZ3YW1IUnUyIiwiaWF0IjoxNzQ1NTE4OTEyLCJleHAiOjE3NDU1MjI1MTJ9.kj4AE4CsJyp-qtAvDwZ9J00vfWDpkIXSB6XCTDcQz0M
+
+
+###
+
+POST http://localhost:5500/api/users 
+content-type: application/json
+
+{
+    "role": "admin",
+    "name": "Admin",
+    "email": "admin@gmail.com",
+    "password": "admin123"
+}
+
+###
+
+POST http://localhost:5500/api/users/login
+content-type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "password": "admin123"
+}

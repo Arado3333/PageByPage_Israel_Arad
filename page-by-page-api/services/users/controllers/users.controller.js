@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
 export async function getAllUsers(req, res) {
@@ -13,7 +14,7 @@ export async function getAllUsers(req, res) {
 
 export async function addUser(req, res) {
     try {
-        const user = new User(req.body);
+        let user = new User(req.body);
         const result = await user.save();
         res.status(201).json({
             message: "User created successfully",
@@ -29,10 +30,17 @@ export async function addUser(req, res) {
 export async function login(req, res) {
     try {
         const { email, password } = req.body;
+
         const user = await User.login(email, password);
 
         if (user) {
-            res.status(200).json({ message: "Login successful", user });
+            res.status(200).json({
+                message: "Login successful",
+                token: jwt.sign(user, process.env.JWT_SECRET, {
+                    expiresIn: "1h",
+                    algorithm: "HS256",
+                }),
+            });
         } else {
             res.status(401).json({ message: "Invalid email or password" });
         }

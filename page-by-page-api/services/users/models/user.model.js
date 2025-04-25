@@ -1,8 +1,10 @@
-import { getAll, getUserByEmail } from "../config/users.db";
 import bcrypt from "bcryptjs";
+import { ROLES } from "../../../global.js";
+import { getAll, getUserByEmail, createUser } from "../config/users.db.js";
 
 export default class User {
-    constructor({ name, email, password }) {
+    constructor({ name, email, password, role =  ROLES.USER }) {
+        this.role = role; // Default role is 'user'
         this.name = name;
         this.email = email;
         this.password = bcrypt.hashSync(password, 15);
@@ -19,11 +21,11 @@ export default class User {
     static async login(email, password) {
         try {
             let user = await getUserByEmail(email);
-            if (!user && bcrypt.compareSync(password, this.password) == false) {
+            if (!user || bcrypt.compareSync(password, user.password) === false) {
                 return null;
             }
-            delete this.password;
-            return user;
+            delete this.password; // Remove password from user object before returning
+            return user; // Return the user object without the password
         } catch (error) {
             throw new Error("Error occured at login");
         }

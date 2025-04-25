@@ -17,7 +17,7 @@ export async function getAll() {
     }
 }
 
-export async function getUserByEmail() {
+export async function getUserByEmail(email) {
     let client = null;
 
     try {
@@ -25,7 +25,7 @@ export async function getUserByEmail() {
         let db = client.db(process.env.DB_NAME);
         return await db.collection("Users").findOne({ email });
     } catch (error) {
-        console.error("Invalid Email", error);
+        console.error("Error fetching user by email from database", error);
         throw error;
     } finally {
         if (client) {
@@ -40,7 +40,7 @@ export async function createUser(user) {
     try {
         client = await MongoClient.connect(process.env.CONNECTION_STRING);
         let db = client.db(process.env.DB_NAME);
-        return await db.collection("Users").insertOne({ user });
+        return await db.collection("Users").insertOne(user);
     } catch (error) {
         console.error("Error registering new user to database:", error);
         throw error;
