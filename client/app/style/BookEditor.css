@@ -1,0 +1,126 @@
+.editor-container {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.editor-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editor-button {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.editor-button.outline {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.editor-button.outline:hover {
+  background-color: var(--input);
+}
+
+.editor-button.primary {
+  background-color: var(--accent);
+  color: white;
+  border: 1px solid var(--accent);
+}
+
+.editor-button.primary:hover {
+  opacity: 0.9;
+}
+
+.button-icon {
+  margin-right: 0.5rem;
+  height: 1rem;
+  width: 1rem;
+}
+
+.editor-card {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.toolbar-button {
+  padding: 0.5rem;
+  color: var(--muted);
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+  background: none;
+  border: none;
+}
+
+.toolbar-button:hover {
+  color: var(--foreground);
+  background-color: var(--input);
+}
+
+.toolbar-icon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.toolbar-divider {
+  height: 1.5rem;
+  width: 1px;
+  background-color: var(--border);
+  margin: 0 0.25rem;
+}
+
+.editor-content {
+  padding: 1.5rem;
+  min-height: 500px;
+}
+
+.editor-textarea-container {
+  min-height: 500px;
+}
+
+.editor-textarea {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  background-color: transparent;
+  border: none;
+  color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+}
+
+.editor-preview {
+  color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.5;
+  min-height: 500px;
+}
