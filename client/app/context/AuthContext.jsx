@@ -68,77 +68,13 @@ export const AuthProvider = ({ children }) => {
     document.documentElement.classList.toggle("dark", newTheme === "dark")
   }
 
-  const login = (email, password, remember) => {
-    // Admin hardcoded credentials
-    if (email === "admin@example.com" && password === "admin123") {
-      const adminUser = {
-        id: "admin1",
-        email,
-        name: "Administrator",
-        role: "admin",
-      }
-      setUser(adminUser)
-      if (remember) {
-        localStorage.setItem("user", JSON.stringify(adminUser))
-      }
-      router.push("/admin-dashboard")
-      return adminUser
-    }
-
-    // Support hardcoded credentials
-    if (email === "support@example.com" && password === "support123") {
-      const supportUser = {
-        id: "support1",
-        email,
-        name: "Support Agent",
-        role: "support",
-      }
-      setUser(supportUser)
-      if (remember) {
-        localStorage.setItem("user", JSON.stringify(supportUser))
-      }
-      router.push("/support-dashboard")
-      return supportUser
-    }
-
-    // Regular user
-    const regularUser = {
-      id: "user" + Math.floor(Math.random() * 1000),
-      email,
-      name: email.split("@")[0],
-      role: "user",
-    }
-    setUser(regularUser)
-    if (remember) {
-      localStorage.setItem("user", JSON.stringify(regularUser))
-    }
-    router.push("/dashboard")
-    return regularUser
-  }
-
-  const register = (email, password) => {
-    const newUser = {
-      id: "user" + Math.floor(Math.random() * 1000),
-      email,
-      name: email.split("@")[0],
-      role: "user",
-    }
-    setUser(newUser)
-    localStorage.setItem("user", JSON.stringify(newUser))
-    router.push("/dashboard")
-    return newUser
-  }
-
   const logout = () => {
     setUser(null)
-    localStorage.removeItem("user")
+    sessionStorage.removeItem("user")
     router.push("/signin")
   }
 
   const value = {
-    user,
-    login,
-    register,
     logout,
     loading,
     theme,
