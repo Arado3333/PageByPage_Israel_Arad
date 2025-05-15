@@ -813,3 +813,56 @@ input[type="search"] {
 input[type="search"]::placeholder {
   color: var(--muted-foreground);
 }
+
+
+.theme-toggle-button {
+  color: var(--accent-foreground); /* צבע בהיר על כהה */
+  background-color: var(--muted);  /* רקע קל להבדלה */
+  border: none;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-toggle-button:hover {
+  background-color: var(--accent);
+  color: white;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--foreground); /* <- שינוי חשוב */
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+
+.theme-toggle {
+  padding: 0.5rem;
+  border-radius: 9999px;
+}
+
+.theme-toggle:hover {
+  color: var(--accent); /* צבע הדגשה */
+  background-color: var(--muted); /* רקע hover */
+}
+.settings-link,
+.settings-button {
+  color: var(--foreground); /* ← תמיד ייראה */
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.settings-link:hover,
+.settings-button:hover {
+  color: var(--accent); /* צבע הדגשה */
+  background-color: var(--muted); /* רקע hover */
+}
+
