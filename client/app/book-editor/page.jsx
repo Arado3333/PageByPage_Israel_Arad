@@ -24,84 +24,99 @@ export default function BookEditorPage() {
   const [previewMode, setPreviewMode] = useState(false)
 
   return (
-    <div className="editor-container">
-      <div className="editor-header">
-        <h1 className="page-title">Book Editor</h1>
+    <div
+      className="book-editor"
+      style={{
+        backgroundImage: 'url("/book-editor-back.png")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        minHeight: "100vh",
+        padding: "2rem",
+      }}
+    >
+      <div className="editor-container">
+        <div className="editor-header">
+          <h1 className="page-title">Book Editor</h1>
 
-        <div className="editor-actions">
-          <button className="editor-button outline">
-            <Save className="button-icon" />
-            Save
-          </button>
-          <button className="editor-button outline">
-            <Download className="button-icon" />
-            Export
-          </button>
-          <button className="editor-button primary" onClick={() => setPreviewMode(!previewMode)}>
-            {previewMode ? (
-              <>
-                <EyeOff className="button-icon" />
-                Edit Mode
-              </>
-            ) : (
-              <>
-                <Eye className="button-icon" />
-                Preview
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      <div className="editor-card">
-        {/* Editor Toolbar */}
-        {!previewMode && (
-          <div className="editor-toolbar">
-            <button className="toolbar-button">
-              <Undo className="toolbar-icon" />
+          <div className="editor-actions">
+            <button className="editor-button outline">
+              <Save className="button-icon" />
+              Save
             </button>
-            <button className="toolbar-button">
-              <Redo className="toolbar-icon" />
+            <button className="editor-button outline">
+              <Download className="button-icon" />
+              Export
             </button>
-            <div className="toolbar-divider"></div>
-            <button className="toolbar-button">
-              <Bold className="toolbar-icon" />
-            </button>
-            <button className="toolbar-button">
-              <Italic className="toolbar-icon" />
-            </button>
-            <button className="toolbar-button">
-              <Underline className="toolbar-icon" />
-            </button>
-            <div className="toolbar-divider"></div>
-            <button className="toolbar-button">
-              <List className="toolbar-icon" />
-            </button>
-            <button className="toolbar-button">
-              <ListOrdered className="toolbar-icon" />
-            </button>
-            <div className="toolbar-divider"></div>
-            <button className="toolbar-button">
-              <AlignLeft className="toolbar-icon" />
-            </button>
-            <button className="toolbar-button">
-              <AlignCenter className="toolbar-icon" />
-            </button>
-            <button className="toolbar-button">
-              <AlignRight className="toolbar-icon" />
+            <button className="editor-button primary" onClick={() => setPreviewMode(!previewMode)}>
+              {previewMode ? (
+                <>
+                  <EyeOff className="button-icon" />
+                  Edit Mode
+                </>
+              ) : (
+                <>
+                  <Eye className="button-icon" />
+                  Preview
+                </>
+              )}
             </button>
           </div>
-        )}
+        </div>
 
-        {/* Editor Content */}
-        <div className="editor-content">
-          {previewMode ? (
-            <div className="editor-preview"></div>
-          ) : (
-            <div className="editor-textarea-container">
-              <textarea className="editor-textarea" placeholder="Start writing your book here..."></textarea>
+        <div className="editor-card">
+          {/* Editor Toolbar */}
+          {!previewMode && (
+            <div className="editor-toolbar">
+              <button className="toolbar-button">
+                <Undo className="toolbar-icon" />
+              </button>
+              <button className="toolbar-button">
+                <Redo className="toolbar-icon" />
+              </button>
+              <div className="toolbar-divider"></div>
+              <button className="toolbar-button">
+                <Bold className="toolbar-icon" />
+              </button>
+              <button className="toolbar-button">
+                <Italic className="toolbar-icon" />
+              </button>
+              <button className="toolbar-button">
+                <Underline className="toolbar-icon" />
+              </button>
+              <div className="toolbar-divider"></div>
+              <button className="toolbar-button">
+                <List className="toolbar-icon" />
+              </button>
+              <button className="toolbar-button">
+                <ListOrdered className="toolbar-icon" />
+              </button>
+              <div className="toolbar-divider"></div>
+              <button className="toolbar-button">
+                <AlignLeft className="toolbar-icon" />
+              </button>
+              <button className="toolbar-button">
+                <AlignCenter className="toolbar-icon" />
+              </button>
+              <button className="toolbar-button">
+                <AlignRight className="toolbar-icon" />
+              </button>
             </div>
           )}
+
+          {/* Editor Content */}
+          <div className="editor-content">
+            {previewMode ? (
+              <div className="editor-preview"></div>
+            ) : (
+              <div className="editor-textarea-container">
+                <textarea
+                  className="editor-textarea"
+                  placeholder="Start writing your book here..."
+                ></textarea>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

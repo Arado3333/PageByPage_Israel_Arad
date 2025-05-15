@@ -892,11 +892,7 @@ input[type="search"]::placeholder {
   font-size: 1.1rem;
 }
 
-.footer-column p,
-.footer-column li {
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
+
 
 .footer-column ul {
   list-style: none;

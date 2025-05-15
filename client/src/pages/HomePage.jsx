@@ -268,6 +268,28 @@ function HomePage() {
           </Card>
         </div>
       </div>
+
+      <footer className="dashboard-footer">
+        <div className="footer-columns">
+          <div className="footer-column">
+            <h4>About</h4>
+            <p>Page by Page is a smart and intuitive platform for writers to manage books, drafts, and creative work efficiently.</p>
+          </div>
+          <div className="footer-column">
+            <h4>Useful Links</h4>
+            <ul>
+              <li>Contact Us</li>
+              <li>Help Center</li>
+              <li>Privacy Policy</li>
+            </ul>
+          </div>
+          <div className="footer-column">
+            <h4>Connect</h4>
+            <p>Email: support@pagebypage.ai</p>
+            <p>© 2025 Page by Page</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
