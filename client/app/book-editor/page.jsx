@@ -37,7 +37,6 @@ export default function BookEditorPage() {
     >
       <div className="editor-container">
         <div className="editor-header">
-          <h1 className="page-title">Book Editor</h1>
 
           <div className="editor-actions">
             <button className="editor-button outline">
