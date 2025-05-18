@@ -906,3 +906,73 @@ input[type="search"]::placeholder {
 
 
 
+
+/* Footer Card (with card design) */
+.footer-card {
+  grid-column: span 1; /* ברירת מחדל למסכים קטנים */
+}
+
+@media (min-width: 1024px) {
+  .footer-card {
+    grid-column: span 3;
+  }
+}
+
+.footer-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+
+.footer-column {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-column h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--foreground);
+}
+
+.footer-column p,
+.footer-column li {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  margin-bottom: 0.3rem;
+  line-height: 1.6;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+
+
+@media (min-width: 1024px) {
+  .ai-card {
+    grid-column: span 2;
+  }
+}
+@media (min-width: 1024px) {
+  .drafts-card {
+    grid-column: span 1;
+  }
+
+  .ai-card {
+    grid-column: span 1;
+  }
+}
+@media (min-width: 1024px) {
+  .ai-card {
+    grid-column: span 3;
+  }
+}
+
+

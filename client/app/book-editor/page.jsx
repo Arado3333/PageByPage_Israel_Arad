@@ -1,13 +1,13 @@
 "use client";
-
-import React, { useState, useMemo, useEffect } from 'react';
+// import '../style/BookEditor.css'; // Assuming you have this
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { createEditor, Editor, Transforms, Range } from 'slate';
 import { Slate, Editable, withReact } from 'slate-react';
 import styled, { ThemeProvider } from 'styled-components';
 import { useTheme } from 'next-themes';
 import {
-  Save, Download, Eye, EyeOff, Zap, Sun, Moon, BookOpen,
-  Search, RefreshCw, Sparkles, Wand2
+    Save, Download, Eye, EyeOff, Zap, Sun, Moon, BookOpen,
+    Search, RefreshCw, Sparkles, Wand2
 } from 'lucide-react';
 
 const lightTheme = {
@@ -41,13 +41,20 @@ const Toolbar = styled.div`
   top: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
   background: ${({ theme }) => theme.toolbarBg};
-  padding: 1rem 2rem;
+  padding: 0.75rem 1.5rem;
   border-bottom: 1px solid ${({ theme }) => theme.borderColor};
   box-shadow: ${({ theme }) => theme.shadow};
   z-index: 10;
   transition: background 0.3s ease, border 0.3s ease;
+  align-items: center;
+`;
+
+const ToolbarGroup = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 `;
 
 const ToolButton = styled.button`
@@ -55,15 +62,15 @@ const ToolButton = styled.button`
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
   border: 1px solid ${({ theme }) => theme.borderColor};
   background: transparent;
   color: ${({ theme }) => theme.textColor};
   cursor: pointer;
   transition: all 0.2s ease;
   &:hover:not(:disabled) {
-    background: rgba(100, 100, 255, 0.08);
+    background: rgba(100, 100, 255, 0.06);
   }
   &:disabled {
     opacity: 0.4;
@@ -71,32 +78,81 @@ const ToolButton = styled.button`
   }
 `;
 
+const AIPromptButton = styled(ToolButton)`
+  background-color: #f0f0f0;
+  color: ${({ theme }) => theme.textColor};
+  border-color: ${({ theme }) => theme.borderColor};
+  &:hover:not(:disabled) {
+    background: #e0e0e0;
+  }
+`;
+
 const Book = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* Arrange pages vertically */
+  align-items: center; /* Center pages horizontally */
   flex: 1;
-  overflow: auto;
+  overflow-y: auto; /* Enable vertical scrolling for the 'book' */
   padding: 2rem;
+  gap: 2rem; /* Spacing between pages */
 `;
 
 const Page = styled.div`
   background: ${({ theme }) => theme.pageBg};
   color: ${({ theme }) => theme.textColor};
   border: 1px solid ${({ theme }) => theme.borderColor};
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 3rem;
-  width: 900px;
-  max-width: 100%;
+  width: 850px;
+  max-width: 95%; /* Adjust max-width for responsiveness */
   box-shadow: ${({ theme }) => theme.shadow};
   transition: all 0.3s ease;
+  min-height: 1100px; /* Simulate a standard page height (adjust as needed) */
 `;
 
 const PageNumber = styled.div`
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   text-align: right;
   font-size: 0.85rem;
   color: ${({ theme }) => theme.textColor};
-  opacity: 0.5;
+  opacity: 0.6;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+`;
+
+const AIModal = styled.div`
+  background: ${({ theme }) => theme.toolbarBg};
+  color: ${({ theme }) => theme.textColor};
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: ${({ theme }) => theme.shadow};
+  max-width: 80%;
+  width: 500px;
+  text-align: center;
+`;
+
+const ModalTitle = styled.h2`
+  margin-bottom: 1rem;
+`;
+
+const ModalText = styled.p`
+  margin-bottom: 1.5rem;
+  white-space: pre-wrap;
+`;
+
+const ModalButton = styled(ToolButton)`
+  margin: 0 0.5rem;
 `;
 
 export default function BookEditorPage() {
@@ -108,6 +164,7 @@ export default function BookEditorPage() {
   const [page, setPage] = useState(1);
   const [preview, setPreview] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState(null);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("book-content");
@@ -133,96 +190,112 @@ export default function BookEditorPage() {
     a.download = 'book-content.json';
     a.click();
   };
- // ...שאר הקוד נשאר זהה עד הפונקציה handleGenerateFromSelection
 
- async function handleGenerateFromSelection(type) {
-  const { selection } = editor;
-  if (!selection || Range.isCollapsed(selection)) return alert("Please select some text.");
+  async function handleGenerateFromSelection(type) {
+    const { selection } = editor;
+    if (!selection || Range.isCollapsed(selection)) {
+      alert("Please select some text.");
+      return;
+    }
 
-  const selectedText = Editor.string(editor, selection);
-  if (!/[a-zA-Zא-ת0-9א-ת]/.test(selectedText)) return alert("Please select meaningful text.");
+    const selectedText = Editor.string(editor, selection);
+    if (!/[a-zA-Zא-ת0-9א-ת]/.test(selectedText)) {
+      alert("Please select meaningful text.");
+      return;
+    }
 
-  setLoading(true);
-  try {
-    const res = await fetch("/api/ai/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: selectedText, promptType: type })
-    });
-    const { generated } = await res.json();
-    const suggestion = generated.trim();
-
-    const box = document.createElement("div");
-    box.style = `
-      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
-      background: var(--popover, white); color: var(--popover-foreground, black);
-      padding: 1.5rem 2rem; border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 9999;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex; flex-direction: column; align-items: center;
-      width: 90%; max-width: 600px; text-align: center;
-    `;
-    box.innerHTML = `
-      <div style="margin-bottom: 1rem; font-size: 1.1rem; font-weight: bold;">AI Suggestion:</div>
-      <div style="margin-bottom: 1.25rem; font-size: 1rem; font-weight: 500; white-space: pre-wrap;">${suggestion}</div>
-      <div style="display: flex; gap: 1rem;">
-        <button id="ai-accept" style="padding:0.6rem 1.2rem;background:#4CAF50;color:white;border:none;border-radius:6px;font-size:0.95rem;cursor:pointer;">✅ Accept</button>
-        <button id="ai-reject" style="padding:0.6rem 1.2rem;background:#f44336;color:white;border:none;border-radius:6px;font-size:0.95rem;cursor:pointer;">❌ Reject</button>
-      </div>
-    `;
-    document.body.appendChild(box);
-    document.getElementById("ai-accept").onclick = () => {
-      if (editor.selection) {
-        Transforms.delete(editor, { at: editor.selection });
-        Transforms.insertText(editor, suggestion);
-      }
-      document.body.removeChild(box);
-    };
-    document.getElementById("ai-reject").onclick = () => {
-      document.body.removeChild(box);
-    };
-  } catch (err) {
-    console.error(err);
-    alert("AI generation failed.");
-  } finally {
-    setLoading(false);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: selectedText, promptType: type })
+      });
+      const { generated } = await res.json();
+      setAiSuggestion(generated.trim());
+    } catch (err) {
+      console.error(err);
+      alert("AI generation failed.");
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
-// ...שאר הקוד ממשיך כרגיל
+  const handleAcceptAISuggestion = () => {
+    if (editor.selection && aiSuggestion) {
+      Transforms.delete(editor, { at: editor.selection });
+      Transforms.insertText(editor, aiSuggestion);
+    }
+    setAiSuggestion(null);
+  };
+
+  const handleRejectAISuggestion = () => {
+    setAiSuggestion(null);
+  };
+
   const toggleTheme = () => setTheme(currentTheme === 'dark' ? 'light' : 'dark');
 
   return (
     <ThemeProvider theme={theme}>
       <EditorContainer>
         <Toolbar>
-          <ToolButton onClick={handleSave} title="Save"><Save size={16} /></ToolButton>
-          <ToolButton onClick={handleExport} title="Export"><Download size={16} /></ToolButton>
-          <ToolButton onClick={() => handleGenerateFromSelection("improve")} disabled={loading} title="Improve"><Sparkles size={16} /></ToolButton>
-          <ToolButton onClick={() => handleGenerateFromSelection("summarize")} disabled={loading} title="Summarize"><Zap size={16} /></ToolButton>
-          <ToolButton onClick={() => handleGenerateFromSelection("expand")} disabled={loading} title="Expand"><Wand2 size={16} /></ToolButton>
-          <ToolButton onClick={() => handleGenerateFromSelection("rewrite")} disabled={loading} title="Rewrite"><RefreshCw size={16} /></ToolButton>
-          <ToolButton onClick={() => setPreview(!preview)} title={preview ? 'Switch to edit mode' : 'Switch to preview mode'}>
-            {preview ? <EyeOff size={16} /> : <Eye size={16} />}
-          </ToolButton>
-          <ToolButton onClick={toggleTheme} title="Toggle light/dark theme">
-            {currentTheme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-          </ToolButton>
-          <ToolButton title="Outline / Chapters (coming soon)"><BookOpen size={16} /></ToolButton>
-          <ToolButton title="Search inside book (coming soon)"><Search size={16} /></ToolButton>
+          <ToolbarGroup>
+            <ToolButton onClick={handleSave} title="Save your work"><Save size={16} /></ToolButton>
+            <ToolButton onClick={handleExport} title="Download as JSON"><Download size={16} /></ToolButton>
+          </ToolbarGroup>
+
+          <ToolbarGroup>
+            <AIPromptButton onClick={() => handleGenerateFromSelection("improve")} disabled={loading} title="Improve the selected text"><Sparkles size={16} /></AIPromptButton>
+            <AIPromptButton onClick={() => handleGenerateFromSelection("summarize")} disabled={loading} title="Summarize the selected text"><Zap size={16} /></AIPromptButton>
+            <AIPromptButton onClick={() => handleGenerateFromSelection("expand")} disabled={loading} title="Expand on the selected text"><Wand2 size={16} /></AIPromptButton>
+            <AIPromptButton onClick={() => handleGenerateFromSelection("rewrite")} disabled={loading} title="Rewrite the selected text"><RefreshCw size={16} /></AIPromptButton>
+          </ToolbarGroup>
+
+          <ToolbarGroup>
+            <ToolButton onClick={() => setPreview(!preview)} title={preview ? 'Switch to edit mode' : 'Switch to preview mode'}>
+              {preview ? <EyeOff size={16} /> : <Eye size={16} />}
+            </ToolButton>
+            <ToolButton onClick={toggleTheme} title="Toggle light/dark theme">
+              {currentTheme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </ToolButton>
+            <ToolButton disabled title="Outline / Chapters (coming soon)"><BookOpen size={16} /></ToolButton>
+            <ToolButton disabled title="Search inside book (coming soon)"><Search size={16} /></ToolButton>
+          </ToolbarGroup>
         </Toolbar>
+
         <Book>
           <Page>
             <Slate editor={editor} initialValue={value} onChange={setValue}>
               <Editable
                 readOnly={preview}
                 placeholder="Start writing your book..."
-                style={{ flex: 1, outline: 'none', lineHeight: '1.8', fontFamily: 'Georgia, serif', fontSize: '1.05rem' }}
+                style={{
+                  flex: 1,
+                  outline: 'none',
+                  lineHeight: '1.7',
+                  fontFamily: 'Georgia, serif',
+                  fontSize: '1.05rem',
+                  minHeight: 'calc(100% - 2rem)', /* Ensure Editable takes up page height */
+                }}
               />
             </Slate>
             <PageNumber>Page {page}</PageNumber>
           </Page>
+          {/* You can dynamically add more <Page> components here if needed */}
         </Book>
+
+        {aiSuggestion && (
+          <ModalOverlay onClick={() => setAiSuggestion(null)}>
+            <AIModal onClick={(e) => e.stopPropagation()}>
+              <ModalTitle>AI Suggestion:</ModalTitle>
+              <ModalText>{aiSuggestion}</ModalText>
+              <div>
+                <ModalButton onClick={handleAcceptAISuggestion}>✅ Accept</ModalButton>
+                <ModalButton onClick={handleRejectAISuggestion}>❌ Reject</ModalButton>
+              </div>
+            </AIModal>
+          </ModalOverlay>
+        )}
       </EditorContainer>
     </ThemeProvider>
   );
