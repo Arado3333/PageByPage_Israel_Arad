@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import "../style/SignIn.css";
+import { logIn } from "../signin/logIn";
 
 export default function SignInPage() {
     const [email, setEmail] = useState("");
@@ -18,30 +19,18 @@ export default function SignInPage() {
         e.preventDefault();
         setError("");
         setIsLoading(true);
+        
+        let res = await logIn(email, password);
 
-        try {
-            let result = await fetch("http://localhost:5500/api/users/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password,
-                }),
-            });
-            const res = await result.json();
-            setIsLoading(false);
-            if (res.token) {
-                setSuccess(res.message);
-                sessionStorage.setItem("user", JSON.stringify(res.token));
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1300);
-            }
-            else { setError(res.message); }
-        } catch (err) { //Useless catch - next.js does not reach that point
-            setError(err);
+        setIsLoading(false);
+        if (res.token) {
+            setSuccess(res.message);
+            sessionStorage.setItem("user", JSON.stringify(res.token));
+            setTimeout(() => {
+                window.location.reload();
+            }, 1300);
+        } else {
+            setError(res.message);
         }
     };
 
