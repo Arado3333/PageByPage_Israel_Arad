@@ -28,7 +28,9 @@ export default class UserModel {
     }
 
     static async getUserById(userId: string) {
-        
+        let db = new DB();
+        let user = await db.GetDocumentById('Users', userId);
+        return user;
     }
     
 

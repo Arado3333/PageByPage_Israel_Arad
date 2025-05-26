@@ -6,11 +6,11 @@ export default class DB {
     private dbName: string = process.env.DB_NAME || 'mydatabase';
 
     constructor() {
-        this.connect();
+        this.connect(); //connects each DB function call from model.
     }
 
     private async connect() {
-        const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+        const uri = process.env.CONNECTION_STRING || 'mongodb://localhost:27017';
         this.client = new MongoClient(uri);
 
         try {
@@ -22,7 +22,7 @@ export default class DB {
         }
     }
 
-    private async disconnect() {
+    private async disconnect() { //optional - the class instance closes the connection automatically after return
         try {
             await this.client?.close();
             console.log('Disconnected from MongoDB');
