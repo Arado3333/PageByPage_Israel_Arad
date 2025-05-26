@@ -5,10 +5,14 @@ import Link from "next/link";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import "../style/SignIn.css";
 import { logIn } from "../signin/logIn";
+import FormField from "./components/FormField";
 
 export default function SignInPage() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [userInput, setUserInput] = useState({
+        email: "",
+        password: "",
+    });
+
     const [rememberMe, setRememberMe] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -19,8 +23,8 @@ export default function SignInPage() {
         e.preventDefault();
         setError("");
         setIsLoading(true);
-        
-        let res = await logIn(email, password);
+
+        let res = await logIn(userInput.email, userInput.password);
 
         setIsLoading(false);
         if (res.token) {
@@ -51,19 +55,19 @@ export default function SignInPage() {
                 )}
 
                 <form className="auth-form" onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="email" className="form-label">
-                            Email
-                        </label>
-                        <input
-                            id="email"
-                            type="email"
-                            className="form-input"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
+                    <FormField
+                        id={"email"}
+                        fieldName={"Email"}
+                        fieldType={"email"}
+                        value={userInput.email}
+                        onChange={(e) =>
+                            setUserInput({
+                                email: e.target.value,
+                                password: userInput.password,
+                            })
+                        }
+                        required
+                    />
 
                     <div className="form-group">
                         <label htmlFor="password" className="form-label">
@@ -74,8 +78,13 @@ export default function SignInPage() {
                                 id="password"
                                 type={showPassword ? "text" : "password"}
                                 className="form-input"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={userInput.password}
+                                onChange={(e) =>
+                                    setUserInput({
+                                        email: userInput.email,
+                                        password: e.target.value,
+                                    })
+                                }
                                 required
                             />
                             <button

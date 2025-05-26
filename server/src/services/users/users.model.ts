@@ -14,7 +14,7 @@ export default class UserModel {
             if (!user.email || !user.password)
                 res.status(400).json({ message: 'Email and password are required' });
 
-            let registeredUser = await new DB().AddDocument('users', user);
+            let registeredUser = await new DB().AddDocument('Users', user);
 
             res.status(201).json({
                 message: 'User registered successfully',
