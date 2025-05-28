@@ -94,9 +94,11 @@
 }
 
 .card-header {
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
+  background: linear-gradient(to right, var(--accent), var(--accent-secondary));
+  color: var(--accent-foreground);
+  font-weight: 600;
 }
+
 
 .card-title {
   font-size: 1rem;
@@ -137,6 +139,13 @@
 
 .card-link:hover {
   opacity: 0.8;
+}
+.card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* day */
+}
+
+.dark .card {
+  box-shadow: 0 2px 8px rgba(255, 215, 100, 0.1); /* night – זהב קל */
 }
 
 .link-icon {
@@ -610,6 +619,37 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
+/* chainge 2025*/
+.dark .stat-item:hover {
+  background-color: rgba(217, 179, 97, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(255, 255, 255, 0.05);
+}
+button {
+  background-color: var(--accent);
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--accent-secondary);
+}
+.tag-high {
+  background-color: #b22222; /* dark red */
+}
+
+.tag-medium {
+  background-color: #e4b02f; /* deep yellow */
+}
+
+.tag-low {
+  background-color: #4caf50; /* elegant green */
+}
+.tag-high {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* chainge 2025*/
 
 @media (min-width: 640px) {
   .actions-grid {
@@ -655,28 +695,51 @@
 
 /* === GLOBAL VARIABLES === */
 :root {
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  --muted: #f1f1f1;
-  --muted-foreground: #6b7280;
-  --accent: #8e24aa;
-  --accent-secondary: #26c6da;
-  --accent-foreground: #ffffff;
-  --border: #e5e7eb;
-  --card-background: #fafafa;
+  --background: #fdfcf8;                 /* קרם בהיר – כמו נייר יוקרתי */
+  --foreground: #1c1c1c;                 /* שחור אלגנטי */
+  --muted: #f3f1eb;                      /* אפור חם לפינות */
+  --muted-foreground: #7d7d7d;           /* טקסט משני רגוע */
+  --accent: #c5a059;                     /* זהב חם – לא כתום */
+  --accent-secondary: #b38b4c;           /* גוון עמוק יותר */
+  --accent-foreground: #ffffff;          /* טקסט לבן על זהב */
+  --border: #ddd7cd;                     /* קווים רגועים */
+  --card-background: #ffffff;      
+  --card-header-background: #f4efe6;      /* קרם רך שמשתלב עם הרקע הכללי */
+  --card-header-text: #3a2c1a;        /* רקע כרטיס */
 }
 
 .dark {
-  --background: #121212;
-  --foreground: #f1f1f1;
-  --muted: #1f1f1f;
-  --muted-foreground: #a3a3a3;
-  --accent: #ba68c8;
-  --accent-secondary: #4dd0e1;
-  --accent-foreground: #ffffff;
-  --border: #333;
-  --card-background: #1a1a1a;
+  --background: #0d0b08;              /* שחור חם עם גוון קפה */
+  --foreground: #f5f5f5;              /* טקסט לבן־רך */
+  --muted: #1b1915;                   /* גוון שוקולד כהה לפינות/גבולות */
+  --muted-foreground: #aaa49b;        /* אפור-זהוב לטקסט משני */
+  --accent: #c9a94b;                  /* זהב עמוק */
+  --accent-secondary: #f1cd7e;        /* זהב בהיר/חמאה עדין */
+  --accent-foreground: #0d0b08;       /* טקסט כהה על רקע בהיר */
+  --border: #2e261c;                  /* קו עדין בגוון עץ כהה */
+  --card-background: #151310;         /* רקע כרטיס: חום כהה עם נגיעת שחור */
+  --card-header-background: linear-gradient(to bottom, #1a1815, #0d0b08);
+  --card-header-text: var(--accent-foreground); /* נגיד לבן */
 }
+
+
+
+
+
+.dark {
+  --background: #0d0b08;                /* שחור חם עם גוון קפה */
+  --foreground: #e9e5dc;                /* טקסט רך – זהב-אפור */
+  --muted: #181511;                     /* פינות/גבולות – כהה יותר מהכרטיס */
+  --muted-foreground: #b9b2a8;          /* אפור-חם לטקסט משני */
+  
+  --accent: #d8b366;                    /* זהב אלגנטי – פחות כתום, יותר רגוע */
+  --accent-secondary: #e9ca8d;          /* חמאה זהובה – hover וכו' */
+  --accent-foreground: #0d0b08;         /* טקסט כהה על זהב בהיר */
+  
+  --border: #2e261c;                    /* קווים בגוון עץ כהה */
+  --card-background: #181511;           /* חום־שחור רך לכרטיסים */
+}
+
 
 /* === CONTAINER === */
 .dashboard-container {
@@ -685,7 +748,8 @@
   padding: 1.5rem;
   max-width: 1600px;
   margin: 0 auto;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Georgia', serif;
+
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -709,27 +773,35 @@
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
-
 .card-header {
-  background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
-  color: var(--accent-foreground);
+  background: var(--card-header-background);
+  color: var(--card-header-text);
   padding: 1rem;
   border-radius: 12px 12px 0 0;
   display: flex;
   align-items: center;
 }
 
+
+
+
+
 .card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
   margin-left: 0.5rem;
-  color: var(--accent-foreground);
+  color: var(--foreground); /* במקום accent-foreground */
+  letter-spacing: -0.25px;
 }
 
+
 .card-content, .card-footer {
-  padding: 1rem;
+  padding: 1.25rem 1.5rem;
   color: var(--foreground);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
+
 
 /* === STATS === */
 .stat-item {
@@ -737,19 +809,34 @@
   border-radius: 8px;
   padding: 1rem;
   text-align: center;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
 }
+
+.stat-item:hover {
+  background-color: rgba(197, 160, 89, 0.15); /* זהב עדין עם שקיפות */
+  transform: translateY(-2px); /* הרמה קלה */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06); /* צל רך */
+  cursor: pointer;
+}
+
+
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: var(--foreground);
+  color: var(--accent);
 }
 
+
 .stat-label {
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   color: var(--muted-foreground);
+  margin-top: 0.25rem;
+  display: block;
 }
+
 
 /* === CIRCLE GOAL === */
 .goal-circle-fill {
@@ -824,10 +911,11 @@ input[type="search"]::placeholder {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.theme-toggle-button:hover {
-  background-color: var(--accent);
-  color: white;
+button:hover {
+  background-color: var(--accent-secondary);
+  box-shadow: 0 0 10px var(--accent-secondary);
 }
+
 
 .theme-toggle {
   display: flex;
