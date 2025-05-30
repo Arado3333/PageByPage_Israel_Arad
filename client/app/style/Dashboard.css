@@ -695,18 +695,19 @@ button:hover {
 
 /* === GLOBAL VARIABLES === */
 :root {
-  --background: #fdfcf8;                 /* קרם בהיר – כמו נייר יוקרתי */
-  --foreground: #1c1c1c;                 /* שחור אלגנטי */
-  --muted: #f3f1eb;                      /* אפור חם לפינות */
-  --muted-foreground: #7d7d7d;           /* טקסט משני רגוע */
-  --accent: #c5a059;                     /* זהב חם – לא כתום */
-  --accent-secondary: #b38b4c;           /* גוון עמוק יותר */
-  --accent-foreground: #ffffff;          /* טקסט לבן על זהב */
-  --border: #ddd7cd;                     /* קווים רגועים */
-  --card-background: #ffffff;      
-  --card-header-background: #f4efe6;      /* קרם רך שמשתלב עם הרקע הכללי */
-  --card-header-text: #3a2c1a;        /* רקע כרטיס */
+  --background: #fdfcf8;
+  --foreground: #1c1c1c;
+  --muted: #f3f1eb;
+  --muted-foreground: #7d7d7d;
+
+  --accent: #b68a3a;              /* זהב טיפה כהה יותר, עם נוכחות */
+  --accent-secondary: #d5ae63;    /* חמאה עמוקה יותר */
+  --accent-foreground: #ffffff;
+
+  --border: #e3ddd2;
+  --card-background: #ffffff;
 }
+
 
 .dark {
   --background: #0d0b08;              /* שחור חם עם גוון קפה */
