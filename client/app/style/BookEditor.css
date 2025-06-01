@@ -4,6 +4,7 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
+  transition: var(--transition);
 }
 
 @layer utilities {
@@ -13,85 +14,10 @@ body {
 }
 
 @layer base {
-  :root {
-    /* צבעים במצב יום (Light) */
-    --background: 0 0% 100%; /* לבן */
-    --foreground: 0 0% 0%;   /* שחור */
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 47 100% 50%; /* זהב */
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 95%;
-    --secondary-foreground: 0 0% 0%;
-    --muted: 0 0% 93%;
-    --muted-foreground: 0 0% 40%;
-    --accent: 47 100% 85%; /* זהב בהיר */
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 85%;
-    --input: 0 0% 85%;
-    --ring: 47 100% 40%; /* זהב כהה */
-    --radius: 0.5rem;
-
-    /* עבור Sidebar */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 47 100% 40%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 47 100% 95%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 47 100% 40%;
-  }
-
-  .dark {
-    /* צבעים במצב לילה (Dark) */
-    --background: 0 0% 5%;    /* שחור כהה */
-    --foreground: 0 0% 100%;  /* לבן */
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 47 100% 60%; /* זהב */
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 47 100% 30%; /* זהב כהה */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 70% 35%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 25%;
-    --ring: 47 100% 50%; /* זהב */
-    --radius: 0.5rem;
-
-    /* Sidebar מצב לילה */
-    --sidebar-background: 0 0% 7%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 47 100% 60%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 47 100% 50%;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
 }
-
-
 
 /* Book Editor Styles */
 .book-editor {
@@ -99,20 +25,25 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: var(--transition);
 }
 
 .editor-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
+  transition: var(--transition);
 }
 
 /* Toolbar */
 .toolbar {
-  flex-shrink: 0;  
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   z-index: 50;
+  background: var(--muted);
+  color: var(--foreground);
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
 }
 
 .toolbar-content {
@@ -122,6 +53,8 @@ body {
   gap: 1rem;
   padding: 1rem;
   overflow-x: auto;
+  background: var(--muted);
+  transition: var(--transition);
 }
 
 .toolbar-group {
@@ -137,21 +70,25 @@ body {
 /* Buttons */
 .btn-primary {
   padding: 8px 16px;
-  background-color: #d4af37;
-  color: white;
+  background-color: var(--accent);
+  color: var(--accent-foreground, #fff);
   border: none;
   border-radius: 6px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
   display: flex;
   align-items: center;
   gap: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
-.btn-primary:hover {
-  background-color: #b8941f;
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--accent-secondary, #b08a2e);
+  color: var(--accent-foreground, #fff);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
 }
 
 .btn-primary:disabled {
@@ -161,28 +98,54 @@ body {
 
 .btn-secondary {
   padding: 6px 12px;
-  background-color: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background-color: var(--background);
+  color: var(--accent);
+  border: 1px solid var(--accent);
   border-radius: 4px;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.btn-secondary:hover {
-  background-color: #e5e7eb;
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background-color: var(--accent-secondary, #b08a2e);
+  color: var(--accent-foreground, #fff);
+  border-color: var(--accent-secondary, #b08a2e);
+}
+
+.preview-btn {
+  background-color: var(--accent);
+  color: var(--accent-foreground, #fff);
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.preview-btn:hover,
+.preview-btn:focus {
+  background-color: var(--accent-secondary, #b08a2e);
+  color: var(--accent-foreground, #fff);
 }
 
 .toolbar-btn {
   padding: 8px;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
   background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+
+.toolbar-btn:hover,
+.toolbar-btn:focus {
+  background: var(--muted);
+  color: var(--accent);
 }
 
 .ai-btn {
@@ -191,10 +154,19 @@ body {
   border-radius: 4px;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
   display: flex;
   align-items: center;
   gap: 4px;
+  background: var(--accent-secondary, #b08a2e);
+  color: var(--accent-foreground, #fff);
+  font-weight: 600;
+}
+
+.ai-btn:hover,
+.ai-btn:focus {
+  background: var(--accent);
+  color: var(--accent-foreground, #fff);
 }
 
 .toolbar-select {
@@ -202,6 +174,10 @@ body {
   border-radius: 4px;
   font-size: 14px;
   cursor: pointer;
+  background: var(--muted);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  transition: var(--transition);
 }
 
 /* Dropdown */
@@ -213,6 +189,12 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: var(--muted-foreground);
+}
+
+.dropdown-btn.active,
+.dropdown-btn:focus {
+  color: var(--accent);
 }
 
 .rotate {
@@ -223,29 +205,32 @@ body {
   position: absolute;
   top: 100%;
   right: 0;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border);
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   min-width: 300px;
   z-index: 9999;
   margin-top: 4px;
+  background: var(--card-background);
+  color: var(--foreground);
+  transition: var(--transition);
 }
 
 .dropdown-header {
   padding: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
   font-weight: 600;
   font-size: 14px;
 }
 
 .dropdown-section {
   padding: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
 }
 
 .section-label {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--placeholder);
   margin-bottom: 8px;
 }
 
@@ -261,11 +246,14 @@ body {
   border-radius: 6px;
   border: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
+  background: var(--muted);
+  color: var(--foreground);
 }
 
 .page-btn:hover {
-  background-color: #f3f4f6;
+  background-color: var(--accent);
+  color: var(--accent-foreground);
 }
 
 .bookmarks-list {
@@ -278,11 +266,14 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 12px;
-  transition: all 0.2s;
+  transition: var(--transition);
+  background: var(--muted);
+  color: var(--foreground);
 }
 
 .bookmark-item:hover {
-  background-color: #f9fafb;
+  background-color: var(--accent);
+  color: var(--accent-foreground);
 }
 
 .bookmark-btn {
@@ -294,6 +285,7 @@ body {
   background: none;
   border: none;
   cursor: pointer;
+  color: inherit;
 }
 
 .bookmark-name {
@@ -303,7 +295,7 @@ body {
 
 .bookmark-page {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--placeholder);
 }
 
 .remove-btn {
@@ -313,7 +305,8 @@ body {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
+  color: var(--muted-foreground);
 }
 
 .bookmark-item:hover .remove-btn {
@@ -321,12 +314,16 @@ body {
 }
 
 .remove-btn:hover {
-  background-color: #fee2e2;
+  background-color: var(--accent-secondary);
+  color: var(--accent-foreground);
 }
 
 /* Status Bar */
 .status-bar {
   flex-shrink: 0;
+  background: var(--muted);
+  color: var(--foreground);
+  transition: var(--transition);
 }
 
 .status-content {
@@ -351,15 +348,11 @@ body {
   font-size: 12px;
   padding: 2px 8px;
   border-radius: 4px;
+  color: var(--muted-foreground);
 }
 
-.mode-indicator.preview {
-  color: #2563eb;
-  animation: pulse 2s infinite;
-}
-
-.mode-indicator.focus {
-  color: #16a34a;
+.mode-indicator.active {
+  color: var(--accent);
 }
 
 /* Editor Area */
@@ -367,6 +360,9 @@ body {
   flex: 1;
   overflow: auto;
   padding: 2rem 1rem;
+  background: var(--background);
+  touch-action: manipulation;
+  transition: var(--transition);
 }
 
 .pages-container {
@@ -391,6 +387,12 @@ body {
   font-size: 16px;
   line-height: 1.6;
   border-radius: 2px;
+  background: var(--card-background);
+  color: var(--foreground);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+  touch-action: pan-y pinch-zoom;
 }
 
 .page-content {
@@ -402,7 +404,7 @@ body {
 
 .page-content:empty:before {
   content: attr(placeholder);
-  color: #999;
+  color: var(--placeholder);
   font-style: italic;
 }
 
@@ -425,11 +427,12 @@ body {
 }
 
 .page-content blockquote {
-  border-left: 4px solid #d4af37;
+  border-left: 4px solid var(--accent);
   padding-left: 16px;
   margin: 16px 0;
   font-style: italic;
   opacity: 0.8;
+  color: var(--foreground);
 }
 
 .page-content ul,
@@ -449,6 +452,7 @@ body {
   transform: translateX(-50%);
   font-size: 12px;
   font-family: Georgia, serif;
+  color: var(--placeholder);
 }
 
 .add-page {
@@ -474,10 +478,14 @@ body {
 .modal {
   padding: 24px;
   border-radius: 8px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08);
   max-width: 28rem;
   width: 100%;
   margin: 0 16px;
+  background: var(--card-background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  transition: var(--transition);
 }
 
 .modal-title {
@@ -491,6 +499,9 @@ body {
   padding: 12px;
   border-radius: 8px;
   margin-bottom: 16px;
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
 }
 
 .modal-actions {
@@ -505,12 +516,13 @@ body {
   top: 16px;
   right: 16px;
   z-index: 50;
-  background-color: #d4af37;
-  color: white;
+  background-color: var(--accent);
+  color: var(--accent-foreground);
   border: none;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
+  transition: var(--transition);
 }
 
 /* Responsive */
@@ -572,15 +584,6 @@ body {
   50% {
     opacity: 0.5;
   }
-}
-
-/* Touch support */
-.editor-area {
-  touch-action: manipulation;
-}
-
-.page {
-  touch-action: pan-y pinch-zoom;
 }
 
 /* Print styles */

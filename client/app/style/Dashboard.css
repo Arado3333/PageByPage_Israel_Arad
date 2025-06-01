@@ -1,8 +1,12 @@
 .dashboard-container {
+  background: var(--background);
+  color: var(--foreground);
   padding: 1.5rem;
   max-width: 1600px;
   margin: 0 auto;
+  font-family: 'Georgia', serif;
   animation: fadeIn 0.3s ease-in-out;
+  transition: var(--transition);
 }
 
 @keyframes fadeIn {
@@ -78,11 +82,11 @@
 }
 
 .dashboard-card {
-  background-color: var(--background);
+  background-color: var(--card-background);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: var(--transition);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -94,11 +98,14 @@
 }
 
 .card-header {
-  background: linear-gradient(to right, var(--accent), var(--accent-secondary));
-  color: var(--accent-foreground);
-  font-weight: 600;
+  background: var(--card-header-background);
+  color: var(--card-header-text);
+  padding: 1rem;
+  border-radius: var(--radius) var(--radius) 0 0;
+  display: flex;
+  align-items: center;
+  transition: var(--transition);
 }
-
 
 .card-title {
   font-size: 1rem;
@@ -176,7 +183,7 @@
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--foreground);
+  color: var(--accent);
 }
 
 .stat-label {
@@ -598,7 +605,7 @@
   border: none;
   background: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: var(--transition);
 }
 
 .action-button:hover {
@@ -619,37 +626,33 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
-/* chainge 2025*/
+
 .dark .stat-item:hover {
   background-color: rgba(217, 179, 97, 0.12);
   transform: translateY(-2px);
   box-shadow: 0 3px 8px rgba(255, 255, 255, 0.05);
 }
+
 button {
   background-color: var(--accent);
-  transition: background-color 0.3s ease;
+  transition: var(--transition);
 }
 
 button:hover {
   background-color: var(--accent-secondary);
 }
+
 .tag-high {
-  background-color: #b22222; /* dark red */
+  background-color: var(--accent);
 }
 
 .tag-medium {
-  background-color: #e4b02f; /* deep yellow */
+  background-color: var(--accent-secondary);
 }
 
 .tag-low {
-  background-color: #4caf50; /* elegant green */
+  background-color: var(--muted);
 }
-.tag-high {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-/* chainge 2025*/
 
 @media (min-width: 640px) {
   .actions-grid {
@@ -693,55 +696,6 @@ button:hover {
   transition: color 0.2s ease;
 }
 
-/* === GLOBAL VARIABLES === */
-:root {
-  --background: #fdfcf8;
-  --foreground: #1c1c1c;
-  --muted: #f3f1eb;
-  --muted-foreground: #7d7d7d;
-
-  --accent: #b68a3a;              /* זהב טיפה כהה יותר, עם נוכחות */
-  --accent-secondary: #d5ae63;    /* חמאה עמוקה יותר */
-  --accent-foreground: #ffffff;
-
-  --border: #e3ddd2;
-  --card-background: #ffffff;
-}
-
-
-.dark {
-  --background: #0d0b08;              /* שחור חם עם גוון קפה */
-  --foreground: #f5f5f5;              /* טקסט לבן־רך */
-  --muted: #1b1915;                   /* גוון שוקולד כהה לפינות/גבולות */
-  --muted-foreground: #aaa49b;        /* אפור-זהוב לטקסט משני */
-  --accent: #c9a94b;                  /* זהב עמוק */
-  --accent-secondary: #f1cd7e;        /* זהב בהיר/חמאה עדין */
-  --accent-foreground: #0d0b08;       /* טקסט כהה על רקע בהיר */
-  --border: #2e261c;                  /* קו עדין בגוון עץ כהה */
-  --card-background: #151310;         /* רקע כרטיס: חום כהה עם נגיעת שחור */
-  --card-header-background: linear-gradient(to bottom, #1a1815, #0d0b08);
-  --card-header-text: var(--accent-foreground); /* נגיד לבן */
-}
-
-
-
-
-
-.dark {
-  --background: #0d0b08;                /* שחור חם עם גוון קפה */
-  --foreground: #e9e5dc;                /* טקסט רך – זהב-אפור */
-  --muted: #181511;                     /* פינות/גבולות – כהה יותר מהכרטיס */
-  --muted-foreground: #b9b2a8;          /* אפור-חם לטקסט משני */
-  
-  --accent: #d8b366;                    /* זהב אלגנטי – פחות כתום, יותר רגוע */
-  --accent-secondary: #e9ca8d;          /* חמאה זהובה – hover וכו' */
-  --accent-foreground: #0d0b08;         /* טקסט כהה על זהב בהיר */
-  
-  --border: #2e261c;                    /* קווים בגוון עץ כהה */
-  --card-background: #181511;           /* חום־שחור רך לכרטיסים */
-}
-
-
 /* === CONTAINER === */
 .dashboard-container {
   background: var(--background);
@@ -752,6 +706,7 @@ button:hover {
   font-family: 'Georgia', serif;
 
   animation: fadeIn 0.3s ease-in-out;
+  transition: var(--transition);
 }
 
 @keyframes fadeIn {
@@ -763,9 +718,9 @@ button:hover {
 .dashboard-card {
   background-color: var(--card-background);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  transition: var(--transition);
   display: flex;
   flex-direction: column;
 }
@@ -774,27 +729,24 @@ button:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
+
 .card-header {
   background: var(--card-header-background);
   color: var(--card-header-text);
   padding: 1rem;
-  border-radius: 12px 12px 0 0;
+  border-radius: var(--radius) var(--radius) 0 0;
   display: flex;
   align-items: center;
+  transition: var(--transition);
 }
-
-
-
-
 
 .card-title {
   font-size: 1.3rem;
   font-weight: 700;
   margin-left: 0.5rem;
-  color: var(--foreground); /* במקום accent-foreground */
+  color: var(--foreground);
   letter-spacing: -0.25px;
 }
-
 
 .card-content, .card-footer {
   padding: 1.25rem 1.5rem;
@@ -803,11 +755,10 @@ button:hover {
   line-height: 1.6;
 }
 
-
 /* === STATS === */
 .stat-item {
   background-color: var(--muted);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 1rem;
   text-align: center;
   transition: background-color 0.3s ease, transform 0.2s ease;
@@ -816,13 +767,11 @@ button:hover {
 }
 
 .stat-item:hover {
-  background-color: rgba(197, 160, 89, 0.15); /* זהב עדין עם שקיפות */
-  transform: translateY(-2px); /* הרמה קלה */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06); /* צל רך */
+  background-color: rgba(197, 160, 89, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
   cursor: pointer;
 }
-
-
 
 .stat-value {
   font-size: 2rem;
@@ -830,14 +779,12 @@ button:hover {
   color: var(--accent);
 }
 
-
 .stat-label {
   font-size: 0.85rem;
   color: var(--muted-foreground);
   margin-top: 0.25rem;
   display: block;
 }
-
 
 /* === CIRCLE GOAL === */
 .goal-circle-fill {
@@ -851,15 +798,17 @@ button:hover {
 /* === TASK PRIORITY === */
 .task-priority.high {
   background-color: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+  color: var(--accent);
 }
+
 .task-priority.medium {
   background-color: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
+  color: var(--accent-secondary);
 }
+
 .task-priority.low {
   background-color: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
+  color: var(--muted);
 }
 
 /* === TEXT === */
@@ -894,7 +843,7 @@ input[type="search"] {
   background-color: var(--muted);
   color: var(--foreground);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 0.5rem 1rem;
 }
 
@@ -902,14 +851,14 @@ input[type="search"]::placeholder {
   color: var(--muted-foreground);
 }
 
-
+/* === THEME TOGGLE === */
 .theme-toggle-button {
-  color: var(--accent-foreground); /* צבע בהיר על כהה */
-  background-color: var(--muted);  /* רקע קל להבדלה */
+  color: var(--accent-foreground);
+  background-color: var(--muted);
   border: none;
   padding: 0.5rem;
   border-radius: 9999px;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: var(--transition);
 }
 
 button:hover {
@@ -917,18 +866,16 @@ button:hover {
   box-shadow: 0 0 10px var(--accent-secondary);
 }
 
-
 .theme-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
   background: none;
   border: none;
-  color: var(--foreground); /* <- שינוי חשוב */
+  color: var(--foreground);
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: var(--transition);
 }
-
 
 .theme-toggle {
   padding: 0.5rem;
@@ -936,32 +883,34 @@ button:hover {
 }
 
 .theme-toggle:hover {
-  color: var(--accent); /* צבע הדגשה */
-  background-color: var(--muted); /* רקע hover */
+  color: var(--accent);
+  background-color: var(--muted);
 }
+
+/* === SETTINGS === */
 .settings-link,
 .settings-button {
-  color: var(--foreground); /* ← תמיד ייראה */
+  color: var(--foreground);
   background: none;
   border: none;
   padding: 0.5rem;
   border-radius: 9999px;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition: var(--transition);
 }
 
 .settings-link:hover,
 .settings-button:hover {
-  color: var(--accent); /* צבע הדגשה */
-  background-color: var(--muted); /* רקע hover */
+  color: var(--accent);
+  background-color: var(--muted);
 }
 
-/* footer*/
+/* === FOOTER === */
 .dashboard-footer {
   margin-top: 2rem;
   padding: 2rem;
-  background-color: var(--footer-bg, #f9f9f9);
-  color: var(--footer-text, #333);
-  border-top: 1px solid #ddd;
+  background-color: var(--footer-bg, var(--muted));
+  color: var(--footer-text, var(--foreground));
+  border-top: 1px solid var(--border);
 }
 
 .footer-content {
@@ -981,8 +930,6 @@ button:hover {
   font-size: 1.1rem;
 }
 
-
-
 .footer-column ul {
   list-style: none;
   padding: 0;
@@ -992,13 +939,9 @@ button:hover {
   margin-bottom: 0.3rem;
 }
 
-
-
-
-
-/* Footer Card (with card design) */
+/* Footer Card */
 .footer-card {
-  grid-column: span 1; /* ברירת מחדל למסכים קטנים */
+  grid-column: span 1;
 }
 
 @media (min-width: 1024px) {
@@ -1014,7 +957,6 @@ button:hover {
   width: 100%;
   max-width: 100%;
 }
-
 
 .footer-column {
   flex: 1;
@@ -1042,13 +984,12 @@ button:hover {
   margin: 0;
 }
 
-
-
 @media (min-width: 1024px) {
   .ai-card {
     grid-column: span 2;
   }
 }
+
 @media (min-width: 1024px) {
   .drafts-card {
     grid-column: span 1;
@@ -1058,6 +999,7 @@ button:hover {
     grid-column: span 1;
   }
 }
+
 @media (min-width: 1024px) {
   .ai-card {
     grid-column: span 3;

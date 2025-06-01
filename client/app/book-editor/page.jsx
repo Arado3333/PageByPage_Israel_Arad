@@ -12,8 +12,6 @@ import {
   BookOpen,
   Plus,
   ChevronDown,
-  Moon,
-  Sun,
   Eye,
   Focus,
   Bookmark,
@@ -26,7 +24,6 @@ export default function BookEditorPage() {
   const [showBookmarks, setShowBookmarks] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [wordCount, setWordCount] = useState(0)
-  const [isDarkMode, setIsDarkMode] = useState(false)
   const [isPreviewMode, setIsPreviewMode] = useState(false)
   const [isFocusMode, setIsFocusMode] = useState(false)
   const [showBookmarkModal, setShowBookmarkModal] = useState(false)
@@ -111,24 +108,18 @@ export default function BookEditorPage() {
   }
 
   return (
-    <div className={`book-editor ${isDarkMode ? "dark" : ""}`}>
-      <div
-        className="editor-container"
-        style={{ backgroundColor: isDarkMode ? "#0a0a0a" : "#f8f9fa", color: isDarkMode ? "#ffffff" : "#0a0a0a" }}
-      >
+    <div className="book-editor">
+      <div className="editor-container">
         {/* Toolbar */}
         {!isFocusMode && (
-          <div
-            className="toolbar"
-            style={{
-              backgroundColor: isDarkMode ? "#1a1a1a" : "#ffffff",
-              borderBottom: `1px solid ${isDarkMode ? "#333" : "#e5e7eb"}`,
-            }}
-          >
+          <div className="toolbar">
             <div className="toolbar-content">
               <div className="toolbar-group">
                 <button className="btn-primary">Save</button>
-                <button className="btn-secondary" onClick={() => setIsPreviewMode(!isPreviewMode)}>
+                <button
+                  className="btn-secondary preview-btn"
+                  onClick={() => setIsPreviewMode(!isPreviewMode)}
+                >
                   <Eye size={16} />
                   {isPreviewMode ? "Edit" : "Preview"}
                 </button>
@@ -140,30 +131,18 @@ export default function BookEditorPage() {
                     <button
                       className="toolbar-btn"
                       onClick={() => formatText("bold")}
-                      style={{
-                        border: `1px solid ${isDarkMode ? "#444" : "#d1d5db"}`,
-                        color: isDarkMode ? "#ffffff" : "#374151",
-                      }}
                     >
                       <Bold size={16} />
                     </button>
                     <button
                       className="toolbar-btn"
                       onClick={() => formatText("italic")}
-                      style={{
-                        border: `1px solid ${isDarkMode ? "#444" : "#d1d5db"}`,
-                        color: isDarkMode ? "#ffffff" : "#374151",
-                      }}
                     >
                       <Italic size={16} />
                     </button>
                     <button
                       className="toolbar-btn"
                       onClick={() => formatText("underline")}
-                      style={{
-                        border: `1px solid ${isDarkMode ? "#444" : "#d1d5db"}`,
-                        color: isDarkMode ? "#ffffff" : "#374151",
-                      }}
                     >
                       <Underline size={16} />
                     </button>
@@ -173,11 +152,6 @@ export default function BookEditorPage() {
                     <select
                       onChange={(e) => formatText("formatBlock", e.target.value)}
                       className="toolbar-select"
-                      style={{
-                        backgroundColor: isDarkMode ? "#2a2a2a" : "#ffffff",
-                        color: isDarkMode ? "#ffffff" : "#0a0a0a",
-                        border: `1px solid ${isDarkMode ? "#444" : "#d1d5db"}`,
-                      }}
                     >
                       <option value="div">Normal</option>
                       <option value="h1">Heading 1</option>
@@ -190,30 +164,18 @@ export default function BookEditorPage() {
                     <button
                       className="toolbar-btn"
                       onClick={() => formatText("justifyLeft")}
-                      style={{
-                        border: `1px solid ${isDarkMode ? "#444" : "#d1d5db"}`,
-                        color: isDarkMode ? "#ffffff" : "#374151",
-                      }}
                     >
                       <AlignLeft size={16} />
                     </button>
                     <button
                       className="toolbar-btn"
                       onClick={() => formatText("insertUnorderedList")}
-                      style={{
-                        border: `1px solid ${isDarkMode ? "#444" : "#d1d5db"}`,
-                        color: isDarkMode ? "#ffffff" : "#374151",
-                      }}
                     >
                       <List size={16} />
                     </button>
                     <button
                       className="toolbar-btn"
                       onClick={() => formatText("formatBlock", "blockquote")}
-                      style={{
-                        border: `1px solid ${isDarkMode ? "#444" : "#d1d5db"}`,
-                        color: isDarkMode ? "#ffffff" : "#374151",
-                      }}
                     >
                       <Quote size={16} />
                     </button>
@@ -222,13 +184,7 @@ export default function BookEditorPage() {
               )}
 
               <div className="toolbar-group">
-                <button
-                  className="ai-btn"
-                  style={{
-                    backgroundColor: isDarkMode ? "#ffffff" : "#0a0a0a",
-                    color: isDarkMode ? "#0a0a0a" : "#ffffff",
-                  }}
-                >
+                <button className="ai-btn">
                   <Sparkles size={14} />
                   AI Tools
                 </button>
@@ -238,10 +194,6 @@ export default function BookEditorPage() {
                 <button
                   onClick={() => setShowBookmarkModal(true)}
                   className="btn-secondary"
-                  style={{
-                    backgroundColor: isDarkMode ? "#2a2a2a" : "#f3f4f6",
-                    color: isDarkMode ? "#ffffff" : "#374151",
-                  }}
                 >
                   <Bookmark size={14} />
                   Bookmark
@@ -251,10 +203,6 @@ export default function BookEditorPage() {
                   <button
                     onClick={() => setShowBookmarks(!showBookmarks)}
                     className="btn-secondary"
-                    style={{
-                      backgroundColor: isDarkMode ? "#2a2a2a" : "#f3f4f6",
-                      color: isDarkMode ? "#ffffff" : "#374151",
-                    }}
                   >
                     <BookOpen size={14} />
                     Page {currentPage}
@@ -262,7 +210,7 @@ export default function BookEditorPage() {
                   </button>
 
                   {showBookmarks && (
-                    <div className="dropdown-menu" style={{ backgroundColor: isDarkMode ? "#1a1a1a" : "#ffffff" }}>
+                    <div className="dropdown-menu">
                       <div className="dropdown-header">Navigation</div>
                       <div className="dropdown-section">
                         <div className="page-buttons">
@@ -272,7 +220,7 @@ export default function BookEditorPage() {
                               onClick={() => scrollToPage(i + 1)}
                               className="page-btn"
                               style={{
-                                backgroundColor: currentPage === i + 1 ? "#D4AF37" : "transparent",
+                                backgroundColor: currentPage === i + 1 ? "var(--accent)" : "transparent",
                                 color: currentPage === i + 1 ? "white" : "inherit",
                               }}
                             >
@@ -285,7 +233,7 @@ export default function BookEditorPage() {
                         {bookmarks.map((bookmark) => (
                           <div key={bookmark.id} className="bookmark-item">
                             <button onClick={() => scrollToBookmark(bookmark)} className="bookmark-btn">
-                              <BookOpen size={14} style={{ color: "#D4AF37" }} />
+                              <BookOpen size={14} style={{ color: "var(--accent)" }} />
                               <div>
                                 <div className="bookmark-name">{bookmark.name}</div>
                                 <div className="bookmark-page">Page {bookmark.pageNumber}</div>
@@ -302,23 +250,8 @@ export default function BookEditorPage() {
                 </div>
 
                 <button
-                  onClick={() => setIsDarkMode(!isDarkMode)}
-                  className="btn-secondary"
-                  style={{
-                    backgroundColor: isDarkMode ? "#D4AF37" : "#f3f4f6",
-                    color: isDarkMode ? "#0a0a0a" : "#374151",
-                  }}
-                >
-                  {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-                </button>
-
-                <button
                   onClick={() => setIsFocusMode(!isFocusMode)}
                   className="btn-secondary"
-                  style={{
-                    backgroundColor: isFocusMode ? "#D4AF37" : isDarkMode ? "#2a2a2a" : "#f3f4f6",
-                    color: isFocusMode ? "#0a0a0a" : isDarkMode ? "#ffffff" : "#374151",
-                  }}
                 >
                   <Focus size={16} />
                 </button>
@@ -329,13 +262,7 @@ export default function BookEditorPage() {
 
         {/* Status Bar */}
         {!isFocusMode && (
-          <div
-            className="status-bar"
-            style={{
-              backgroundColor: isDarkMode ? "#1a1a1a" : "#f8f9fa",
-              borderBottom: `1px solid ${isDarkMode ? "#333" : "#e5e7eb"}`,
-            }}
-          >
+          <div className="status-bar">
             <div className="status-content">
               <div className="status-left">
                 <span>Words: {wordCount.toLocaleString()}</span>
@@ -347,18 +274,11 @@ export default function BookEditorPage() {
         )}
 
         {/* Editor */}
-        <div ref={containerRef} className="editor-area" style={{ backgroundColor: isDarkMode ? "#0a0a0a" : "#f1f3f4" }}>
+        <div ref={containerRef} className="editor-area">
           <div className="pages-container">
             {pages.map((page, index) => (
               <div key={page.id} className="page-wrapper">
-                <div
-                  className="page"
-                  style={{
-                    backgroundColor: isDarkMode ? "#1a1a1a" : "#ffffff",
-                    boxShadow: isDarkMode ? "0 4px 20px rgba(0, 0, 0, 0.3)" : "0 4px 20px rgba(0, 0, 0, 0.1)",
-                    color: isDarkMode ? "#ffffff" : "#0a0a0a",
-                  }}
-                >
+                <div className="page">
                   <div
                     ref={index === 0 ? activeEditorRef : null}
                     contentEditable={!isPreviewMode}
@@ -367,7 +287,7 @@ export default function BookEditorPage() {
                     onInput={(e) => updatePageContent(page.id, e.currentTarget.textContent || "")}
                     placeholder={index === 0 ? "Start writing your story..." : ""}
                   />
-                  <div className="page-number" style={{ color: isDarkMode ? "#888" : "#666" }}>
+                  <div className="page-number">
                     Page {index + 1}
                   </div>
                 </div>
@@ -378,10 +298,6 @@ export default function BookEditorPage() {
               <button
                 onClick={addNewPage}
                 className="btn-secondary"
-                style={{
-                  backgroundColor: isDarkMode ? "#2a2a2a" : "#f3f4f6",
-                  color: isDarkMode ? "#ffffff" : "#374151",
-                }}
               >
                 <Plus size={16} />
                 Add New Page
@@ -393,10 +309,7 @@ export default function BookEditorPage() {
         {/* Bookmark Modal */}
         {showBookmarkModal && (
           <div className="modal-overlay">
-            <div
-              className="modal"
-              style={{ backgroundColor: isDarkMode ? "#1a1a1a" : "#ffffff", color: isDarkMode ? "#ffffff" : "#0a0a0a" }}
-            >
+            <div className="modal">
               <h3>Add Bookmark</h3>
               <input
                 type="text"
@@ -404,11 +317,6 @@ export default function BookEditorPage() {
                 onChange={(e) => setBookmarkName(e.target.value)}
                 placeholder="Enter bookmark name..."
                 className="modal-input"
-                style={{
-                  backgroundColor: isDarkMode ? "#2a2a2a" : "#ffffff",
-                  color: isDarkMode ? "#ffffff" : "#0a0a0a",
-                  border: `1px solid ${isDarkMode ? "#444" : "#d1d5db"}`,
-                }}
                 autoFocus
                 onKeyPress={(e) => e.key === "Enter" && addBookmark()}
               />

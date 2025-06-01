@@ -1,26 +1,38 @@
 :root {
-  --background: #ffffff;
-  --foreground: #1e1e1e;
-  --muted: #666666;
-  --muted-foreground: #888888;
-  --border: #e5e5e5;
-  --input: #f5f5f5;
-  --ring: #007aff;
-  --accent: #007aff;
-  --radius: 0.5rem;
-}
-
-.dark {
-  --background: #121212;
-  --foreground: #eeeeee;
-  --muted: #888888;
-  --muted-foreground: #bbbbbb;
-  --border: #2c2c2c;
-  --input: #1e1e1e;
-  --ring: #007aff;
-  --accent: #007aff;
-}
-
+    --background: #ffffff;             /* לבן קלאסי רקע */
+    --foreground: #0a0a0a;             /* שחור אלגנטי לטקסט ראשי */
+    --muted: #f6f6f6;                  /* אפור עדין לרקעים משניים */
+    --muted-foreground: #888888;       /* טקסט משני רגוע */
+  
+    --accent: #d4af37;                 /* זהב עמוק עם נוכחות */
+    --accent-secondary: #f3d67b;       /* זהב בהיר לחוויות hover ו־active */
+    --accent-foreground: #000000;      /* טקסט כהה על זהב בהיר */
+  
+    --success: #3cb371;                /* ירוק "מאשר" */
+    --error: #d9534f;                  /* אדום חזק לשלילה/שגיאה */
+  
+    --border: #e0d7c6;                 /* גוון חם לתיחום */
+    --card-background: #ffffff;        /* רקע כרטיסים בהיר */
+    --radius: 0.5rem;
+  }
+  
+  .dark {
+    --background: #0d0b08;             /* שחור עם נגיעה קפה */
+    --foreground: #f5f5f5;             /* טקסט בהיר מאוד */
+    --muted: #181511;                  /* אפור כהה עדין */
+    --muted-foreground: #b3ada4;       /* טקסט משני בהיר */
+  
+    --accent: #d4af37;                 /* זהב – אחיד כמו בלייט */
+    --accent-secondary: #f1cd7e;       /* חמאה-זהוב */
+    --accent-foreground: #0d0b08;      /* טקסט כהה על זהב בהיר */
+  
+    --success: #64df64;                /* ירוק זוהר */
+    --error: #ff6b6b;                  /* אדום בוהק אך הרמוני */
+  
+    --border: #2e261c;                 /* תיחום כהה-עץ */
+    --card-background: #1a1815;        /* רקע כרטיס כהה אך נעים */
+  }
+  
 * {
   box-sizing: border-box;
   padding: 0;
