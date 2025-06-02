@@ -1,263 +1,177 @@
-.books-container {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* צבעים ראשיים של האתר */
+:root {
+  --background: #ffffff;             /* לבן קלאסי רקע */
+  --foreground: #0a0a0a;             /* שחור אלגנטי לטקסט ראשי */
+  --muted: #f6f6f6;                  /* אפור עדין לרקעים משניים */
+  --muted-foreground: #888888;       /* טקסט משני רגוע */
+
+  --accent: #d4af37;                 /* זהב עמוק עם נוכחות */
+  --accent-secondary: #f3d67b;       /* זהב בהיר לחוויות hover ו־active */
+  --accent-foreground: #000000;      /* טקסט כהה על זהב בהיר */
+
+  --success: #3cb371;                /* ירוק "מאשר" */
+  --error: #d9534f;                  /* אדום חזק לשלילה/שגיאה */
+
+  --border: #e0d7c6;                 /* גוון חם לתיחום */
+  --card-background: #ffffff;        /* רקע כרטיסים בהיר */
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #0d0b08;             /* שחור עם נגיעה קפה */
+  --foreground: #f5f5f5;             /* טקסט בהיר מאוד */
+  --muted: #181511;                  /* אפור כהה עדין */
+  --muted-foreground: #b3ada4;       /* טקסט משני בהיר */
+
+  --accent: #d4af37;                 /* זהב – אחיד כמו בלייט */
+  --accent-secondary: #f1cd7e;       /* חמאה-זהוב */
+  --accent-foreground: #0d0b08;      /* טקסט כהה על זהב בהיר */
+
+  --success: #64df64;                /* ירוק זוהר */
+  --error: #ff6b6b;                  /* אדום בוהק אך הרמוני */
+
+  --border: #2e261c;                 /* תיחום כהה-עץ */
+  --card-background: #1a1815;        /* רקע כרטיס כהה אך נעים */
+}
+
+/* Reset בסיסי */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  @apply border-border;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+/* אנימציות */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-transition {
   animation: fadeIn 0.3s ease-in-out;
 }
 
-.books-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.page-title {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: var(--foreground);
-}
-
-.books-button {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
+/* רכיבים */
+.card {
+  background-color: var(--card-background);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  border: 1px solid var(--accent);
   transition: all 0.2s ease;
 }
 
-.books-button.primary {
-  background-color: var(--accent);
-  color: white;
-  border: none;
+.btn-primary:hover {
+  background-color: var(--accent-secondary);
+  transform: scale(1.05);
 }
 
-.books-button.primary:hover {
-  opacity: 0.9;
-}
-
-.button-icon {
-  margin-right: 0.5rem;
-  height: 1rem;
-  width: 1rem;
-}
-
-.search-card {
-  background-color: var(--background);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin-bottom: 1.5rem;
-}
-
-.search-form {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-@media (min-width: 768px) {
-  .search-form {
-    flex-direction: row;
-  }
-}
-
-.search-input-container {
-  position: relative;
-  flex-grow: 1;
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 1rem;
-  width: 1rem;
-  color: var(--muted);
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.625rem 0.75rem 0.625rem 2.5rem;
-  background-color: var(--input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--foreground);
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--ring);
-}
-
-.search-filters {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.filter-select {
-  padding: 0.625rem 0.75rem;
-  background-color: var(--input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--foreground);
-}
-
-.filter-select:focus {
-  outline: none;
-  border-color: var(--ring);
-}
-
-.books-grid {
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 1.5rem;
-}
-
-@media (min-width: 640px) {
-  .books-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .books-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.book-card {
-  background-color: var(--background);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.book-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-.book-header {
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.book-title {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--foreground);
-  display: flex;
-  align-items: center;
-}
-
-.book-icon {
-  margin-right: 0.5rem;
-  height: 1.25rem;
-  width: 1.25rem;
+.btn-outline {
+  background-color: transparent;
   color: var(--accent);
-}
-
-.book-menu-button {
-  color: var(--muted);
-  transition: color 0.2s ease;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.book-menu-button:hover {
-  color: var(--foreground);
-}
-
-.menu-icon {
-  height: 1.25rem;
-  width: 1.25rem;
-}
-
-.book-content {
-  padding: 1rem;
-}
-
-.book-details {
-  margin-bottom: 1rem;
-}
-
-.book-meta {
-  font-size: 0.875rem;
-  color: var(--muted);
-  margin-bottom: 0.5rem;
-}
-
-.book-progress {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.progress-bar {
-  flex-grow: 1;
-  height: 0.5rem;
-  background-color: var(--input);
-  border-radius: 9999px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background-color: var(--accent);
-  border-radius: 9999px;
-}
-
-.progress-text {
-  font-size: 0.75rem;
-  color: var(--muted);
-}
-
-.book-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.book-action-button {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.375rem 0.75rem;
-  border-radius: var(--radius);
-  font-size: 0.875rem;
-  font-weight: 500;
+  border: 1px solid var(--accent);
   transition: all 0.2s ease;
 }
 
-.book-action-button.edit {
-  background-color: transparent;
+.btn-outline:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.bg-muted {
+  background-color: var(--muted);
+}
+
+.border-custom {
+  border-color: var(--border);
+}
+
+.input-field {
+  background-color: var(--card-background);
   border: 1px solid var(--border);
   color: var(--foreground);
+  border-radius: var(--radius);
 }
 
-.book-action-button.edit:hover {
-  background-color: var(--input);
+.input-field:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-secondary);
 }
 
-.book-action-button.delete {
-  background-color: transparent;
+.badge-accent {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.badge-muted {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
   border: 1px solid var(--border);
-  color: #d32f2f;
 }
 
-.book-action-button.delete:hover {
-  background-color: rgba(211, 47, 47, 0.05);
-  border-color: rgba(211, 47, 47, 0.3);
+.success {
+  color: var(--success);
 }
 
-.action-icon {
-  margin-right: 0.25rem;
-  height: 1rem;
-  width: 1rem;
+.error {
+  color: var(--error);
+}
+
+.tab-active {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.tab-inactive {
+  color: var(--muted-foreground);
+}
+
+.tab-inactive:hover {
+  background-color: var(--accent-secondary);
+  color: var(--accent-foreground);
 }
