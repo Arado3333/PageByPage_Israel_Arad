@@ -1,37 +1,39 @@
 :root {
-    --background: #ffffff;             /* לבן קלאסי רקע */
-    --foreground: #0a0a0a;             /* שחור אלגנטי לטקסט ראשי */
-    --muted: #f6f6f6;                  /* אפור עדין לרקעים משניים */
-    --muted-foreground: #888888;       /* טקסט משני רגוע */
-  
-    --accent: #d4af37;                 /* זהב עמוק עם נוכחות */
-    --accent-secondary: #f3d67b;       /* זהב בהיר לחוויות hover ו־active */
-    --accent-foreground: #000000;      /* טקסט כהה על זהב בהיר */
-  
-    --success: #3cb371;                /* ירוק "מאשר" */
-    --error: #d9534f;                  /* אדום חזק לשלילה/שגיאה */
-  
-    --border: #e0d7c6;                 /* גוון חם לתיחום */
-    --card-background: #ffffff;        /* רקע כרטיסים בהיר */
-    --radius: 0.5rem;
-  }
-  
-  .dark {
-    --background: #0d0b08;             /* שחור עם נגיעה קפה */
-    --foreground: #f5f5f5;             /* טקסט בהיר מאוד */
-    --muted: #181511;                  /* אפור כהה עדין */
-    --muted-foreground: #b3ada4;       /* טקסט משני בהיר */
-  
-    --accent: #d4af37;                 /* זהב – אחיד כמו בלייט */
-    --accent-secondary: #f1cd7e;       /* חמאה-זהוב */
-    --accent-foreground: #0d0b08;      /* טקסט כהה על זהב בהיר */
-  
-    --success: #64df64;                /* ירוק זוהר */
-    --error: #ff6b6b;                  /* אדום בוהק אך הרמוני */
-  
-    --border: #2e261c;                 /* תיחום כהה-עץ */
-    --card-background: #1a1815;        /* רקע כרטיס כהה אך נעים */
-  }
+  --background: #fdf2f8;
+  --foreground: #374151;
+  --muted: #fce7f3;
+  --muted-foreground: #7b8691;
+
+  --accent: #ec4899;
+  --accent-secondary: #f472b6;
+  --accent-foreground: #ffffff;
+
+  --success: #4bb69f;
+  --error: #e11d48;
+
+  --border: #e5e0e3;
+  --card-background: #ffffff;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #1b1a1f;
+  --foreground: #e4e1e5;
+  --muted: #27262b;
+  --muted-foreground: #a09da1;
+
+  --accent: #ec4899;
+  --accent-secondary: #f472b6;
+  --accent-foreground: #0f0f0f;
+
+  --success: #4bb69f;
+  --error: #fb7185;
+
+  --border: #3a383d;
+  --card-background: #2e2d33;
+}
+
+
   
 * {
   box-sizing: border-box;
