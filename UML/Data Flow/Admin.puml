@@ -1,0 +1,52 @@
+@startuml
+!theme vibrant
+
+' --- Skin Parameters for a modern, clean DFD look ---
+skinparam actorStyle none
+skinparam rectangle {
+    roundCorner 5
+    shadowing false
+    backgroundColor White
+    borderColor Black
+    stereo false
+}
+skinparam agent {
+    roundCorner 25
+    shadowing false
+    borderThickness 2
+    borderColor Black
+    backgroundColor White
+    fontSize 16
+    padding 20
+}
+skinparam arrow {
+    thickness 1
+    color Black
+}
+hide stereotype
+
+title תרשים זרימת נתונים - מערכת ניהול
+
+' --- Central Process ---
+agent "מערכת\nניהול" as System
+
+' --- External Entity & Data Stores (as rectangles) ---
+rectangle "מנהל מערכת" as Admin
+rectangle "D1: חשבונות משתמשים" as UserDB
+rectangle "D2: תפקידים והרשאות" as RolesDB
+rectangle "D3: יומני מערכת" as LogsDB
+rectangle "D4: הגדרות פלטפורמה" as SettingsDB
+rectangle "D5: פיקוח על תוכן" as ModDB
+
+' --- Define the flows for a balanced layout ---
+Admin -up-> System : בקשות ניהול
+System -down-> Admin : תצוגת נתונים
+
+System -right-> UserDB : קריאה/כתיבה
+System -> RolesDB : קריאה/כתיבה
+System -> LogsDB : קריאה/כתיבה
+System -left-> SettingsDB : קריאה/כתיבה
+System -> ModDB : קריאה/כתיבה
+
+
+@enduml

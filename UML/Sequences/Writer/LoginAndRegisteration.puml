@@ -1,0 +1,84 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: User Authentication (Login & Registration)
+
+actor "User" as User
+participant "Browser" as Browser
+participant "API Gateway" as Gateway
+participant "Auth Service" as AuthService
+database "UserDB"
+
+User -> Browser : Navigates to PageByPage website
+
+alt User chooses to Login
+
+    Browser -> User : Displays Login Form
+    User -> Browser : Enters email and password
+    Browser ->> Gateway : POST /api/login\n(email, password)
+    activate Gateway
+
+    Gateway ->> AuthService : login(credentials)
+    activate AuthService
+    
+    AuthService ->> UserDB : findUserByEmail(email)
+    activate UserDB
+    UserDB -->> AuthService : User Document or null
+    deactivate UserDB
+
+    alt User details are valid
+        AuthService -> AuthService : Compare hashed password
+        alt Password is correct
+            AuthService -> AuthService : Create secure JWT
+            AuthService -->> Gateway : 200 OK { jwt: "..." }
+            Gateway -->> Browser : 200 OK
+            Browser -> Browser : Store JWT and redirect to dashboard
+            Browser -> User : Displays Dashboard
+        else Password is incorrect
+            AuthService -->> Gateway : 401 Unauthorized
+            Gateway -->> Browser : 401 Unauthorized
+            Browser -> User : Display error: "Incorrect email or password"
+        end
+    else User does not exist
+        AuthService -->> Gateway : 404 Not Found
+        Gateway -->> Browser : 404 Not Found
+        Browser -> User : Display error: "User not found, please register"
+    end
+    deactivate AuthService
+    deactivate Gateway
+
+else User chooses to Register
+    
+    Browser -> User : Displays Registration Form
+    User -> Browser : Enters name, email, and password
+    Browser ->> Gateway : POST /api/register\n(name, email, password)
+    activate Gateway
+
+    Gateway ->> AuthService : register(userData)
+    activate AuthService
+
+    AuthService ->> UserDB : findUserByEmail(email)
+    activate UserDB
+    UserDB -->> AuthService : User Document or null
+    deactivate UserDB
+
+    alt Email does not exist in system
+        AuthService -> AuthService : Hash password
+        AuthService ->> UserDB : save(newUserDocument)
+        activate UserDB
+        UserDB -->> AuthService : New User Document
+        deactivate UserDB
+
+        AuthService -->> Gateway : 201 Created
+        Gateway -->> Browser : 201 Created
+        Browser -> User : Display success message and direct to login
+    else Email already exists
+        AuthService -->> Gateway : 409 Conflict
+        Gateway -->> Browser : 409 Conflict
+        Browser -> User : Display error: "User with this email already exists"
+    end
+    deactivate AuthService
+    deactivate Gateway
+end
+
+@enduml

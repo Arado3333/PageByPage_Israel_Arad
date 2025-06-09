@@ -1,0 +1,64 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: User Management by a Manager
+
+actor "Manager"
+participant "Browser"
+participant "API Gateway" as Gateway
+participant "Project Service" as ProjectService
+database "ProjectDB / UserDB"
+
+Manager -> Browser : Navigates to project's User Management page
+' ... The list of users associated with the project is fetched and displayed ...
+Browser -> Manager : Displays list of project users
+
+alt Manager chooses to Add a New User to Project
+
+    Manager -> Browser : Clicks "Add User"
+    Browser -> Manager : Displays form for user email and project role
+    Manager -> Browser : Fills form and clicks "Invite"
+    Browser ->> Gateway : POST /api/v1/projects/{projectId}/users\n(Authorization: Bearer JWT, {email, role})
+    activate Gateway
+    Gateway ->> ProjectService : inviteUserToProject(managerId, projectId, inviteData)
+    activate ProjectService
+    
+    ProjectService -> ProjectService : Verify manager has permission for this project
+    alt Manager has permissions
+        ProjectService ->> ProjectDB : Add user association to project document
+        activate ProjectDB
+        ProjectDB -->> ProjectService : Success
+        deactivate ProjectDB
+        ProjectService -->> Gateway : 200 OK { message: "Invitation sent" }
+        Gateway -->> Browser : 200 OK
+        Browser -> Manager : Displays "User invited successfully"
+    else Manager lacks permissions
+        ProjectService -->> Gateway : 403 Forbidden
+        Gateway -->> Browser : 403 Forbidden
+        Browser -> Manager : Displays error message
+    end
+    deactivate ProjectService
+    deactivate Gateway
+
+else Manager chooses to Edit a User's Role
+
+    Manager -> Browser : Clicks "Edit Role" on a user
+    ' ... similar flow to add, but using PUT on a specific user's association ...
+    Browser ->> Gateway : PUT /api/v1/projects/{projectId}/users/{userId}\n(Authorization: Bearer JWT, {role: "Editor"})
+    ' ... server validates and updates ...
+    Gateway -->> Browser : 200 OK
+    Browser -> Manager : Displays "User role updated"
+
+else Manager chooses to Remove a User from Project
+
+    Manager -> Browser : Clicks "Remove" on a user
+    Browser -> Manager : Displays confirmation dialog
+    Manager -> Browser : Clicks "Confirm"
+    Browser ->> Gateway : DELETE /api/v1/projects/{projectId}/users/{userId}\n(Authorization: Bearer JWT)
+    ' ... server verifies permissions and removes the user-project association ...
+    Gateway -->> Browser : 204 No Content
+    Browser -> Manager : Displays "User removed from project" and updates list
+
+end
+
+@enduml

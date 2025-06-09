@@ -1,0 +1,37 @@
+@startuml
+!theme vibrant
+
+title Proposed System Architecture (Revised)
+
+package "Client" {
+  actor "Admin" as User
+  rectangle "Browser" as Browser
+}
+
+package "Backend Services" {
+  rectangle "API Gateway" as Gateway
+  
+  rectangle "Services" {
+    component "Auth Service" as AuthService
+    component "User Service" as UserService
+    component "Logging Service" as LogService
+  }
+  
+  database "Database Cluster" as DB {
+    database "UserDB (with roles)" as UserDB
+    database "LogsDB"
+  }
+}
+
+User -right-> Browser
+Browser -right-> Gateway : Requests to /api/admin/**
+
+Gateway -> AuthService
+Gateway -> UserService
+Gateway -> LogService
+
+AuthService <--> UserDB : Verifies credentials
+UserService <--> UserDB : Manages user data & roles
+LogService <--> LogsDB : Writes/reads logs
+
+@enduml

@@ -1,0 +1,45 @@
+@startuml
+!theme vibrant
+
+title Proposed System Architecture (Writer/User)
+
+package "Client" {
+  actor "Writer" as User
+  rectangle "Browser" as Browser
+}
+
+package "Backend Services" {
+  rectangle "API Gateway" as Gateway
+  
+  rectangle "Services" {
+    component "Auth Service" as AuthService
+    component "Book Service" as BookService
+    component "Chapter Service" as ChapterService
+    component "Content Service" as ContentService
+    component "AI Service" as AIService
+  }
+  
+  database "Database Cluster" as DB {
+    database "UserDB"
+    database "BookDB"
+    database "ChapterDB"
+    database "ContentDB"
+    database "AIConfigDB"
+  }
+}
+
+User -right-> Browser
+Browser -right-> Gateway : Requests to /api/v1/**
+
+Gateway -> AuthService
+Gateway -> BookService
+Gateway -> ChapterService
+Gateway -> ContentService
+Gateway -> AIService
+
+BookService <--> BookDB
+ChapterService <--> ChapterDB
+ContentService <--> ContentDB
+AIService <--> AIConfigDB : Reads custom configs
+
+@enduml

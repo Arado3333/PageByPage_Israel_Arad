@@ -1,0 +1,46 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: Admin Login with JWT
+
+actor Admin
+participant Browser
+participant "API Gateway" as Gateway
+participant "Auth Service" as AuthService
+database "UserDB"
+
+Admin -> Browser : Enters details in /admin/login
+Browser ->> Gateway : POST /api/admin/login\n(email, password)
+activate Gateway
+
+Gateway ->> AuthService : login(credentials)
+activate AuthService
+
+AuthService ->> UserDB : findUserByEmail(email)
+activate UserDB
+UserDB -->> AuthService : User Document (incl. hashedPass, role)
+deactivate UserDB
+
+alt Credentials & Role Valid
+    AuthService -> AuthService : Verify role === 'Admin'
+    AuthService -> AuthService : hash(password) matches hashedPass
+
+    AuthService -> AuthService : Generate & sign JWT\n(payload: {userId, role})
+    AuthService -->> Gateway : 200 OK { jwt: "..." }
+else Credentials or Role Invalid
+    AuthService -->> Gateway : 401 Unauthorized
+end
+
+deactivate AuthService
+
+Gateway -->> Browser : Response (200 OK or 401)
+deactivate Gateway
+
+alt Login Successful
+    Browser -> Browser : Store JWT (e.g., sessionStorage)
+    Browser -> Admin : Redirect to /admin/dashboard
+else Login Failed
+    Browser -> Admin : Display "Invalid credentials" error
+end
+
+@enduml

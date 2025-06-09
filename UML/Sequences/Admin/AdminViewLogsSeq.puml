@@ -1,0 +1,38 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: Admin Views and Filters System Logs
+
+actor Admin
+participant Browser
+participant "API Gateway" as Gateway
+participant "Logging Service" as LoggingService
+database "LogsDB"
+
+Admin -> Browser : Navigates to /admin/logs\nand applies filters (e.g., eventType, dateRange)
+
+Browser ->> Gateway : GET /api/admin/logs?eventType=...&dateStart=...\n(Authorization: Bearer JWT)
+activate Gateway
+
+Gateway -> Gateway : Verify JWT (ensure admin privileges)
+Gateway ->> LoggingService : getLogs(filterParams)
+activate LoggingService
+
+LoggingService ->> LogsDB : find(query)
+activate LogsDB
+LogsDB -->> LoggingService : [Log Documents]
+deactivate LogsDB
+
+alt Logs found
+    LoggingService -->> Gateway : 200 OK { logs: [...] }
+else No logs match
+    LoggingService -->> Gateway : 200 OK { logs: [] }
+end
+
+deactivate LoggingService
+Gateway -->> Browser : Response (200 OK with log data)
+deactivate Gateway
+
+Browser -> Admin : Display filtered logs in a table or list
+
+@enduml

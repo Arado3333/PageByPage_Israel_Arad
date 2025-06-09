@@ -1,0 +1,51 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: Admin Manages Complementary AI Settings
+
+actor Admin
+participant Browser
+participant "API Gateway" as Gateway
+participant "AIConfig Service" as AIConfigService
+database "AIConfigDB"
+participant "Logging Service" as LoggingService
+
+Admin -> Browser : Navigates to /admin/ai-settings page
+Browser ->> Gateway : GET /api/admin/ai-configs\n(Authorization: Bearer JWT)
+activate Gateway
+Gateway ->> AIConfigService : getConfigs()
+activate AIConfigService
+AIConfigService ->> AIConfigDB : find({})
+activate AIConfigDB
+AIConfigDB -->> AIConfigService : [AI Config Documents]
+deactivate AIConfigDB
+AIConfigService -->> Gateway : 200 OK { configs: [...] }
+deactivate AIConfigService
+Gateway -->> Browser : Response with current AI configs
+deactivate Gateway
+Browser -> Admin : Displays AI configurations (e.g., custom prompts)
+
+... Time passes ...
+
+Admin -> Browser : Creates or modifies an AI configuration and clicks 'Save'
+Browser ->> Gateway : POST or PUT /api/admin/ai-configs/{configId}\n(Authorization: Bearer JWT, configData)
+activate Gateway
+Gateway -> Gateway : Verify JWT (ensure admin privileges)
+Gateway ->> AIConfigService : saveConfig(configId, configData)
+activate AIConfigService
+
+AIConfigService ->> AIConfigDB : save(configData)
+activate AIConfigDB
+AIConfigDB -->> AIConfigService : Saved AI Config Document
+deactivate AIConfigDB
+
+AIConfigService -->> Gateway : 200 OK or 201 Created { savedConfig }
+' Asynchronous Logging
+AIConfigService ->> LoggingService : logEvent('AI_CONFIG_UPDATED', {adminId, configId})
+deactivate AIConfigService
+
+Gateway -->> Browser : Response (200/201 OK)
+deactivate Gateway
+Browser -> Admin : Display "AI configuration saved successfully" message
+
+@enduml

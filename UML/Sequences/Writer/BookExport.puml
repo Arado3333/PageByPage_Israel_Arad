@@ -1,0 +1,67 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: User Exports a Book
+
+actor "User"
+participant "Browser"
+participant "API Gateway" as Gateway
+participant "Export Service" as ExportService
+participant "Book Service" as BookService
+participant "Chapter Service" as ChapterService
+
+User -> Browser : Navigates to book page and clicks "Export Book"
+Browser -> User : Displays export options (e.g., PDF, Word)
+User -> Browser : Selects format and clicks "Export"
+
+Browser ->> Gateway : POST /api/v1/books/{bookId}/export\n(Authorization: Bearer JWT, {format: "PDF"})
+activate Gateway
+Gateway -> Gateway : Verify JWT and user permissions for book
+alt User lacks permission
+    Gateway -->> Browser : 403 Forbidden
+    deactivate Gateway
+    Browser -> User : Displays error: "Permission denied"
+
+end
+
+Gateway ->> ExportService : generateExport(userId, bookId, format)
+activate ExportService
+
+' The Export service orchestrates fetching all necessary data
+ExportService ->> BookService : getBookDetails(bookId)
+activate BookService
+BookService -->> ExportService : Book Metadata
+deactivate BookService
+
+ExportService ->> ChapterService : getChaptersInOrder(bookId)
+activate ChapterService
+ChapterService -->> ExportService : [Chapter Documents]
+deactivate ChapterService
+
+' Note: In a real system, this would likely be a loop
+ExportService ->> ChapterService : getChapterContent(chapterId)
+activate ChapterService
+ChapterService -->> ExportService : Chapter Content
+deactivate ChapterService
+
+
+alt File generation is successful
+    ExportService -> ExportService : Compile content into selected format (PDF/Word)
+    ExportService -->> Gateway : 200 OK { file: (binary data) }
+else File generation fails
+    ExportService -->> Gateway : 500 Internal Server Error { error: "Export process failed" }
+end
+
+deactivate ExportService
+Gateway -->> Browser : Response (200 OK with file or 500 Error)
+deactivate Gateway
+
+alt 200 OK
+    Browser -> Browser : Triggers file download for the user
+    Browser -> User : Shows "Download started" notification
+else 500 Internal Server Error
+    Browser -> User : Displays error: "An error occurred during export"
+end
+
+
+@enduml
