@@ -1,0 +1,28 @@
+@startuml
+title "תרחישי שימוש: מנהל מערכת"
+
+left to right direction
+
+actor "מנהל מערכת" as Admin
+
+rectangle "פלטפורמת PageByPage - ניהול" {
+  usecase UC_AdminAuth as "אימות מנהל \n(התחברות)"
+  usecase UC_ManageUserAccounts as "ניהול חשבונות משתמשים \n(יצירה, צפייה, עריכה, השעיה, מחיקה)"
+  usecase UC_AssignRoles as "הקצאת תפקידים והרשאות"
+  usecase UC_ViewSystemLogs as "צפייה ביומני מערכת \n(לוגים ואנליטיקות)"
+  usecase UC_ManagePlatformSettings as "ניהול הגדרות פלטפורמה כלליות"
+  usecase UC_ManageAIOverrides as "ניהול תצורות AI משלימות \n(Overrides/Supplementary)"
+  usecase UC_OverseeContent as "פיקוח על תוכן \n(אופציונלי - מדיניות שימוש)"
+
+  UC_ManageUserAccounts .> UC_AssignRoles : <<include>>
+}
+
+' Actor Associations
+Admin -- UC_AdminAuth
+Admin -- UC_ManageUserAccounts
+Admin -- UC_ViewSystemLogs
+Admin -- UC_ManagePlatformSettings
+Admin -- UC_ManageAIOverrides
+Admin -- UC_OverseeContent
+
+@enduml

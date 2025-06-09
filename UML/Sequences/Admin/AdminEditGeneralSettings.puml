@@ -1,0 +1,51 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: Admin Manages General Platform Settings
+
+actor Admin
+participant Browser
+participant "API Gateway" as Gateway
+participant "Settings Service" as SettingsService
+database "SettingsDB"
+participant "Logging Service" as LoggingService
+
+Admin -> Browser : Navigates to /admin/settings page
+Browser ->> Gateway : GET /api/admin/settings\n(Authorization: Bearer JWT)
+activate Gateway
+Gateway ->> SettingsService : getSettings()
+activate SettingsService
+SettingsService ->> SettingsDB : findOne({})
+activate SettingsDB
+SettingsDB -->> SettingsService : Settings Document
+deactivate SettingsDB
+SettingsService -->> Gateway : 200 OK { settings }
+deactivate SettingsService
+Gateway -->> Browser : Response with current settings
+deactivate Gateway
+Browser -> Admin : Displays current settings in a form
+
+... Time passes ...
+
+Admin -> Browser : Modifies settings and clicks 'Save'
+Browser ->> Gateway : PUT /api/admin/settings\n(Authorization: Bearer JWT, updatedSettings)
+activate Gateway
+Gateway -> Gateway : Verify JWT (ensure admin privileges)
+Gateway ->> SettingsService : updateSettings(updatedSettings)
+activate SettingsService
+
+SettingsService ->> SettingsDB : findOneAndUpdate({}, updatedSettings)
+activate SettingsDB
+SettingsDB -->> SettingsService : Updated Settings Document
+deactivate SettingsDB
+
+SettingsService -->> Gateway : 200 OK { updatedSettings }
+' Asynchronous Logging
+SettingsService ->> LoggingService : logEvent('SETTINGS_UPDATED', {adminId})
+deactivate SettingsService
+
+Gateway -->> Browser : Response (200 OK)
+deactivate Gateway
+Browser -> Admin : Display "Settings updated successfully" message
+
+@enduml

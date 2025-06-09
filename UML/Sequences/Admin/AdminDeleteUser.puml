@@ -1,0 +1,49 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: Admin Deletes a User
+
+actor Admin
+participant Browser
+participant "API Gateway" as Gateway
+participant "User Service" as UserService
+database "UserDB"
+participant "Logging Service" as LoggingService
+
+Admin -> Browser : Selects user and clicks 'Delete User'
+Browser -> Browser : Shows confirmation dialog: "Are you sure?"
+Admin -> Browser : Confirms deletion
+
+Browser ->> Gateway : DELETE /api/admin/users/{userId}\n(Authorization: Bearer JWT)
+activate Gateway
+
+Gateway -> Gateway : Verify JWT (ensure admin privileges)
+Gateway ->> UserService : deleteUser(userId)
+activate UserService
+
+UserService ->> UserDB : findByIdAndDelete(userId)
+activate UserDB
+UserDB -->> UserService : Deleted User Document
+deactivate UserDB
+
+alt User deleted successfully
+    UserService -->> Gateway : 204 No Content
+    
+    ' Asynchronous Logging
+    UserService ->> LoggingService : logEvent('USER_DELETED', {adminId, deletedUserId})
+
+else User not found
+    UserService -->> Gateway : 404 Not Found
+end
+
+deactivate UserService
+Gateway -->> Browser : Response (204 or 404)
+deactivate Gateway
+
+alt Deletion successful
+    Browser -> Admin : Display "User deleted successfully" and remove from list
+else Deletion failed
+    Browser -> Admin : Display error message
+end
+
+@enduml

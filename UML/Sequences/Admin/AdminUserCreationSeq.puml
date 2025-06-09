@@ -1,0 +1,52 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: Admin Creates a New User
+
+actor Admin
+participant Browser
+participant "API Gateway" as Gateway
+participant "User Service" as UserService
+database "UserDB"
+participant "Logging Service" as LoggingService
+
+Admin -> Browser : Fills out 'Create User' form\n(email, password, role)
+Browser ->> Gateway : POST /api/admin/users\n(Authorization: Bearer JWT, userData)
+activate Gateway
+
+Gateway -> Gateway : Verify JWT (ensure admin privileges)
+Gateway ->> UserService : createUser(userData)
+activate UserService
+
+UserService ->> UserDB : findUserByEmail(email)
+activate UserDB
+UserDB -->> UserService : null (email is unique)
+deactivate UserDB
+
+alt Email is unique
+    UserService -> UserService : Hash user password
+    UserService ->> UserDB : save(newUserDocument)
+    activate UserDB
+    UserDB -->> UserService : New User Document
+    deactivate UserDB
+
+    UserService -->> Gateway : 201 Created { newUser }
+    
+    ' Asynchronous Logging
+    UserService ->> LoggingService : logEvent('USER_CREATED', {adminId, newUserId})
+
+else Email already exists
+    UserService -->> Gateway : 409 Conflict { error: "Email already in use" }
+end
+
+deactivate UserService
+Gateway -->> Browser : Response (201 Created or 409 Conflict)
+deactivate Gateway
+
+alt User created successfully
+    Browser -> Admin : Display "User successfully created" message
+else User creation failed
+    Browser -> Admin : Display error message
+end
+
+@enduml

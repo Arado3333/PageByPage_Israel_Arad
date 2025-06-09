@@ -1,0 +1,45 @@
+@startuml
+title "תרחישי שימוש: כותב - PageByPage"
+
+left to right direction
+
+actor "כותב" as Writer
+
+rectangle "פלטפורמת PageByPage" {
+  usecase UC_Auth as "אימות משתמש \n(התחברות/רישום)"
+  usecase UC_ManageBooks as "ניהול ספרים \n(יצירה, עריכה, מחיקה)"
+  usecase UC_ManageChapters as "ניהול פרקים \n(יצירה, עריכה, מחיקה, ארגון)"
+  usecase UC_WriteEdit as "כתיבה ועריכת תוכן פרק"
+  usecase UC_FormatText as "עיצוב טקסט"
+  usecase UC_SaveVersions as "שמירת טיוטות / ניהול גרסאות"
+  usecase UC_ManageTasks as "ניהול משימות / תזמון אירועים"
+  usecase UC_Export as "ייצוא ספר \n(Word/PDF)"
+  usecase UC_ManageUsers as "ניהול משתמשים \n(מנהל/רגיל)"
+
+  ' Relationships within the system
+  UC_WriteEdit .> UC_FormatText : <<include>>
+  UC_WriteEdit .> UC_SaveVersions : <<include>>
+}
+
+package "כלי AI" {
+  usecase UC_Rewrite as "שכתוב טקסט"
+  usecase UC_Summarize as "סיכום טקסט"
+  usecase UC_Brainstorm as "סיעור מוחות / קבלת ייעוץ"
+}
+
+' Extend relationships from Writing to AI Tools
+UC_WriteEdit <.. UC_Rewrite : <<extend>>
+UC_WriteEdit <.. UC_Summarize : <<extend>>
+UC_WriteEdit <.. UC_Brainstorm : <<extend>>
+
+' Actor Associations
+Writer -- UC_Auth
+Writer -- UC_ManageBooks
+Writer -- UC_ManageChapters
+Writer -- UC_WriteEdit
+' Writer interacts with AI tools *through* UC_WriteEdit
+Writer -- UC_ManageTasks
+Writer -- UC_Export
+Writer -- UC_ManageUsers
+
+@enduml

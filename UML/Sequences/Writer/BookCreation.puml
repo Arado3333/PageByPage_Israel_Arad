@@ -1,0 +1,50 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: Create a New Book
+
+actor "User"
+participant "Browser"
+participant "API Gateway" as Gateway
+participant "Book Service" as BookService
+database "BookDB"
+participant "Cloudinary Service" as Cloudinary
+
+User -> Browser : Navigates to Dashboard / Book List
+' ... initial book list is loaded ...
+
+User -> Browser : Clicks "Create New Book"
+Browser -> User : Displays form for Title and Summary
+
+User -> Browser : Fills form and clicks "Create Book"
+
+opt User uploads a cover image
+    Browser ->> Cloudinary : Upload Image Request
+    activate Cloudinary
+    Cloudinary -->> Browser : Image URL
+    deactivate Cloudinary
+end
+
+Browser ->> Gateway : POST /api/v1/books\n(Authorization: Bearer JWT, {title, summary, coverUrl?})
+activate Gateway
+Gateway -> Gateway : Verify JWT
+Gateway ->> BookService : createBook(userId, bookData)
+activate BookService
+
+alt Input data is valid
+    BookService ->> BookDB : save(newBookDocument)
+    activate BookDB
+    BookDB -->> BookService : New Book Document
+    deactivate BookDB
+    BookService -->> Gateway : 201 Created { newBook }
+    Gateway -->> Browser : 201 Created
+    Browser -> User : Displays "Book created successfully"
+else Input data is invalid
+    BookService -->> Gateway : 400 Bad Request { error: "Title is required" }
+    Gateway -->> Browser : 400 Bad Request
+    Browser -> User : Displays validation error
+end
+deactivate BookService
+deactivate Gateway
+
+@enduml

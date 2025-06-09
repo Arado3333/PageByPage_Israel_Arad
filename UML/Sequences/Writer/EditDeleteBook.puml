@@ -1,0 +1,62 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: Edit and Delete a Book
+
+actor "User"
+participant "Browser"
+participant "API Gateway" as Gateway
+participant "Book Service" as BookService
+database "BookDB"
+
+User -> Browser : Navigates to Dashboard / Book List
+Browser ->> Gateway : GET /api/v1/books\n(Authorization: Bearer JWT)
+' ... book list is fetched from the server and displayed ...
+Browser -> User : Displays list of books
+
+alt User chooses to Edit an Existing Book
+
+    User -> Browser : Clicks "Edit" on a book
+    Browser ->> Gateway : GET /api/v1/books/{bookId}\n(Authorization: Bearer JWT)
+    ' ... data fetching happens, then form is displayed ...
+    User -> Browser : Modifies form and clicks "Save"
+    Browser ->> Gateway : PUT /api/v1/books/{bookId}\n(Authorization: Bearer JWT, updatedData)
+    activate Gateway
+    Gateway -> Gateway : Verify JWT
+    Gateway ->> BookService : updateBook(userId, bookId, updatedData)
+    ' ... similar validation and DB update flow as creation ...
+    Gateway -->> Browser : 200 OK
+    deactivate Gateway
+    Browser -> User : Displays "Book updated successfully"
+
+else User chooses to Delete an Existing Book
+
+    User -> Browser : Clicks "Delete" on a book
+    Browser -> User : Displays confirmation dialog "Are you sure?"
+    User -> Browser : Clicks "Confirm"
+    Browser ->> Gateway : DELETE /api/v1/books/{bookId}\n(Authorization: Bearer JWT)
+    activate Gateway
+    Gateway -> Gateway : Verify JWT
+    Gateway ->> BookService : deleteBook(userId, bookId)
+    activate BookService
+
+    BookService -> BookService : Verify user owns book
+    alt User has permission
+        BookService ->> BookDB : findByIdAndDelete(bookId)
+        activate BookDB
+        BookDB -->> BookService : Success
+        deactivate BookDB
+        BookService -->> Gateway : 204 No Content
+        Gateway -->> Browser : 204 No Content
+        Browser -> User : Displays "Book deleted" and removes it from list
+    else User lacks permission
+        BookService -->> Gateway : 403 Forbidden
+        Gateway -->> Browser : 403 Forbidden
+        Browser -> User : Displays error: "You cannot delete this book"
+    end
+    deactivate BookService
+    deactivate Gateway
+
+end
+
+@enduml
