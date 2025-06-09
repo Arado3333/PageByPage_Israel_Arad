@@ -1,37 +1,38 @@
 :root {
-  --background: #fbeaf3;
-  --foreground: #3b3b3b;
-  --muted: #f9d8e8;
-  --muted-foreground: #7a6f79;
+  --background: #f9f7f4;
+  --foreground: #2e2e2e;
+  --muted: #ebe6df;
+  --muted-foreground: #726e6a;
 
-  --accent: #ec4899;
-  --accent-secondary: #f062a7;
+  --accent: #3b82f6; /* כחול יוקרתי ונקי */
+  --accent-secondary: #60a5fa;
   --accent-foreground: #ffffff;
 
-  --success: #4bb69f;
-  --error: #dc3545;
+  --success: #3dbf87;
+  --error: #e53935;
 
-  --border: #e2c5d6;
-  --card-background: #fff3f8;
+  --border: #ddd6ce;
+  --card-background: #ffffff;
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: #1d1a22;
-  --foreground: #f5f1f6;
-  --muted: #2a2330;
-  --muted-foreground: #bfa7be;
+  --background: #121212;
+  --foreground: #e3e3e3;
+  --muted: #1f1f1f;
+  --muted-foreground: #999999;
 
-  --accent: #f472b6;
-  --accent-secondary: #fb91c6;
-  --accent-foreground: #0e0a0f;
+  --accent: #5a9bd8; /* כחול רגוע */
+  --accent-secondary: #7fb7ff;
+  --accent-foreground: #0a0a0a;
 
-  --success: #4bb69f;
-  --error: #ff6b81;
+  --success: #3dbf87;
+  --error: #ff6b6b;
 
-  --border: #3a2f3d;
-  --card-background: #2d2733;
+  --border: #2c2c2c;
+  --card-background: #1a1a1a;
 }
+
 
 
 

@@ -22,6 +22,74 @@ import {
 } from "lucide-react"
 import "../style/AppLayout.css"
 
+// Sidebar navigation structure
+const sidebarNavGroups = [
+  {
+    group: "Main",
+    items: [
+      {
+        href: "/dashboard",
+        label: "Overview",
+        icon: FileText,
+        aria: "Go to Overview",
+      },
+      {
+        href: "/book-editor",
+        label: "Writing Studio",
+        icon: Edit,
+        aria: "Go to Writing Studio",
+      },
+      {
+        href: "/books",
+        label: "Library",
+        icon: Book,
+        aria: "Go to Library",
+      },
+      {
+        href: "/drafts",
+        label: "Draft Manager",
+        icon: FileText,
+        aria: "Go to Draft Manager",
+      },
+    ],
+  },
+  {
+    group: "Tools",
+    items: [
+      {
+        href: "/ai-consultant",
+        label: "AI Assistant",
+        icon: MessageSquare,
+        aria: "Go to AI Assistant",
+      },
+      {
+        href: "/task-manager",
+        label: "Goals & Calendar",
+        icon: Calendar,
+        aria: "Go to Goals and Calendar",
+      },
+      {
+        href: "/storage",
+        label: "Files & Backups",
+        icon: Save,
+        aria: "Go to Files and Backups",
+      },
+      {
+        href: "/version-history",
+        label: "Revision History",
+        icon: Clock,
+        aria: "Go to Revision History",
+      },
+      {
+        href: "/contact",
+        label: "Support & Feedback",
+        icon: MessageSquare,
+        aria: "Go to Support and Feedback",
+      },
+    ],
+  },
+]
+
 export default function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -61,126 +129,123 @@ export default function AppLayout({ children }) {
 
   return (
     <div className="layout-container">
-      {/* Sidebar */}
-      <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
+      {/* Sidebar Section */}
+      <section className={`sidebar-section sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="sidebar-inner">
           {/* Sidebar header */}
           <div className="sidebar-header">
             <div className="sidebar-header-content">
-              <Link href="/dashboard" className="logo-link">
-                <Book className="logo-icon" />
+              <Link href="/dashboard" className="logo-link" aria-label="Go to Dashboard">
+                <Book className="logo-icon" role="img" />
                 <span className="logo-text">Page by Page</span>
               </Link>
-              <button className="sidebar-close-button" onClick={toggleSidebar}>
-                <X className="close-icon" />
+              <button
+                className="sidebar-close-button"
+                onClick={toggleSidebar}
+                aria-label="Close sidebar"
+                type="button"
+              >
+                <X className="close-icon" role="img" />
               </button>
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="sidebar-nav">
-            <ul className="nav-list">
-              <li className="nav-item">
-                <Link href="/dashboard" className={`nav-link ${pathname === "/dashboard" ? "active" : ""}`}>
-                  <FileText className="nav-icon" />
-                  <span>Dashboard</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/book-editor" className={`nav-link ${pathname === "/book-editor" ? "active" : ""}`}>
-                  <Edit className="nav-icon" />
-                  <span>Book Editor</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/books" className={`nav-link ${pathname === "/books" ? "active" : ""}`}>
-                  <Book className="nav-icon" />
-                  <span>My Books</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/drafts" className={`nav-link ${pathname === "/drafts" ? "active" : ""}`}>
-                  <FileText className="nav-icon" />
-                  <span>Drafts</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/ai-consultant" className={`nav-link ${pathname === "/ai-consultant" ? "active" : ""}`}>
-                  <MessageSquare className="nav-icon" />
-                  <span>AI Consultant</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/task-manager" className={`nav-link ${pathname === "/task-manager" ? "active" : ""}`}>
-                  <Calendar className="nav-icon" />
-                  <span>Task Manager</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/storage" className={`nav-link ${pathname === "/storage" ? "active" : ""}`}>
-                  <Save className="nav-icon" />
-                  <span>Storage</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/version-history" className={`nav-link ${pathname === "/version-history" ? "active" : ""}`}>
-                  <Clock className="nav-icon" />
-                  <span>Version History</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/contact" className={`nav-link ${pathname === "/contact" ? "active" : ""}`}>
-                  <MessageSquare className="nav-icon" />
-                  <span>Contact</span>
-                </Link>
-              </li>
-            </ul>
+          {/* Sidebar Navigation */}
+          <nav className="sidebar-nav" aria-label="Sidebar Navigation">
+            {sidebarNavGroups.map((group, idx) => (
+              <ul className="nav-list" key={group.group || idx}>
+                {group.items.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <li className="nav-item" key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={`nav-link ${pathname === item.href ? "active" : ""}`}
+                        aria-label={item.aria}
+                      >
+                        <Icon className="nav-icon" role="img" />
+                        <span>{item.label}</span>
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            ))}
           </nav>
 
           {/* Sidebar footer */}
-          <div className="sidebar-footer">
+          <footer className="sidebar-footer">
             <div className="time-display">
               <div>{formatTime(currentTime)}</div>
               <div>{formatDate(currentTime)}</div>
             </div>
-            <button onClick={logout} className="logout-button">
-              <LogOut className="logout-icon" />
+            <button
+              onClick={logout}
+              className="logout-button"
+              aria-label="Sign Out"
+              type="button"
+            >
+              <LogOut className="logout-icon" role="img" />
               <span>Sign Out</span>
             </button>
-          </div>
+          </footer>
         </div>
-      </aside>
+      </section>
 
-      {/* Main content */}
-      <div className="main-container">
-        {/* Header */}
-        <header className="main-header">
+      {/* Main Section */}
+      <section className="main-section main-container">
+        {/* Header Section */}
+        <section className="header-section main-header">
           <div className="header-content">
             <div className="header-left">
-              <button className="menu-button" onClick={toggleSidebar}>
-                <Menu className="menu-icon" />
+              <button
+                className="menu-button"
+                onClick={toggleSidebar}
+                aria-label="Open sidebar"
+                type="button"
+              >
+                <Menu className="menu-icon" role="img" />
               </button>
               <div className="search-container">
-                <Search className="search-icon" />
-                <input type="text" placeholder="Search..." className="search-input" />
+                <Search className="search-icon" role="img" />
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="search-input"
+                  aria-label="Search"
+                />
               </div>
             </div>
-
             <div className="header-right">
-              <button onClick={toggleTheme} className="theme-toggle">
-                {theme === "dark" ? <Sun className="theme-icon" /> : <Moon className="theme-icon" />}
+              <button
+                onClick={toggleTheme}
+                className="theme-toggle"
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                type="button"
+              >
+                {theme === "dark" ? (
+                  <Sun className="theme-icon" role="img" />
+                ) : (
+                  <Moon className="theme-icon" role="img" />
+                )}
               </button>
-              <Link href="/settings" className="settings-link">
-                <Settings className="settings-icon" />
+              <Link
+                href="/settings"
+                className="settings-link"
+                aria-label="Go to Settings"
+              >
+                <Settings className="settings-icon" role="img" />
               </Link>
-              <div className="user-avatar">{user?.name?.charAt(0) || "U"}</div>
+              <div className="user-avatar" aria-label="User avatar">
+                {user?.name?.charAt(0) || "U"}
+              </div>
             </div>
           </div>
-        </header>
+        </section>
 
         {/* Main content area */}
         <main className="main-content page-transition">{children}</main>
-      </div>
+      </section>
     </div>
   )
 }
