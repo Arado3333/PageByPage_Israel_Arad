@@ -1,3 +1,4 @@
+//DB Functions
 import { MongoClient, ObjectId } from 'mongodb';
 
 export default class DB {
@@ -29,6 +30,16 @@ export default class DB {
 
         } catch (err) {
             console.error('Error disconnecting from MongoDB:', err);
+        }
+    }
+
+    async GetDocumentByEmail(collection: string, email: string)
+    {
+        try {
+            return this.client?.db(this.dbName).collection(collection).findOne({ email });
+        } catch (error) {
+            console.error('Error fetching document by email:', error);
+            throw error;
         }
     }
 

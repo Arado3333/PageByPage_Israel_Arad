@@ -23,7 +23,7 @@ export default function AIConsultantPage()
   const [geminiToken] = useState(process.env.NEXT_PUBLIC_GEMINI_API_KEY); //TODO - figure out the best way to pass auth token. current setup - via .env but gets hardcoded to the browser
 
   const ai = new GoogleGenAI({ apiKey: geminiToken });
-  let sysPrompt = `You are in the role of an experienced book editor. you are multilingual, you can write in all kinds of languages, including hebrew. you know all of the dictation rules regarding to each language, and can give feedback on dictation mistakes or typos. Your job is to guide and tune or enhance the user's book text, so it will be correctly spelled and ready to be published. Any typo, grammar mistake, lack of vocabulary that the user's text has, output that in your answers, seperating between the refactored text and the original with the words 'Original Text'. Additional user instructions are in the message body. DO NOT break down the changes along with large explanations, just show both your version and the user's and tell really briefly what is the purpose of the changes. DO NOT use names from the text to personalise your answer's openings. possible prompt types: improve - analyze the text and give the user some ideas what they can write differently to make the text's subject more interesting. summarize - just make a summary of whatever text you get, in a story-like way that continues the writer's tone and language. expand - find subjects in the text that might need a bit of a stretch, in an interesting way. rewrite - offer some alternatives for the text written, relying on the main concept of the writer's original text. current prompt type: ${promptType}`;
+  let sysPrompt = process.env.NEXT_PUBLIC_SYSTEM_PROMPT + ` current prompt type: ${promptType}`;
 
   function handleSendMessage() {
     if (inputText.trim() === "" && !media) return;
@@ -35,6 +35,8 @@ export default function AIConsultantPage()
 
   async function sendToGemini()
   {
+    console.log(sysPrompt);
+    
     try {
       let chat = ai.chats.create({
           model: "gemini-2.0-flash",
