@@ -10,6 +10,7 @@ participant "User Service" as UserService
 database "UserDB"
 participant "Logging Service" as LoggingService
 
+activate Browser
 Admin -> Browser : Selects user and submits 'Edit User' form\n(e.g., updated name, new role: "Manager")
 
 Browser ->> Gateway : PUT /api/admin/users/{userId}\n(Authorization: Bearer JWT, updatedData)
@@ -28,7 +29,10 @@ alt User updated successfully
     UserService -->> Gateway : 200 OK { updatedUser }
     
     ' Asynchronous Logging
+    
     UserService ->> LoggingService : logEvent('USER_UPDATED', {adminId, updatedUserId, changes})
+    activate LoggingService
+    deactivate LoggingService
 
 else User not found
     UserService -->> Gateway : 404 Not Found
@@ -43,5 +47,6 @@ alt Update successful
 else Update failed
     Browser -> Admin : Display error message
 end
+deactivate Browser
 
 @enduml

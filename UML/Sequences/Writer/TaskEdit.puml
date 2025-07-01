@@ -1,0 +1,69 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: Edit and Delete a Task
+
+actor "Writer" as User
+participant "Browser" as Browser
+participant "API Gateway" as Gateway
+participant "Task Service" as TaskService
+database "TaskDB" as TaskDB
+participant "Logging Service" as LoggingService
+
+activate Browser
+User -> Browser : Navigates to the Task Management board
+' ... The initial list of tasks is fetched and displayed ...
+Browser -> User : Displays list of tasks
+
+alt User chooses to Edit a Task
+
+    User -> Browser : Clicks "Edit" on a task
+    User -> Browser : Modifies form and clicks "Save"
+    Browser ->> Gateway : PUT /api/v1/tasks/{taskId}\n(Authorization: Bearer JWT, {description, dueDate})
+    activate Gateway
+    Gateway ->> TaskService : updateTask(userId, taskId, updatedData)
+    activate TaskService
+    TaskService ->> TaskDB : findByIdAndUpdate(taskId, updatedData)
+    activate TaskDB
+    TaskDB -->> TaskService : Updated Task Document
+    deactivate TaskDB
+    TaskService -->> Gateway : 200 OK
+    
+    ' Asynchronous Logging
+    TaskService ->> LoggingService : logEvent('TASK_UPDATED', {userId, taskId, changes})
+    activate LoggingService
+    deactivate LoggingService
+
+    deactivate TaskService
+    Gateway -->> Browser : 200 OK
+    deactivate Gateway
+    Browser -> User : Displays "Task updated"
+
+else User chooses to Delete a Task
+
+    User -> Browser : Clicks "Delete" on a task
+    Browser -> User : Displays confirmation dialog
+    User -> Browser : Clicks "Confirm"
+    Browser ->> Gateway : DELETE /api/v1/tasks/{taskId}\n(Authorization: Bearer JWT)
+    activate Gateway
+    Gateway ->> TaskService : deleteTask(userId, taskId)
+    activate TaskService
+    TaskService ->> TaskDB : findByIdAndDelete(taskId)
+    activate TaskDB
+    TaskDB -->> TaskService : Success
+    deactivate TaskDB
+    TaskService -->> Gateway : 204 No Content
+    
+    ' Asynchronous Logging
+    TaskService ->> LoggingService : logEvent('TASK_DELETED', {userId, taskId})
+    activate LoggingService
+    deactivate LoggingService
+
+    deactivate TaskService
+    Gateway -->> Browser : 204 No Content
+    deactivate Gateway
+    Browser -> User : Displays "Task deleted" and removes it from list
+
+end
+deactivate Browser
+@enduml

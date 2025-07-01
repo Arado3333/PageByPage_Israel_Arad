@@ -3,13 +3,14 @@
 
 title Sequence Diagram: User Exports a Book
 
-actor "User"
-participant "Browser"
+actor "Writer" as User
+participant "Browser" as Browser
 participant "API Gateway" as Gateway
 participant "Export Service" as ExportService
 participant "Book Service" as BookService
 participant "Chapter Service" as ChapterService
 
+activate Browser
 User -> Browser : Navigates to book page and clicks "Export Book"
 Browser -> User : Displays export options (e.g., PDF, Word)
 User -> Browser : Selects format and clicks "Export"

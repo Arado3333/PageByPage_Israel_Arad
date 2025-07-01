@@ -1,0 +1,50 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: Create a New Task
+
+actor "Writer" as User
+participant "Browser" as Browser
+participant "API Gateway" as Gateway
+participant "Task Service" as TaskService
+database "TaskDB" as TaskDB
+participant "Logging Service" as LoggingService
+
+activate Browser
+User -> Browser : Navigates to the Task Management board
+' ... The initial list of tasks is fetched and displayed ...
+Browser -> User : Displays list of tasks
+
+User -> Browser : Clicks "Add Task"
+Browser -> User : Displays form for description and due date
+User -> Browser : Fills form and clicks "Save"
+Browser ->> Gateway : POST /api/v1/tasks\n(Authorization: Bearer JWT, {description, dueDate})
+activate Gateway
+
+Gateway ->> TaskService : createTask(userId, taskData)
+activate TaskService
+
+alt Due date is provided
+    TaskService ->> TaskDB : save(newTaskDocument)
+    activate TaskDB
+    TaskDB -->> TaskService : New Task Document
+    deactivate TaskDB
+    TaskService -->> Gateway : 201 Created { newTask }
+    
+    ' Asynchronous Logging
+    TaskService ->> LoggingService : logEvent('TASK_CREATED', {userId, taskId})
+    activate LoggingService
+    deactivate LoggingService
+
+    Gateway -->> Browser : 201 Created
+    Browser -> User : Displays "Task created" and adds it to the list
+else Due date is missing
+    TaskService -->> Gateway : 400 Bad Request { error: "Due date is required" }
+    Gateway -->> Browser : 400 Bad Request
+    Browser -> User : Displays validation error
+end
+deactivate TaskService
+deactivate Gateway
+
+deactivate Browser
+@enduml

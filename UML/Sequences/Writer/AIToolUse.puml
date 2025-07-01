@@ -1,28 +1,26 @@
 @startuml
 !theme vibrant
 
-title Sequence Diagram: Writer Uses an AI Tool (All Cases)
+title Sequence Diagram: Writer Uses a Generic AI Generation Tool
 
 actor Writer
 participant Browser
-participant "API Gateway" as Gateway
 participant "AI Service" as AIService
 database "AIConfigDB"
 participant "External AI Model\n(Gemini)" as ExternalAI
 
+activate Browser
 Writer -> Browser : Selects text and clicks 'Summarize'
-Browser ->> Gateway : POST /api/v1/ai/summarize\n(Authorization: Bearer JWT, {text: "..."})
-activate Gateway
-
-Gateway -> Gateway : Verify JWT
-alt JWT Invalid
-    Gateway -->> Browser : 401 Unauthorized
-    deactivate Gateway
-    Browser -> Writer : Session expired, please log in.
-end
-
-Gateway ->> AIService : summarizeText(text)
+Browser ->> AIService : POST /api/v1/ai/generate\n(Authorization: Bearer JWT, {task: 'summarize', text: "..."})
 activate AIService
+
+AIService -> AIService : Verify JWT
+alt JWT Invalid
+    AIService -->> Browser : 401 Unauthorized
+    
+    Browser -> Writer : Session expired, please log in.
+
+end
 
 AIService ->> AIConfigDB : findConfig({ type: 'summarize' })
 activate AIConfigDB
@@ -34,17 +32,14 @@ activate ExternalAI
 
 alt External API call is successful
     ExternalAI -->> AIService : API Response\n{ summary: "..." }
-    AIService -->> Gateway : 200 OK { summary: "..." }
+    AIService -->> Browser : 200 OK { summary: "..." }
 else External API call fails
     ExternalAI -->> AIService : Error (e.g., 503 Service Unavailable, timeout)
-    AIService -->> Gateway : 502 Bad Gateway { error: "AI service is currently unavailable" }
+    AIService -->> Browser : 502 Bad Gateway { error: "AI service is currently unavailable" }
 end
 
 deactivate ExternalAI
 deactivate AIService
-
-Gateway -->> Browser : Response (200, 401, 502)
-deactivate Gateway
 
 alt 200 OK
     Browser -> Writer : Displays the generated summary
@@ -52,5 +47,5 @@ else Other error codes
     Browser -> Writer : Display error message (e.g., "AI tool failed")
 end
 
+deactivate Browser
 @enduml
-

@@ -10,6 +10,7 @@ participant "User Service" as UserService
 database "UserDB"
 participant "Logging Service" as LoggingService
 
+activate Browser
 Admin -> Browser : Fills out 'Create User' form\n(email, password, role)
 Browser ->> Gateway : POST /api/admin/users\n(Authorization: Bearer JWT, userData)
 activate Gateway
@@ -33,8 +34,10 @@ alt Email is unique
     UserService -->> Gateway : 201 Created { newUser }
     
     ' Asynchronous Logging
+    
     UserService ->> LoggingService : logEvent('USER_CREATED', {adminId, newUserId})
-
+    activate LoggingService
+    deactivate LoggingService
 else Email already exists
     UserService -->> Gateway : 409 Conflict { error: "Email already in use" }
 end

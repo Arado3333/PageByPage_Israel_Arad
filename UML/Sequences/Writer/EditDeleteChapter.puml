@@ -1,14 +1,16 @@
 @startuml
 !theme vibrant
 
-title Sequence Diagram: Chapter Management (Create, Edit, Delete, Reorder)
+title Sequence Diagram: Chapter Management (Create, Edit, Delete)
 
-actor "User"
-participant "Browser"
+actor "Writer" as User
+participant "Browser" as Browser
 participant "API Gateway" as Gateway
 participant "Chapter Service" as ChapterService
-database "ChapterDB"
+database "ChapterDB" as ChapterDB
+participant "Logging Service" as LoggingService
 
+activate Browser
 User -> Browser : Navigates to a specific book's page
 ' ... The list of chapters for the book is fetched and displayed ...
 Browser -> User : Displays list of chapters
@@ -27,9 +29,15 @@ alt User chooses to Create a New Chapter
     alt Chapter name is valid (not empty)
         ChapterService ->> ChapterDB : save(newChapterDocument)
         activate ChapterDB
-        DB -->> ChapterService : New Chapter Document
+        ChapterDB -->> ChapterService : New Chapter Document
         deactivate ChapterDB
         ChapterService -->> Gateway : 201 Created { newChapter }
+        
+        ' Asynchronous Logging
+        ChapterService ->> LoggingService : logEvent('CHAPTER_CREATED', {userId, bookId, chapterId})
+        activate LoggingService
+        deactivate LoggingService
+
         Gateway -->> Browser : 201 Created
         Browser -> User : Displays "Chapter created" and adds it to the list
     else Chapter name is invalid
@@ -43,10 +51,26 @@ alt User chooses to Create a New Chapter
 else User chooses to Edit a Chapter Name
 
     User -> Browser : Clicks "Edit name" on a chapter
-    ' ... similar flow to create, but using PUT ...
+    User -> Browser : Modifies name and clicks "Save"
     Browser ->> Gateway : PUT /api/v1/chapters/{chapterId}\n(Authorization: Bearer JWT, {name: "New Name"})
-    ' ... server validates and updates ...
+    activate Gateway
+    Gateway ->> ChapterService : updateChapter(userId, chapterId, {name: "New Name"})
+    activate ChapterService
+    
+    ChapterService ->> ChapterDB : findByIdAndUpdate(chapterId, {name: "New Name"})
+    activate ChapterDB
+    ChapterDB -->> ChapterService : Updated Chapter Document
+    deactivate ChapterDB
+    ChapterService -->> Gateway : 200 OK
+    
+    ' Asynchronous Logging
+    ChapterService ->> LoggingService : logEvent('CHAPTER_UPDATED', {userId, chapterId, changes})
+    activate LoggingService
+    deactivate LoggingService
+
+    deactivate ChapterService
     Gateway -->> Browser : 200 OK
+    deactivate Gateway
     Browser -> User : Displays "Chapter name updated"
 
 else User chooses to Delete a Chapter
@@ -55,36 +79,27 @@ else User chooses to Delete a Chapter
     Browser -> User : Displays confirmation dialog
     User -> Browser : Clicks "Confirm"
     Browser ->> Gateway : DELETE /api/v1/chapters/{chapterId}\n(Authorization: Bearer JWT)
-    ' ... server verifies permissions and deletes ...
-    Gateway -->> Browser : 204 No Content
-    Browser -> User : Displays "Chapter deleted" and removes it from list
-
-else User chooses to Reorder Chapters (Drag & Drop)
-
-    User -> Browser : Drags a chapter to a new position in the list
-    note over Browser : On drop, browser prepares the new order
-    Browser ->> Gateway : PUT /api/v1/books/{bookId}/chapters/order\n(Authorization: Bearer JWT, { chapterIds: ["id3", "id1", "id2"] })
     activate Gateway
-    Gateway ->> ChapterService : reorderChapters(userId, bookId, orderedIds)
+    Gateway ->> ChapterService : deleteChapter(userId, chapterId)
     activate ChapterService
+    
+    ChapterService ->> ChapterDB : findByIdAndDelete(chapterId)
+    activate ChapterDB
+    ChapterDB -->> ChapterService : Success
+    deactivate ChapterDB
+    ChapterService -->> Gateway : 204 No Content
 
-    ChapterService -> ChapterService : Verify user has permission for book
-    alt User has permission
-        ChapterService ->> ChapterDB : update order for all chapters in list
-        activate ChapterDB
-        ChapterDB -->> ChapterService : Success
-        deactivate ChapterDB
-        ChapterService -->> Gateway : 200 OK
-        Gateway -->> Browser : 200 OK
-        Browser -> User : UI list is now permanently in the new order
-    else User lacks permission
-        ChapterService -->> Gateway : 403 Forbidden
-        Gateway -->> Browser : 403 Forbidden
-        Browser -> User : Displays error: "Could not reorder chapters"
-    end
+    ' Asynchronous Logging
+    ChapterService ->> LoggingService : logEvent('CHAPTER_DELETED', {userId, chapterId})
+    activate LoggingService
+    deactivate LoggingService
+
     deactivate ChapterService
+    Gateway -->> Browser : 204 No Content
     deactivate Gateway
+    Browser -> User : Displays "Chapter deleted" and removes it from list
 
 end
 
+deactivate Browser
 @enduml

@@ -3,12 +3,14 @@
 
 title Sequence Diagram: User Management by a Manager
 
-actor "Manager"
+actor "Writer Manager" as Manager
 participant "Browser"
 participant "API Gateway" as Gateway
 participant "Project Service" as ProjectService
-database "ProjectDB / UserDB"
+database "ProjectDB / UserDB" as ProjectDB
+participant "Logging Service" as LoggingService
 
+activate Browser
 Manager -> Browser : Navigates to project's User Management page
 ' ... The list of users associated with the project is fetched and displayed ...
 Browser -> Manager : Displays list of project users
@@ -30,6 +32,12 @@ alt Manager chooses to Add a New User to Project
         ProjectDB -->> ProjectService : Success
         deactivate ProjectDB
         ProjectService -->> Gateway : 200 OK { message: "Invitation sent" }
+        
+        ' Asynchronous Logging
+        ProjectService ->> LoggingService : logEvent('USER_ADDED_TO_PROJECT', {managerId, projectId, invitedUserId})
+        activate LoggingService
+        deactivate LoggingService
+
         Gateway -->> Browser : 200 OK
         Browser -> Manager : Displays "User invited successfully"
     else Manager lacks permissions
@@ -43,10 +51,25 @@ alt Manager chooses to Add a New User to Project
 else Manager chooses to Edit a User's Role
 
     Manager -> Browser : Clicks "Edit Role" on a user
-    ' ... similar flow to add, but using PUT on a specific user's association ...
+    Manager -> Browser : Changes role and clicks "Save"
     Browser ->> Gateway : PUT /api/v1/projects/{projectId}/users/{userId}\n(Authorization: Bearer JWT, {role: "Editor"})
-    ' ... server validates and updates ...
+    activate Gateway
+    Gateway ->> ProjectService : updateUserRole(managerId, projectId, userId, {role: "Editor"})
+    activate ProjectService
+    ProjectService ->> ProjectDB : updateUserAssociation(projectId, userId, {role: "Editor"})
+    activate ProjectDB
+    ProjectDB -->> ProjectService : Success
+    deactivate ProjectDB
+    ProjectService -->> Gateway : 200 OK
+    
+    ' Asynchronous Logging
+    ProjectService ->> LoggingService : logEvent('USER_ROLE_UPDATED', {managerId, projectId, userId})
+    activate LoggingService
+    deactivate LoggingService
+
+    deactivate ProjectService
     Gateway -->> Browser : 200 OK
+    deactivate Gateway
     Browser -> Manager : Displays "User role updated"
 
 else Manager chooses to Remove a User from Project
@@ -55,10 +78,25 @@ else Manager chooses to Remove a User from Project
     Browser -> Manager : Displays confirmation dialog
     Manager -> Browser : Clicks "Confirm"
     Browser ->> Gateway : DELETE /api/v1/projects/{projectId}/users/{userId}\n(Authorization: Bearer JWT)
-    ' ... server verifies permissions and removes the user-project association ...
+    activate Gateway
+    Gateway ->> ProjectService : removeUserFromProject(managerId, projectId, userId)
+    activate ProjectService
+    ProjectService ->> ProjectDB : removeUserAssociation(projectId, userId)
+    activate ProjectDB
+    ProjectDB -->> ProjectService : Success
+    deactivate ProjectDB
+    ProjectService -->> Gateway : 204 No Content
+    
+    ' Asynchronous Logging
+    ProjectService ->> LoggingService : logEvent('USER_REMOVED_FROM_PROJECT', {managerId, projectId, userId})
+    activate LoggingService
+    deactivate LoggingService
+
+    deactivate ProjectService
     Gateway -->> Browser : 204 No Content
+    deactivate Gateway
     Browser -> Manager : Displays "User removed from project" and updates list
 
 end
-
+deactivate Browser
 @enduml

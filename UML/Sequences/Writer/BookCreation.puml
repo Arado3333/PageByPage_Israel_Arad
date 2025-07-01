@@ -3,13 +3,16 @@
 
 title Sequence Diagram: Create a New Book
 
-actor "User"
-participant "Browser"
+
+actor "Writer" as User
+participant "Browser" as Browser
 participant "API Gateway" as Gateway
 participant "Book Service" as BookService
-database "BookDB"
+database "BookDB" as BookDB
 participant "Cloudinary Service" as Cloudinary
+participant "Logging Service" as LoggingService
 
+activate Browser
 User -> Browser : Navigates to Dashboard / Book List
 ' ... initial book list is loaded ...
 
@@ -36,7 +39,14 @@ alt Input data is valid
     activate BookDB
     BookDB -->> BookService : New Book Document
     deactivate BookDB
+
     BookService -->> Gateway : 201 Created { newBook }
+    
+    ' Asynchronous Logging
+    BookService ->> LoggingService : logEvent('BOOK_CREATED', {userId, bookId})
+    activate LoggingService
+    deactivate LoggingService
+
     Gateway -->> Browser : 201 Created
     Browser -> User : Displays "Book created successfully"
 else Input data is invalid

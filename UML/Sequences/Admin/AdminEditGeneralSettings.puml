@@ -10,6 +10,7 @@ participant "Settings Service" as SettingsService
 database "SettingsDB"
 participant "Logging Service" as LoggingService
 
+activate Browser
 Admin -> Browser : Navigates to /admin/settings page
 Browser ->> Gateway : GET /api/admin/settings\n(Authorization: Bearer JWT)
 activate Gateway
@@ -25,7 +26,6 @@ Gateway -->> Browser : Response with current settings
 deactivate Gateway
 Browser -> Admin : Displays current settings in a form
 
-... Time passes ...
 
 Admin -> Browser : Modifies settings and clicks 'Save'
 Browser ->> Gateway : PUT /api/admin/settings\n(Authorization: Bearer JWT, updatedSettings)
@@ -42,6 +42,8 @@ deactivate SettingsDB
 SettingsService -->> Gateway : 200 OK { updatedSettings }
 ' Asynchronous Logging
 SettingsService ->> LoggingService : logEvent('SETTINGS_UPDATED', {adminId})
+activate LoggingService
+deactivate LoggingService
 deactivate SettingsService
 
 Gateway -->> Browser : Response (200 OK)

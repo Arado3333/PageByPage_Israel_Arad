@@ -9,6 +9,7 @@ participant "API Gateway" as Gateway
 participant "Auth Service" as AuthService
 database "UserDB"
 
+activate Browser
 Admin -> Browser : Enters details in /admin/login
 Browser ->> Gateway : POST /api/admin/login\n(email, password)
 activate Gateway
@@ -42,5 +43,6 @@ alt Login Successful
 else Login Failed
     Browser -> Admin : Display "Invalid credentials" error
 end
+
 
 @enduml

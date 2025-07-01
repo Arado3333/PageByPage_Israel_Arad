@@ -1,0 +1,52 @@
+@startuml
+!theme vibrant
+
+title Sequence Diagram: User Registration
+
+actor "Writer" as User
+participant "Browser" as Browser
+participant "API Gateway" as Gateway
+participant "Auth Service" as AuthService
+database "UserDB" as UserDB
+participant "Logging Service" as LoggingService
+
+activate Browser
+User -> Browser : Navigates to PageByPage website and chooses to Register
+    
+Browser -> User : Displays Registration Form
+User -> Browser : Enters name, email, and password
+Browser ->> Gateway : POST /api/register\n(name, email, password)
+activate Gateway
+
+Gateway ->> AuthService : register(userData)
+activate AuthService
+
+AuthService ->> UserDB : findUserByEmail(email)
+activate UserDB
+UserDB -->> AuthService : User Document or null
+deactivate UserDB
+
+alt Email does not exist in system
+    AuthService -> AuthService : Hash password
+    AuthService ->> UserDB : save(newUserDocument)
+    activate UserDB
+    UserDB -->> AuthService : New User Document
+    deactivate UserDB
+
+    AuthService -->> Gateway : 201 Created
+    
+    ' Asynchronous Logging
+    AuthService ->> LoggingService : logEvent('USER_REGISTERED', {userId})
+    activate LoggingService
+    deactivate LoggingService
+
+    Gateway -->> Browser : 201 Created
+    Browser -> User : Display success message and direct to login
+else Email already exists
+    AuthService -->> Gateway : 409 Conflict
+    Gateway -->> Browser : 409 Conflict
+    Browser -> User : Display error: "User with this email already exists"
+end
+deactivate AuthService
+deactivate Gateway
+@enduml

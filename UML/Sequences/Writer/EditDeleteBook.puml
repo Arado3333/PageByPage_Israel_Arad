@@ -3,12 +3,14 @@
 
 title Sequence Diagram: Edit and Delete a Book
 
-actor "User"
-participant "Browser"
+actor "Writer" as User
+participant "Browser" as Browser
 participant "API Gateway" as Gateway
 participant "Book Service" as BookService
-database "BookDB"
+database "BookDB" as BookDB
+participant "Logging Service" as LoggingService
 
+activate Browser
 User -> Browser : Navigates to Dashboard / Book List
 Browser ->> Gateway : GET /api/v1/books\n(Authorization: Bearer JWT)
 ' ... book list is fetched from the server and displayed ...
@@ -24,7 +26,22 @@ alt User chooses to Edit an Existing Book
     activate Gateway
     Gateway -> Gateway : Verify JWT
     Gateway ->> BookService : updateBook(userId, bookId, updatedData)
+    activate BookService
     ' ... similar validation and DB update flow as creation ...
+    
+    BookService ->> BookDB : findByIdAndUpdate(bookId, updatedData)
+    activate BookDB
+    BookDB -->> BookService : Updated Book Document
+    deactivate BookDB
+    
+    BookService -->> Gateway : 200 OK
+    
+    ' Asynchronous Logging
+    BookService ->> LoggingService : logEvent('BOOK_UPDATED', {userId, bookId, changes})
+    activate LoggingService
+    deactivate LoggingService
+
+    deactivate BookService
     Gateway -->> Browser : 200 OK
     deactivate Gateway
     Browser -> User : Displays "Book updated successfully"
@@ -47,6 +64,12 @@ else User chooses to Delete an Existing Book
         BookDB -->> BookService : Success
         deactivate BookDB
         BookService -->> Gateway : 204 No Content
+        
+        ' Asynchronous Logging
+        BookService ->> LoggingService : logEvent('BOOK_DELETED', {userId, bookId})
+        activate LoggingService
+        deactivate LoggingService
+
         Gateway -->> Browser : 204 No Content
         Browser -> User : Displays "Book deleted" and removes it from list
     else User lacks permission

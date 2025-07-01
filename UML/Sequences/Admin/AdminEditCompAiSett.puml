@@ -10,6 +10,7 @@ participant "AIConfig Service" as AIConfigService
 database "AIConfigDB"
 participant "Logging Service" as LoggingService
 
+activate Browser
 Admin -> Browser : Navigates to /admin/ai-settings page
 Browser ->> Gateway : GET /api/admin/ai-configs\n(Authorization: Bearer JWT)
 activate Gateway
@@ -25,7 +26,6 @@ Gateway -->> Browser : Response with current AI configs
 deactivate Gateway
 Browser -> Admin : Displays AI configurations (e.g., custom prompts)
 
-... Time passes ...
 
 Admin -> Browser : Creates or modifies an AI configuration and clicks 'Save'
 Browser ->> Gateway : POST or PUT /api/admin/ai-configs/{configId}\n(Authorization: Bearer JWT, configData)
@@ -42,10 +42,12 @@ deactivate AIConfigDB
 AIConfigService -->> Gateway : 200 OK or 201 Created { savedConfig }
 ' Asynchronous Logging
 AIConfigService ->> LoggingService : logEvent('AI_CONFIG_UPDATED', {adminId, configId})
+activate LoggingService
+deactivate LoggingService
 deactivate AIConfigService
 
 Gateway -->> Browser : Response (200/201 OK)
 deactivate Gateway
 Browser -> Admin : Display "AI configuration saved successfully" message
-
+deactivate Browser
 @enduml

@@ -9,6 +9,7 @@ participant "API Gateway" as Gateway
 participant "Logging Service" as LoggingService
 database "LogsDB"
 
+activate Browser
 Admin -> Browser : Navigates to /admin/logs\nand applies filters (e.g., eventType, dateRange)
 
 Browser ->> Gateway : GET /api/admin/logs?eventType=...&dateStart=...\n(Authorization: Bearer JWT)
@@ -34,5 +35,6 @@ Gateway -->> Browser : Response (200 OK with log data)
 deactivate Gateway
 
 Browser -> Admin : Display filtered logs in a table or list
+deactivate Browser
 
 @enduml
