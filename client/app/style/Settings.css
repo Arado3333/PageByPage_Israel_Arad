@@ -181,3 +181,37 @@
   transition: all 0.2s ease;
   align-self: flex-start;
 }
+
+.warning-window {
+  border: solid 2px rgb(204, 204, 204);
+  padding-block: 2%;
+  margin-bottom: 2%;
+  text-align: center;
+  background-color: lightyellow;
+}
+
+.auth-error {
+  transition: 0.2s;
+  background-color: rgba(255, 0, 0, 0.05);
+  border: 1px solid rgba(255, 0, 0, 0.1);
+  color: #d32f2f;
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.auth-success {
+  transition: 0.2s;
+  background-color: #a1eebd40;
+  border: 1px solid rgba(60, 98, 11, 0.103);
+  color: rgb(88, 117, 66);
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.auth-none { 
+  transition: 0.2s;
+}

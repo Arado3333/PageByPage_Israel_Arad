@@ -50,3 +50,25 @@ export async function createUser(user) {
         }
     }
 }
+
+export async function updateUser(id, user) {
+    let client = null;
+    
+    try {
+        client = await MongoClient.connect(process.env.CONNECTION_STRING);
+        let db = client.db(process.env.DB_NAME);
+        return await db
+            .collection("Users")
+            .updateOne(
+                { _id: ObjectId.createFromHexString(id) },
+                { $set: user }
+            );
+    } catch (error) {
+        console.error("Error updating user in database:", error);
+        throw error;
+    } finally {
+        if (client) {
+            client.close();
+        }
+    }
+}

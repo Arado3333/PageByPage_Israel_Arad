@@ -65,7 +65,6 @@ export default function RegisterPage() {
       setError("An error occured while trying to register")
     }
 
-
   }
 
   return (

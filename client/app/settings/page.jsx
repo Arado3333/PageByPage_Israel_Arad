@@ -1,10 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { User, Lock, Bell, Eye, EyeOff, Save } from "lucide-react"
 import "../style/Settings.css"
 
 export default function SettingsPage() {
+  const [message, setMessage] = useState({
+    success: null,
+    message: ""
+  });
+
   const [activeTab, setActiveTab] = useState("profile")
   const [showPassword, setShowPassword] = useState(false)
   const [profileData, setProfileData] = useState({
@@ -40,18 +45,66 @@ export default function SettingsPage() {
 
   const handleSaveProfile = (e) => {
     e.preventDefault()
-    // In a real app, this would save the profile data to a server
+
+    const {name, email, bio} = profileData;
+    const {currentPasswd, newPassword} = passwordData;
+    const userKeys = JSON.parse(sessionStorage.getItem('user'));
+    
+    const objToPUT = {
+      name: name,
+      email: email,
+      currentPasswd: currentPasswd,
+      newPassword: newPassword,
+      bio: bio
+    };
+
+    try {
+      fetch(`http://localhost:5500/api/users/${userKeys.userID}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${userKeys.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(objToPUT),
+    })
+      .then((res) => {
+        if (res.ok) {
+          res.json().then((data) => {
+            setMessage({
+              success: true,
+              message: data.message || "Profile updated successfully."
+            });
+          });
+        } else {
+          setMessage("Failed to update profile.");
+        }
+      })
+    } catch (error) {
+      setMessage("An error occurred while updating profile.");
+    }
   }
 
   const handleSavePassword = (e) => {
     e.preventDefault()
-    // In a real app, this would save the password to a server
+    const {currentPassword, newPassword} = passwordData;
+    if (currentPassword == newPassword)
+    {
+      setMessage("Cannot update: old and new passwords are identical");
+    }
+    handleSaveProfile(e);
   }
 
   const handleSaveNotifications = (e) => {
     e.preventDefault()
-    // In a real app, this would save the notification settings to a server
+    localStorage.setItem('notifications', JSON.stringify(notificationSettings));
+    setMessage((prev) => ({...prev, success: true, message: "Notification preferences saved!"}));
   }
+
+  useEffect(() => {
+    setTimeout(() => {
+      setMessage((prev) => ({...prev, success: null, message: ""}));
+    }, 5000);
+  }, [message.message])
 
   return (
     <div className="settings-container">
@@ -85,6 +138,15 @@ export default function SettingsPage() {
         </div>
 
         <div className="settings-main">
+
+          {message.success == true ? <div className="auth-success">
+           <p>{message.message}</p>
+            </div> : message.success == false ? <div className="auth-error">
+           <p>{message.message}</p>
+            </div> : <div className="auth-none">
+           <p>{message.message}</p>
+            </div>}
+
           {activeTab === "profile" && (
             <div className="profile-section">
               <h2 className="section-title">Profile Settings</h2>
@@ -101,6 +163,7 @@ export default function SettingsPage() {
                     value={profileData.name}
                     onChange={handleProfileChange}
                     placeholder="Your name"
+                    required
                   />
                 </div>
                 <div className="form-group">
@@ -155,6 +218,7 @@ export default function SettingsPage() {
                       value={passwordData.currentPassword}
                       onChange={handlePasswordChange}
                       placeholder="Enter current password"
+                      required
                     />
                     <button
                       type="button"
@@ -179,6 +243,7 @@ export default function SettingsPage() {
                       value={passwordData.newPassword}
                       onChange={handlePasswordChange}
                       placeholder="Enter new password"
+                      required
                     />
                   </div>
                 </div>
@@ -195,6 +260,7 @@ export default function SettingsPage() {
                       value={passwordData.confirmPassword}
                       onChange={handlePasswordChange}
                       placeholder="Confirm new password"
+                       required
                     />
                   </div>
                 </div>

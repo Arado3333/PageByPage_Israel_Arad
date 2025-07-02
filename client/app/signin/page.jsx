@@ -29,7 +29,7 @@ export default function SignInPage() {
         setIsLoading(false);
         if (res.token) {
             setSuccess(res.message);
-            sessionStorage.setItem("user", JSON.stringify(res.token));
+            sessionStorage.setItem("user", JSON.stringify({token: res.token, userID: res.userID}));
             setTimeout(() => {
                 window.location.reload();
             }, 1300);

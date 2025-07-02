@@ -20,7 +20,7 @@ export default function AIConsultantPage()
   ]);
   const [promptType, setPromptType] = useState("improve")
   const [isGenerating, setIsGenerating]   = useState(false)
-  const [geminiToken] = useState(process.env.NEXT_PUBLIC_GEMINI_API_KEY); //TODO - figure out the best way to pass auth token. current setup - via .env but gets hardcoded to the browser
+  const [geminiToken] = useState(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 
   const ai = new GoogleGenAI({ apiKey: geminiToken });
   let sysPrompt = process.env.NEXT_PUBLIC_SYSTEM_PROMPT + ` current prompt type: ${promptType}`;
@@ -35,8 +35,6 @@ export default function AIConsultantPage()
 
   async function sendToGemini()
   {
-    console.log(sysPrompt);
-    
     try {
       let chat = ai.chats.create({
           model: "gemini-2.0-flash",
@@ -61,7 +59,6 @@ export default function AIConsultantPage()
       console.log(error);
     }
     setIsGenerating(false);
-
   }
 
   function copyToClipboard()
