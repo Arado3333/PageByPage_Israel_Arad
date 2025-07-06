@@ -10,8 +10,10 @@ import { ArrowLeft, Plus } from "lucide-react"
 export default function NewProjectForm({ onCreateProject, onCancel }) {
   const [formData, setFormData] = useState({
     title: "",
-    tags: "",
+    author: "",
+    tags: [],
     description: "",
+    status: "Draft"
   })
 
   const handleSubmit = (e) => {
@@ -20,12 +22,15 @@ export default function NewProjectForm({ onCreateProject, onCancel }) {
 
     const projectData = {
       title: formData.title.trim(),
-      tags: formData.tags
+      author: formData.author,
+      genres: formData.tags
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag),
       description: formData.description.trim(),
+      status: formData.status
     }
+    
 
     onCreateProject(projectData)
   }
@@ -76,6 +81,20 @@ export default function NewProjectForm({ onCreateProject, onCancel }) {
             </div>
 
             <div>
+              <label htmlFor="title" className="block text-sm font-medium mb-2" style={{ color: "var(--foreground)" }}>
+                Author *
+              </label>
+              <Input
+                id="author"
+                value={formData.author}
+                onChange={(e) => handleChange("author", e.target.value)}
+                placeholder="Who's writing the book?"
+                className="input-field"
+                required
+              />
+            </div>
+
+            <div>
               <label htmlFor="tags" className="block text-sm font-medium mb-2" style={{ color: "var(--foreground)" }}>
                 Tags
               </label>
@@ -87,6 +106,22 @@ export default function NewProjectForm({ onCreateProject, onCancel }) {
                 className="input-field"
               />
               <p className="text-xs text-muted mt-1">Separate tags with commas</p>
+            </div>
+
+            <div>
+              <label htmlFor="status" className="block text-sm font-medium mb-2" style={{ color: "var(--foreground)" }}>
+                Status *
+              </label>
+              <select
+                id="status"
+                value={formData.status || "Draft"}
+                onChange={(e) => handleChange("status", e.target.value)}
+                className="input-field block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-md focus:ring-blue-500 focus:border-blue-500 "
+                required
+              >
+                <option value="Draft">Draft</option>
+                <option value="In Progress">In Progress</option>
+              </select>
             </div>
 
             <div>

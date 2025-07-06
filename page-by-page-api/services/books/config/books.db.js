@@ -21,7 +21,6 @@ export async function saveBookToDB(book) {
     let client = null;
 
     try {
-        console.log("opening connection to database");
         client = await MongoClient.connect(process.env.CONNECTION_STRING);
         let db = client.db(process.env.DB_NAME);
         return await db.collection("Books").insertOne(book);
@@ -30,7 +29,6 @@ export async function saveBookToDB(book) {
         throw error;
     } finally {
         if (client) client.close();
-        console.log("Connection closed");
     }
 }
 

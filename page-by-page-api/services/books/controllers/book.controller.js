@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import Book from "../models/book.model.js";
 
+
 export async function getBooks(req, res) {
     try {
         const books = await Book.findAll();
@@ -11,23 +12,27 @@ export async function getBooks(req, res) {
 }
 
 export async function addBook(req, res) {
-    let { title, author } = req.body;
+    console.log("Req: \n" + req.body);
+
+    let { title, author, genres, coverImg } = req.body;
     if (!title || !author) {
         return res
             .status(400)
             .json({ message: "Title and Author are required" });
     }
 
-    const newBook = new Book(title, author);
+    const newBook = new Book(title, author, genres, coverImg);
     console.log(newBook);
-    
 
     //בקשה לשמירת ספר חדש
     try {
         const saved = await newBook.createBook();
-        res.status(201).json(saved);
+        res.status(201).json({ success: true, message: saved });
     } catch (error) {
-        res.status(500).json({ message: "Error while adding the book" });
+        res.status(500).json({
+            success: false,
+            message: "Error while adding the book",
+        });
     }
 }
 

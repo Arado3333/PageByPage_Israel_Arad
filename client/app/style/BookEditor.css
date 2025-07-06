@@ -605,4 +605,16 @@ body {
   }
 }
 
+#my_modal_1 {
+  width: fit-content;
+  position: relative;
+  margin-left: 5%;
+  margin-top: 5%;
+}
+
+.save-button {
+  padding: 6px 14px;
+  font-size: 14px;
+}
+
 
