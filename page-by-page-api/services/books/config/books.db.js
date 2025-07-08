@@ -17,6 +17,23 @@ export async function getBooksFromDB() {
     }
 }
 
+export async function findBookByProjectId(id)
+{
+    let client = null;
+
+    try {
+        client = await MongoClient.connect(process.env.CONNECTION_STRING);
+        let db = client.db(process.env.DB_NAME);
+        return await db.collection("Books").findOne({ projectId: ObjectId.createFromHexString(id), isDeleted: { $exists: false } });
+        
+    } catch (error) {
+        console.error("Error finding book by projectId:", error);
+        throw error;
+    } finally {
+        if (client) client.close();
+    }
+}
+
 export async function saveBookToDB(book) {
     let client = null;
 
@@ -63,7 +80,7 @@ export async function deleteBookFromDB(id) {
         let db = client.db(process.env.DB_NAME);
         return await db
             .collection("Books")
-            .updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { isDeleted: true } });
+            .deleteOne({ _id: ObjectId.createFromHexString(id) });
     } catch (error) {
         console.error("Error deleting book from database:", error);
         throw error;

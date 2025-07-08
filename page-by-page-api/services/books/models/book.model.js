@@ -1,7 +1,8 @@
-import { getBooksFromDB, saveBookToDB, updateBookInDB, deleteBookFromDB } from "../config/books.db.js";
+import { getBooksFromDB, saveBookToDB, updateBookInDB, deleteBookFromDB, findBookByProjectId } from "../config/books.db.js";
 
 export default class Book {
-    constructor(title, author, genres = [], coverImg = null) {
+    constructor(projectId, title, author, genres = [], coverImg = null) {
+        this.projectId = projectId;
         this.title = title;
         this.author = author;
         this.genres = genres;
@@ -14,6 +15,15 @@ export default class Book {
             return await getBooksFromDB();
         } catch (error) {
             throw new Error("Error fetching books");
+        }
+    }
+
+    static async getBookByProjectId(projId)
+    {
+        try {
+            return await findBookByProjectId(projId);
+        } catch (error) {
+            throw new Error("Error fetching book");
         }
     }
     

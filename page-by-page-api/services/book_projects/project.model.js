@@ -4,7 +4,8 @@ import {
     saveToDB,
     getProjectsFromDBById,
     updateToDB,
-    deleteFromDB
+    deleteFromDB,
+    getProjectById,
 } from "./project.db.js";
 
 export default class Project {
@@ -25,7 +26,6 @@ export default class Project {
         this.title = title;
         this.genres = genres;
         this.status = status;
-        new Book(title, author, genres).createBook();
         this.description = description;
         this.drafts = drafts;
         this.notes = notes;
@@ -49,26 +49,23 @@ export default class Project {
         }
     }
 
-    static async getProjectById(projectId)
-    {
+    static async getProjectById(projectId) {
         try {
-            return await getProjectById(projectId) //TODO: finish this function
+            return await getProjectById(projectId); //TODO: finish this function
         } catch (error) {
             throw new Error("Error fetching projects, userId: " + userId);
         }
     }
 
-    static async deleteProject(projectId)
-    {
+    static async deleteProject(projectId) {
         try {
-            return await deleteFromDB(projectId)
+            return await deleteFromDB(projectId);
         } catch (error) {
             throw new Error("Error deleting project");
         }
     }
 
-    async updateProjectById(projectId)
-    {   
+    async updateProjectById(projectId) {
         try {
             return await updateToDB(projectId, this);
         } catch (error) {

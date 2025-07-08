@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import BookLibrary from "../../app/books/book_components/book-library";
 import BookWorkspace from "../../app/books/book_components/book-workspace";
 import SectionEditor from "../../app/books/book_components/section-editor";
@@ -12,8 +13,7 @@ export default function App() {
     const [editingSection, setEditingSection] = useState(null);
     const [books, setBooks] = useState([]);
     const [showNewProjectForm, setShowNewProjectForm] = useState(false);
-
-    let addedProjectIds = [] || JSON.parse(localStorage.getItem("projects"));
+    const [addedProjectIds, setProjectIds] = useState(null);
 
     async function getProjects() {
         const { token, userID } = JSON.parse(sessionStorage.getItem("user"));
@@ -30,9 +30,12 @@ export default function App() {
         );
         const projects = await response.json();
         setBooks(projects);
+        console.log(projects);
     }
 
     useEffect(() => {
+        const projectIds = JSON.parse(localStorage.getItem("projects")) || [];
+        setProjectIds(projectIds);
         getProjects();
     }, []);
 
@@ -72,7 +75,8 @@ export default function App() {
     };
 
     const handleCreateProject = async (projectData) => {
-        const keys = JSON.parse(sessionStorage.getItem("user"));
+        const keys = JSON.parse(sessionStorage.getItem('user'));
+
 
         const newBook = {
             userId: keys.userID,
@@ -82,7 +86,8 @@ export default function App() {
             lastEdited: new Date().toISOString(),
             genres: projectData.genres || [],
             description: projectData.description,
-            drafts: [],
+            drafts:
+                JSON.parse(sessionStorage.getItem("bookDraft"))?.pages || [],
             notes: [],
             characters: [],
             assets: [],
@@ -113,12 +118,15 @@ export default function App() {
         console.log(result);
 
         const objToAdd = {
-            projectid: result.message.insertedId,
+            projectid: result.projectId,
             projectName: newBook.title,
         };
+
         addedProjectIds.push(objToAdd);
+        console.log(addedProjectIds);
 
         localStorage.setItem("projects", JSON.stringify(addedProjectIds));
+        sessionStorage.removeItem("bookDraft");
 
         setBooks([...books, newBook]);
 
@@ -126,24 +134,63 @@ export default function App() {
         setShowNewProjectForm(false);
     };
 
-    async function handleDeleteProject(e) {
-        e.preventDefault();
+    async function handleDeleteConfirm(projectName) {
+        //get the projectId and delete from server
+        const { token, userID } = JSON.parse(sessionStorage.getItem("user"));
 
-        // const { token, userID } = JSON.parse(sessionStorage.getItem("user"));
+        const bookToDelete = books.filter((book) => {
+            return book.title === projectName;
+        });
 
-        // await fetch(`http://localhost:5500/api/projects/${userID}/${projId}`, {
-        //     headers: {
-        //         Authorization: `Bearer ${token}`,
-        //     },
-        //     method: "DELETE",
-        // });
+        const idToDelete = bookToDelete[0]._id;
 
-        // setBooks(books.filter((book) => book.id !== projId));
+        const getBookResponse = await fetch(
+            `http://localhost:5500/api/books/${idToDelete}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                method: "GET",
+            }
+        );
+        const bookObj = await getBookResponse.json();
 
-        // // Remove from localStorage as well
-        // let storedProjects = JSON.parse(localStorage.getItem("projects")) || [];
-        // storedProjects = storedProjects.filter((p) => p.projectid !== projId);
-        // localStorage.setItem("projects", JSON.stringify(storedProjects));
+        console.log(bookObj.book._id);
+
+        const delBookResponse = await fetch(
+            `http://localhost:5500/api/books/${bookObj.book._id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                method: "DELETE",
+            }
+        );
+        const delBookConfirm = await delBookResponse.json();
+
+        const delProjResponse = await fetch(
+            `http://localhost:5500/api/projects/${idToDelete}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                method: "DELETE",
+            }
+        );
+        const projDeletionConfirm = await delProjResponse.json();
+
+        if (projDeletionConfirm.success && delBookConfirm.success) {
+            // Remove deleted book from state
+            setBooks(books.filter((book) => book._id !== idToDelete));
+
+            // Remove from localStorage projects
+            const updatedProjectIds = (
+                JSON.parse(localStorage.getItem("projects")) || []
+            ).filter((proj) => proj.projectName !== projectName);
+            localStorage.setItem("projects", JSON.stringify(updatedProjectIds));
+        }
+
+        setCurrentView("library");
     }
 
     const renderCurrentView = () => {
@@ -155,7 +202,7 @@ export default function App() {
                         onOpenBook={handleOpenBook}
                         onUpdateBook={handleUpdateBook}
                         onNewProject={handleNewProject}
-                        // onDeleteProject={handleDeleteProject}
+                        onDeleteConfirm={handleDeleteConfirm}
                     />
                 );
             case "workspace":

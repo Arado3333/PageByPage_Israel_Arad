@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import Project from "./project.model.js";
+import Book from "../books/models/book.model.js";
 
 export async function getBookProjects(req, res) {
     try {
@@ -53,8 +54,11 @@ export async function createProject(req, res) {
     );
 
     try {
-        const saved = await project.createProjectInDB();
-        res.status(201).json({ success: true, message: saved });
+        const saved = await project.createProjectInDB();        
+        const book = new Book(saved.insertedId, title, author, genres);
+        const createdBook = await book.createBook();
+        
+        res.status(201).json({ success: true, projectId: saved.insertedId, bookId: createdBook.insertedId  });
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -66,6 +70,7 @@ export async function createProject(req, res) {
 export async function updateProject(req, res) {
     const { projectId } = req.params;
     const updateData = req.body;
+    
 
     if (!projectId) {
         return res.status(400).json({ message: "Project ID is required" });
@@ -83,9 +88,6 @@ export async function updateProject(req, res) {
         updateData.characts,
         updateData.assets
     );
-
-    console.log(updatedProject);
-    
 
     try {
         await updatedProject.updateProjectById(projectId);
@@ -111,7 +113,7 @@ export async function deleteProject(req, res)
 
     try {
         await Project.deleteProject(projectId);
-        return res.status(200).json({success: true, message: "Project " + projectId + "has been deleted successfully"})
+        return res.status(200).json({success: true, message: "Project has been deleted successfully"})
     } catch (error) {
         res.status(500).json({
             success: false,

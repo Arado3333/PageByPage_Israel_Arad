@@ -125,43 +125,112 @@ export default function BookEditorPage() {
     };
 
     function handleCreateNewProject() {
+        // Gather all pages content as a draft
+        const draftContent = pages.map((page) => page.content).join("\n\n");
+
+        // Store draft in sessionStorage to be used at /books route
+        sessionStorage.setItem(
+            "bookDraft",
+            JSON.stringify({
+                pages,
+                draftContent,
+            })
+        );
+
         router.push("/books");
         setTimeout(() => {
             document.querySelector(".new-project-btn").click();
         }, 1000);
-
-        //TODO: insert the current content as a draft to the project
     }
 
-    //TODO: Optional - Pre-fetch the data on page load. (server component)
     async function handleSaveExistingProject() {
         const { token, userID } = JSON.parse(sessionStorage.getItem("user"));
-        console.log(userID);
-        
+
         //fetch projects from db
-        const response = await fetch(`http://localhost:5500/api/projects/${userID}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            method: "GET",
-        });
+        const response = await fetch(
+            `http://localhost:5500/api/projects/${userID}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                method: "GET",
+            }
+        );
         const projects = await response.json();
-        
+
         setSaveBook(true);
         setFetchedProjects(projects);
-        console.log(projects);
-        
     }
 
-    async function handleSaveProject(e)
-    {
+    async function handleSaveProject(e) {
         e.preventDefault();
+
+        const keys = JSON.parse(sessionStorage.getItem("user"));
+        const element = e.target;
+        console.log(element);
         
-        
+        const projectName = element
+            .querySelector("#project")
+            .value.split(", ")[0];
+            
+        const status = element.querySelector("#status").value;
+
+        const selectedProject = fetchedProjects.filter((project) => {
+            return project.title === projectName;
+        });
+
+        const draftContent = pages.map((page) => page.content).join("\n\n");
+
+        // Store draft in sessionStorage
+        sessionStorage.setItem(
+            "bookDraft",
+            JSON.stringify({
+                pages,
+                draftContent,
+            })
+        );
+
+        const response = await fetch(
+            `http://localhost:5500/api/projects/${selectedProject[0]._id}`,
+            {
+                headers: {
+                    Authentication: `Bearer ${keys.token}`,
+                    "Content-Type": "application/json",
+                },
+                method: "PUT",
+                body: JSON.stringify({
+                    userId: keys.userID,
+                    author: selectedProject[0].author,
+                    title: selectedProject[0].title,
+                    genres: selectedProject[0].genres,
+                    status: status,
+                    description: selectedProject[0].description,
+                    drafts: JSON.parse(sessionStorage.getItem("bookDraft")),
+                }),
+            }
+        );
+
+        setSaveBook(false);
+
+        const result = await response.json();
+        setSavedStaus(() =>
+            result.success
+                ? "Book saved successfully!"
+                : "Error while saving the book. Please try again later"
+        );
     }
 
     return (
         <div className="book-editor">
+            <div
+                className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                role="alert"
+            >
+                <span className="block sm:inline">
+                    {savedBookStatus}
+                </span>
+                <span className="absolute top-0 bottom-0 right-0 px-4 py-3"></span>
+            </div>
             <div className="editor-container">
                 {/* Toolbar */}
                 {!isFocusMode && (
@@ -211,7 +280,10 @@ export default function BookEditorPage() {
                                                     Save To Existing Book
                                                     Project
                                                 </h3>
-                                                <form onSubmit={handleSaveProject} className="mt-2 px-7 py-3">
+                                                <form
+                                                    onSubmit={handleSaveProject}
+                                                    className="mt-2 px-7 py-3"
+                                                >
                                                     <label
                                                         htmlFor="project"
                                                         className="block text-gray-700 text-sm font-bold mb-2"
@@ -222,11 +294,22 @@ export default function BookEditorPage() {
                                                         id="project"
                                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                     >
-                                                        {fetchedProjects.map((project, index) => (
-                                                          <option key={index}> {/* can add custom component with the options */}
-                                                            {project.title + ", " + project.author}
-                                                          </option>
-                                                        ))}
+                                                        {fetchedProjects.map(
+                                                            (
+                                                                project,
+                                                                index
+                                                            ) => (
+                                                                <option
+                                                                    key={index}
+                                                                >
+                                                                    {" "}
+                                                                    {/* can add custom component with the options */}
+                                                                    {project.title +
+                                                                        ", " +
+                                                                        project.author}
+                                                                </option>
+                                                            )
+                                                        )}
                                                     </select>
 
                                                     <label
@@ -247,12 +330,12 @@ export default function BookEditorPage() {
                                                             Completed
                                                         </option>
                                                     </select>
+                                                    <div className="items-center px-4 py-3">
+                                                        <button className="px-4 py-2 bg-blue-500 text-white font-bold rounded-md shadow-sm hover:bg-navy-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                                            Confirm
+                                                        </button>
+                                                    </div>
                                                 </form>
-                                                <div className="items-center px-4 py-3">
-                                                    <button className="px-4 py-2 bg-blue-500 text-white font-bold rounded-md shadow-sm hover:bg-navy-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                                                        Confirm
-                                                    </button>
-                                                </div>
                                             </div>
                                         </div>
                                     </section>

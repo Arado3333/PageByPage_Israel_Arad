@@ -11,7 +11,7 @@ export default function NewProjectForm({ onCreateProject, onCancel }) {
   const [formData, setFormData] = useState({
     title: "",
     author: "",
-    tags: [],
+    tags: "",
     description: "",
     status: "Draft"
   })
@@ -27,7 +27,7 @@ export default function NewProjectForm({ onCreateProject, onCancel }) {
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag),
-      description: formData.description.trim(),
+      description: formData.description?.trim(),
       status: formData.status
     }
     

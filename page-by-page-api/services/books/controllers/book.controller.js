@@ -11,6 +11,24 @@ export async function getBooks(req, res) {
     }
 }
 
+export async function getBookByProjectId(req, res)
+{
+    const {projId} = req.params;
+    console.log(projId);
+    
+
+    if (!projId) {
+        return res.status(400).json({message: "ProjectId is required"});
+    }
+
+    try {
+        const book = await Book.getBookByProjectId(projId);
+        return res.status(200).json({success: true, book: book})
+    } catch (error) {
+        
+    }
+}
+
 export async function addBook(req, res) {
     console.log("Req: \n" + req.body);
 
@@ -38,7 +56,7 @@ export async function addBook(req, res) {
 
 export async function updateBook(req, res) {
     let { id } = req.params;
-    let { title, author } = req.body;
+    let { title, author, genres, coverImg } = req.body;
 
     if (!id) {
         return res.status(400).json({ message: "Book ID is required" });
@@ -53,7 +71,7 @@ export async function updateBook(req, res) {
             .json({ message: "Title and Author are required" });
     }
 
-    const updatedBook = new Book(title, author);
+    const updatedBook = new Book(title, author, genres, coverImg);
 
     //בקשה לעדכון ספר קיים
     try {
