@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb";
 import Book from "../models/book.model.js";
 
-
 export async function getBooks(req, res) {
     try {
         const books = await Book.findAll();
@@ -11,21 +10,24 @@ export async function getBooks(req, res) {
     }
 }
 
-export async function getBookByProjectId(req, res)
-{
-    const {projId} = req.params;
+export async function getBookByProjectId(req, res) {
+    const { projId } = req.params;
     console.log(projId);
-    
 
     if (!projId) {
-        return res.status(400).json({message: "ProjectId is required"});
+        return res.status(400).json({ message: "ProjectId is required" });
     }
 
     try {
         const book = await Book.getBookByProjectId(projId);
-        return res.status(200).json({success: true, book: book})
+        return res.status(200).json({ success: true, book: book });
     } catch (error) {
-        
+        return res
+            .status(500)
+            .json({
+                success: false,
+                message: "Error while deleting project: " + error,
+            });
     }
 }
 

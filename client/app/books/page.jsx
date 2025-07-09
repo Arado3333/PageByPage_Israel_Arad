@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import BookLibrary from "../../app/books/book_components/book-library";
 import BookWorkspace from "../../app/books/book_components/book-workspace";
 import SectionEditor from "../../app/books/book_components/section-editor";
@@ -14,6 +14,8 @@ export default function App() {
     const [books, setBooks] = useState([]);
     const [showNewProjectForm, setShowNewProjectForm] = useState(false);
     const [addedProjectIds, setProjectIds] = useState(null);
+
+    const router = useRouter();
 
     async function getProjects() {
         const { token, userID } = JSON.parse(sessionStorage.getItem("user"));
@@ -40,6 +42,8 @@ export default function App() {
     }, []);
 
     const handleOpenBook = (book) => {
+        console.log(book);
+
         setSelectedBook(book);
         setCurrentView("workspace");
     };
@@ -75,8 +79,7 @@ export default function App() {
     };
 
     const handleCreateProject = async (projectData) => {
-        const keys = JSON.parse(sessionStorage.getItem('user'));
-
+        const keys = JSON.parse(sessionStorage.getItem("user"));
 
         const newBook = {
             userId: keys.userID,
@@ -190,7 +193,7 @@ export default function App() {
             localStorage.setItem("projects", JSON.stringify(updatedProjectIds));
         }
 
-        setCurrentView("library");
+        router.push("/books");
     }
 
     const renderCurrentView = () => {

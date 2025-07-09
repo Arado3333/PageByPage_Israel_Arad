@@ -19,21 +19,30 @@ import {
 } from "lucide-react";
 import "../../app//style/BookEditor.css";
 import { useRouter } from "next/navigation";
+import SaveModal from "./SaveModal";
+import StatusMessage from "./StatusMessage";
 
 export default function BookEditorPage() {
-    const [pages, setPages] = useState([{ id: "1", content: "" }]);
+    let numPages = 1;
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pages, setPages] = useState([
+        { id: numPages, title: "", content: "" },
+    ]);
     const [bookmarks, setBookmarks] = useState([]);
     const [showBookmarks, setShowBookmarks] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
     const [wordCount, setWordCount] = useState(0);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
     const [isFocusMode, setIsFocusMode] = useState(false);
     const [showBookmarkModal, setShowBookmarkModal] = useState(false);
     const [bookmarkName, setBookmarkName] = useState("");
-
     const [saveExistingBook, setSaveBook] = useState(false);
-    const [fetchedProjects, setFetchedProjects] = useState([]);
-    const [savedBookStatus, setSavedStaus] = useState("");
+    const [fetchedProjects, setFetchedProjects] = useState(null);
+    const [currentDrafts, setCurrentDrafts] = useState([]);
+    const [savedBookStatus, setSavedStatus] = useState({
+        message: "",
+        color: "",
+    });
+    const [popWarnMessage, setPopWarnMessage] = useState(false);
 
     const containerRef = useRef(null);
     const activeEditorRef = useRef(null);
@@ -56,6 +65,13 @@ export default function BookEditorPage() {
         }
     }, [pages.length]);
 
+    useEffect(() => {
+        if (fetchedProjects === null) {
+            setSaveBook(false);
+            setPopWarnMessage(true);
+        }
+    }, [popWarnMessage]);
+
     // Update word count
     useEffect(() => {
         const allContent = pages.map((page) => page.content).join(" ");
@@ -73,13 +89,26 @@ export default function BookEditorPage() {
     };
 
     const addNewPage = () => {
-        setPages([...pages, { id: Date.now().toString(), content: "" }]);
+        setPages([...pages, { id: ++numPages, title: "", content: "" }]);
     };
 
     const updatePageContent = (pageId, content) => {
+        const titleArr = content.split(" ");
+        let draftTitle = "";
+        for (let i = 0; i < 3; i++) 
+        {
+            if (titleArr[i] == undefined) { break; }
+            draftTitle += titleArr[i] + " ";
+        }
+
+        console.log(draftTitle);
+        
+
         setPages(
             pages.map((page) =>
-                page.id === pageId ? { ...page, content } : page
+                page.id === pageId
+                    ? { ...page, content, title: draftTitle }
+                    : page
             )
         );
     };
@@ -143,7 +172,8 @@ export default function BookEditorPage() {
         }, 1000);
     }
 
-    async function handleSaveExistingProject() {
+    async function getBooksFromServer()
+    {
         const { token, userID } = JSON.parse(sessionStorage.getItem("user"));
 
         //fetch projects from db
@@ -156,10 +186,17 @@ export default function BookEditorPage() {
                 method: "GET",
             }
         );
-        const projects = await response.json();
+        return await response.json();
+    }
+
+    async function handleSaveExistingProject() {
+
+        const projects = await getBooksFromServer();
+
+        setFetchedProjects(projects);
 
         setSaveBook(true);
-        setFetchedProjects(projects);
+        setPopWarnMessage(false);
     }
 
     async function handleSaveProject(e) {
@@ -168,18 +205,33 @@ export default function BookEditorPage() {
         const keys = JSON.parse(sessionStorage.getItem("user"));
         const element = e.target;
         console.log(element);
-        
+
         const projectName = element
             .querySelector("#project")
             .value.split(", ")[0];
-            
+
         const status = element.querySelector("#status").value;
 
         const selectedProject = fetchedProjects.filter((project) => {
             return project.title === projectName;
         });
 
-        const draftContent = pages.map((page) => page.content).join("\n\n");
+        // Initialize with existing drafts from the selected project
+        const existingDrafts = selectedProject[0].drafts || [];
+
+        const draftContent = pages.map((page) => page.content).join("\\n\\n");
+
+        // Create the new draft object
+        const newDraft = { title: pages[0].title, pages, draftContent };
+
+        // Combine existing drafts with the new draft
+        const updatedDrafts = [...existingDrafts, newDraft];
+
+        console.log(updatedDrafts);
+        
+
+        // Update the state with the combined drafts (optional, but good practice)
+        setCurrentDrafts(updatedDrafts);
 
         // Store draft in sessionStorage
         sessionStorage.setItem(
@@ -189,6 +241,7 @@ export default function BookEditorPage() {
                 draftContent,
             })
         );
+
 
         const response = await fetch(
             `http://localhost:5500/api/projects/${selectedProject[0]._id}`,
@@ -205,7 +258,7 @@ export default function BookEditorPage() {
                     genres: selectedProject[0].genres,
                     status: status,
                     description: selectedProject[0].description,
-                    drafts: JSON.parse(sessionStorage.getItem("bookDraft")),
+                    drafts: updatedDrafts,
                 }),
             }
         );
@@ -213,24 +266,43 @@ export default function BookEditorPage() {
         setSaveBook(false);
 
         const result = await response.json();
-        setSavedStaus(() =>
+
+        setSavedStatus(() =>
             result.success
-                ? "Book saved successfully!"
-                : "Error while saving the book. Please try again later"
+                ? {
+                      message: "Book saved successfully!",
+                      color: "green",
+                  }
+                : {
+                      message:
+                          "Error while saving the book. Please try again later",
+                      color: "red",
+                  }
         );
+
+        setTimeout(() => {
+            setSavedStatus("");
+        }, 3000);
     }
 
     return (
         <div className="book-editor">
-            <div
-                className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
-                role="alert"
-            >
-                <span className="block sm:inline">
-                    {savedBookStatus}
-                </span>
-                <span className="absolute top-0 bottom-0 right-0 px-4 py-3"></span>
-            </div>
+            {savedBookStatus.message && (
+                <StatusMessage
+                    message={savedBookStatus.message}
+                    color={savedBookStatus.color}
+                />
+            )}
+
+            {popWarnMessage && (
+                <StatusMessage
+                    message={
+                        "You don't have any saved projects yet. Please create one first"
+                    }
+                    color={"yellow"}
+                />
+            )}
+
             <div className="editor-container">
                 {/* Toolbar */}
                 {!isFocusMode && (
@@ -272,6 +344,7 @@ export default function BookEditorPage() {
                                     </div>
                                 </dialog>
 
+                                {/* TODO: Create a custom component for this section - save existing project */}
                                 {saveExistingBook && (
                                     <section className="flex justify-center items-center fixed inset-0 bg-gray-500 bg-opacity-50 overflow-y-auto h-full w-full">
                                         <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
@@ -333,6 +406,11 @@ export default function BookEditorPage() {
                                                     <div className="items-center px-4 py-3">
                                                         <button className="px-4 py-2 bg-blue-500 text-white font-bold rounded-md shadow-sm hover:bg-navy-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
                                                             Confirm
+                                                        </button>
+                                                        <button onClick={() => {
+                                                            setSaveBook(false);
+                                                        }} className="px-4 py-2 ml-4 bg-red-500 text-white font-bold rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
+                                                            Cancel
                                                         </button>
                                                     </div>
                                                 </form>
@@ -580,7 +658,7 @@ export default function BookEditorPage() {
                 <div ref={containerRef} className="editor-area">
                     <div className="pages-container">
                         {pages.map((page, index) => (
-                            <div key={page.id} className="page-wrapper">
+                            <div key={index} className="page-wrapper">
                                 <div className="page">
                                     <div
                                         ref={

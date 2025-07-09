@@ -24,7 +24,7 @@ export default function BookEditor({ book, section, onBack, onSave }) {
   }, [section])
 
   useEffect(() => {
-    setHasChanges(true)
+    setHasChanges(true);
   }, [content, title])
 
   const handleSave = () => {
@@ -47,7 +47,7 @@ export default function BookEditor({ book, section, onBack, onSave }) {
     setHasChanges(false)
   }
 
-  const handleBack = () => {
+  const handleBack = () => { 
     if (hasChanges) {
       if (window.confirm("You have unsaved changes. Do you want to save before leaving?")) {
         handleSave()

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "../../books/ui/button";
 import { Input } from "../../books/ui/input";
@@ -21,6 +22,8 @@ export default function BookLibrary({
     const [projectToDelete, setProjectToDelete] = useState("");
     const [isExist, setIsExist] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+
+    const router = useRouter();
 
     const allTags = [...new Set(books.flatMap((book) => book.genres))];
 
