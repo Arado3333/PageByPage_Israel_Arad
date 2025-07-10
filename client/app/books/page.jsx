@@ -60,6 +60,7 @@ export default function App() {
             )
         );
         setSelectedBook(updatedBook);
+        updateBookToServer(updatedBook);
     };
 
     const handleBackToLibrary = () => {
@@ -77,6 +78,47 @@ export default function App() {
         setShowNewProjectForm(true);
         setCurrentView("newProject");
     };
+
+    async function updateBookToServer(updatedBook) {
+        console.log("Attempting to update book on server:", updatedBook);
+
+        try {
+            const keys = JSON.parse(sessionStorage.getItem("user"));
+            if (!keys || !keys.token) {
+                console.error("User token not found in sessionStorage.");
+                return;
+            }
+
+            const response = await fetch(
+                `http://localhost:5500/api/projects/${updatedBook._id}`, //projectId
+                {
+                    headers: {
+                        Authorization: `Bearer ${keys.token}`,
+                        "Content-Type": "application/json",
+                    },
+                    method: "PUT",
+                    body: JSON.stringify(updatedBook),
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error(
+                    "Failed to update book on server:",
+                    response.status,
+                    errorData
+                );
+                // TODO: Handle server-side errors (e.g., show a toast notification)
+            } else {
+                const result = await response.json();
+                console.log("Book updated successfully on server:", result);
+                // TODO: Handle successful server update (e.g., show a success message)
+            }
+        } catch (error) {
+            console.error("Error sending update request to server:", error);
+            // TODO: Handle network or other errors
+        }
+    }
 
     const handleCreateProject = async (projectData) => {
         const keys = JSON.parse(sessionStorage.getItem("user"));

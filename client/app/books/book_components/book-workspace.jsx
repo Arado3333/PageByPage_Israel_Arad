@@ -29,6 +29,10 @@ export default function BookWorkspace({
     const [tagFilter, setTagFilter] = useState("All");
     const [activeTab, setActiveTab] = useState("drafts");
 
+    let id = 0;
+    console.log(book.drafts);
+    
+    
     const allTags = [
         ...new Set([
             ...book.drafts.map((d) => d.tag),
@@ -36,20 +40,20 @@ export default function BookWorkspace({
         ]),
     ].filter(Boolean);
 
-
     useEffect(() => {
         if (book) {
-            console.log(book);
+            // console.log(book);
         }
     });
 
     const handleAddDraft = () => {
         const newDraft = {
-            id: Date.now(),
+            id: id++,
             title: "New draft",
             content: "",
             tag: "scene",
             status: "draft",
+            lastEdited: Date.now()
         };
         const updatedBook = {
             ...book,
@@ -117,6 +121,26 @@ export default function BookWorkspace({
         onEditSection(asset, "asset");
     };
 
+    const handleDeleteDraft = (draftId) => {
+        const updatedDrafts = book.drafts.filter(
+            (draft) => draft.id !== draftId
+        );
+        const updatedBook = {
+            ...book,
+            drafts: updatedDrafts,
+            lastEdited: new Date().toISOString(),
+        };
+        onUpdateBook(updatedBook);
+        // TODO: Add API call here to send the updatedBook to the server
+
+
+
+
+        console.log(
+            `Draft with ID ${draftId} removed from UI state. Server update needed.`
+        );
+    };
+
     const getStatusColor = (status) => {
         switch (status) {
             case "complete":
@@ -135,7 +159,8 @@ export default function BookWorkspace({
     };
 
     const filteredDrafts = book.drafts.filter((draft) => {
-        const matchesSearch = draft.title?.toLowerCase()
+        const matchesSearch = draft.title
+            ?.toLowerCase()
             .includes(searchTerm.toLowerCase());
         const matchesTag = tagFilter === "All" || draft.tag === tagFilter;
         return matchesSearch && matchesTag;
@@ -293,10 +318,11 @@ export default function BookWorkspace({
                                 </p>
                             </div>
                         ) : (
-                          //TODO: save the drafts object in DB as chapters according to this pattern.
+                            //TODO: save the drafts object in DB as chapters according to this pattern.
                             filteredDrafts.map((draft, index) => (
                                 <Card
                                     key={index}
+                                    id={index}
                                     className="card hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                                 >
                                     <CardHeader className="pb-3 mobile-p">
@@ -308,11 +334,11 @@ export default function BookWorkspace({
                                                 className="badge-accent"
                                                 variant="outline"
                                             >
-                                                {draft.status}
+                                                {draft.status || "Draft"}
                                             </Badge>
                                         </div>
                                         <Badge className="badge-muted text-xs mt-2">
-                                            {draft.tag}
+                                            {draft.tag || "Scene"}
                                         </Badge>
                                     </CardHeader>
                                     <CardContent className="mobile-p">
