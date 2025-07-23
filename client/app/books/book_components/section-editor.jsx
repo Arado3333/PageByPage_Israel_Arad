@@ -17,19 +17,20 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
     const [type, setType] = useState("");
     const [description, setDescription] = useState("");
     const [hasChanges, setHasChanges] = useState(false);
+    const [maxPages, setMaxPages] = useState(section.pages.length || null);
 
     useEffect(() => {
         if (section) {
             console.log(section);
-
+            
             setTitle(section.title || section.name || "");
-            setContent(section.content || section.notes || "");
+            setContent(section.pages[page - 1].content || section.notes || "");
             setTag(section.tag || "");
             setRole(section.role || "");
             setType(section.type || "");
             setDescription(section.description || "");
         }
-    }, [section]);
+    }, [section, page]);
 
     useEffect(() => {
         setHasChanges(true);
@@ -58,7 +59,7 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
                 break;
             case "draft":
                 updatedSection.title = title;
-                updatedSection.pages[page-1].content += content;
+                updatedSection.pages[page - 1].content += content;
                 break;
             case "note":
                 updatedSection.title = title;
@@ -73,7 +74,6 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
 
         let updatedBook = { ...book };
         console.log("updated inside workspace: " + updatedBook);
-        
 
         // Determine which array to update and perform the update
         const sectionTypeKey = section.type + "s"; // e.g., 'draft' -> 'drafts'
@@ -145,6 +145,8 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
     };
 
     return (
+
+        
         <div className="container mx-auto px-4 py-6 max-w-4xl">
             <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-6">
                 <div className="flex flex-col sm:flex-row items-start gap-4 w-full sm:w-auto">
@@ -213,24 +215,24 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 p-6 mobile-p">
-                <div>
-                  <label
-                    htmlFor="page"
-                    className="block text-sm font-medium mb-2"
-                  >
-                    Page no.
-                  </label>
-                  <Input
-                    id="page"
-                    type="number"
-                    value={page}
-                    onChange={(e) => setPage(Number(e.target.value))}
-                    placeholder="Enter page number"
-                    className="input-field transition-all"
-                    min={1}
-                  />
-                </div>
-
+                    <div>
+                        <label
+                            htmlFor="page"
+                            className="block text-sm font-medium mb-2"
+                        >
+                            Page no.
+                        </label>
+                        <Input
+                            id="page"
+                            type="number"
+                            value={page}
+                            onChange={(e) => setPage(Number(e.target.value))}
+                            placeholder="Enter page number"
+                            className="input-field transition-all"
+                            min={1}
+                            max={maxPages}
+                        />
+                    </div>
 
                     <div>
                         <label

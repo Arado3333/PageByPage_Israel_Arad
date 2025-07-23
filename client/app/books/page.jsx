@@ -6,6 +6,11 @@ import BookLibrary from "../../app/books/book_components/book-library";
 import BookWorkspace from "../../app/books/book_components/book-workspace";
 import SectionEditor from "../../app/books/book_components/section-editor";
 import NewProjectForm from "../../app/books/book_components/new-project-form";
+import NoteEditor from "./book_components/NoteEditor";
+import DraftEditor from "./book_components/DraftEditor";
+import CharacterEditor from "./book_components/CharacterEditor";
+import AssetEditor from "./book_components/AssetEditor";
+import Draft from "../../lib/models/draft.model.js";
 
 export default function App() {
     const [currentView, setCurrentView] = useState("library");
@@ -50,8 +55,32 @@ export default function App() {
 
     const handleEditSection = (section, type) => {
         setEditingSection({ ...section, type });
-        setCurrentView("editor");
+
+        switch (type) {
+            case "draft":
+                setCurrentView("editor");
+                break;
+            case "newDraft":
+                setCurrentView("draftCreate");
+                break;
+            case "note":
+                setCurrentView("noteEditor");
+                break;
+            case "character":
+                setCurrentView("characterEditor");
+                break;
+            case "asset":
+                setCurrentView("assetEditor");
+                break;
+            default:
+                setCurrentView("editor");
+                break;
+        }
     };
+
+    function handleNoteEdit() {
+        setCurrentView("noteEditor");
+    }
 
     const handleUpdateBook = (updatedBook) => {
         setBooks(
@@ -123,6 +152,12 @@ export default function App() {
     const handleCreateProject = async (projectData) => {
         const keys = JSON.parse(sessionStorage.getItem("user"));
 
+        const draftPages =
+            JSON.parse(sessionStorage.getItem("bookDraft"))?.pages || [];
+
+        // Use Draft class to create the drafts array
+        const drafts = new Draft(projectData.title, draftPages)
+
         const newBook = {
             userId: keys.userID,
             title: projectData.title,
@@ -131,14 +166,13 @@ export default function App() {
             lastEdited: new Date().toISOString(),
             genres: projectData.genres || [],
             description: projectData.description,
-            drafts:
-                JSON.parse(sessionStorage.getItem("bookDraft"))?.pages || [],
+            drafts: [drafts],
             notes: [],
             characters: [],
             assets: [],
         };
 
-        //TODO: Complete Create new project
+        // Send new project to server
         const response = await fetch("http://localhost:5500/api/projects/", {
             headers: {
                 Authentication: `Bearer ${keys.token}`,
@@ -262,6 +296,42 @@ export default function App() {
             case "editor":
                 return (
                     <SectionEditor
+                        book={selectedBook}
+                        section={editingSection}
+                        onBack={handleBackToWorkspace}
+                        onSave={handleUpdateBook}
+                    />
+                );
+            case "characterEditor":
+                return (
+                    <CharacterEditor
+                        book={selectedBook}
+                        character={editingSection}
+                        onBack={handleBackToWorkspace}
+                        onSave={handleUpdateBook}
+                    />
+                );
+            case "draftCreate":
+                return (
+                    <DraftEditor
+                        book={selectedBook}
+                        section={editingSection}
+                        onBack={handleBackToWorkspace}
+                        onSave={handleUpdateBook}
+                    />
+                );
+            case "noteEditor":
+                return (
+                    <NoteEditor
+                        book={selectedBook}
+                        section={editingSection}
+                        onBack={handleBackToWorkspace}
+                        onSave={handleUpdateBook}
+                    />
+                );
+            case "assetEditor":
+                return (
+                    <AssetEditor
                         book={selectedBook}
                         section={editingSection}
                         onBack={handleBackToWorkspace}

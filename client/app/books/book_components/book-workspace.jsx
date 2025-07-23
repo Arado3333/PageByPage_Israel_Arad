@@ -18,6 +18,10 @@ import {
     Lightbulb,
     Eye,
 } from "lucide-react";
+import Note from "../../../lib/models/note.model.js";
+import Draft from "../../../lib/models/draft.model.js";
+import Character from "../../../lib/models/character.model.js";
+import Asset from "../../../lib/models/asset.model.js";
 
 export default function BookWorkspace({
     book,
@@ -29,10 +33,6 @@ export default function BookWorkspace({
     const [tagFilter, setTagFilter] = useState("All");
     const [activeTab, setActiveTab] = useState("drafts");
 
-    let id = 0;
-    console.log(book.drafts);
-    
-    
     const allTags = [
         ...new Set([
             ...book.drafts.map((d) => d.tag),
@@ -40,21 +40,11 @@ export default function BookWorkspace({
         ]),
     ].filter(Boolean);
 
-    useEffect(() => {
-        if (book) {
-            // console.log(book);
-        }
-    });
-
     const handleAddDraft = () => {
-        const newDraft = {
-            id: id++,
-            title: "New draft",
-            content: "",
-            tag: "scene",
-            status: "draft",
-            lastEdited: Date.now()
-        };
+        const newDraft = new Draft("New Draft", [
+            { id: 1, title: "", content: "" },
+        ]); //initializes new empty draft object
+        
         const updatedBook = {
             ...book,
             drafts: [...book.drafts, newDraft],
@@ -62,16 +52,11 @@ export default function BookWorkspace({
         };
         onUpdateBook(updatedBook);
         // Immediately edit the new draft
-        onEditSection(newDraft, "draft");
+        onEditSection(newDraft, "newDraft");
     };
 
     const handleAddNote = () => {
-        const newNote = {
-            id: Date.now(),
-            title: "New note",
-            content: "",
-            tag: "idea",
-        };
+        const newNote = new Note(); //initializes new empty note --> model
         const updatedBook = {
             ...book,
             notes: [...book.notes, newNote],
@@ -83,15 +68,12 @@ export default function BookWorkspace({
     };
 
     const handleAddCharacter = () => {
-        const newCharacter = {
-            id: Date.now(),
-            name: "New Character",
-            role: "",
-            notes: "",
-        };
+        const newCharacter = new Character();
+        console.log(newCharacter);
+        
         const updatedBook = {
             ...book,
-            characters: [...book.characters, newCharacter],
+            characts: [...book.characts, newCharacter],
             lastEdited: new Date().toISOString(),
         };
         onUpdateBook(updatedBook);
@@ -100,12 +82,8 @@ export default function BookWorkspace({
     };
 
     const handleAddAsset = () => {
-        const newAsset = {
-            id: Date.now(),
-            name: "New Asset",
-            type: "image",
-            description: "",
-        };
+        const newAsset = new Asset("New Asset", "image", "");
+
         const updatedBook = {
             ...book,
             assets: [...book.assets, newAsset],
@@ -119,26 +97,6 @@ export default function BookWorkspace({
     const handleViewAsset = (asset) => {
         // For now, just edit the asset
         onEditSection(asset, "asset");
-    };
-
-    const handleDeleteDraft = (draftId) => {
-        const updatedDrafts = book.drafts.filter(
-            (draft) => draft.id !== draftId
-        );
-        const updatedBook = {
-            ...book,
-            drafts: updatedDrafts,
-            lastEdited: new Date().toISOString(),
-        };
-        onUpdateBook(updatedBook);
-        // TODO: Add API call here to send the updatedBook to the server
-
-
-
-
-        console.log(
-            `Draft with ID ${draftId} removed from UI state. Server update needed.`
-        );
     };
 
     const getStatusColor = (status) => {
@@ -159,9 +117,7 @@ export default function BookWorkspace({
     };
 
     const filteredDrafts = book.drafts.filter((draft) => {
-        const matchesSearch = draft.title
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase());
+        const matchesSearch = draft.title.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesTag = tagFilter === "All" || draft.tag === tagFilter;
         return matchesSearch && matchesTag;
     });
@@ -275,7 +231,7 @@ export default function BookWorkspace({
                         <Users className="w-4 h-4" />
                         <span className="hidden sm:inline">Characters</span>
                         <span className="sm:hidden">
-                            {book.characters?.length}
+                            {book.characts.length}
                         </span>
                     </TabsTrigger>
                     <TabsTrigger
@@ -343,7 +299,7 @@ export default function BookWorkspace({
                                     </CardHeader>
                                     <CardContent className="mobile-p">
                                         <p className="text-sm line-clamp-3 mb-3 text-muted">
-                                            {draft.content}
+                                            {draft.pages[0].content}
                                         </p>
                                         <Button
                                             variant="outline"
@@ -392,6 +348,7 @@ export default function BookWorkspace({
                         ) : (
                             filteredNotes.map((note, index) => (
                                 <Card
+                                    id={index}
                                     key={index}
                                     className="card hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                                 >
@@ -440,7 +397,7 @@ export default function BookWorkspace({
                         </Button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {book.characters?.length === 0 || !book.characters ? (
+                        {book.characts.length === 0 || !book.characts ? (
                             <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
                                 <Users
                                     className="w-12 h-12 mx-auto mb-4"
@@ -452,8 +409,9 @@ export default function BookWorkspace({
                                 </p>
                             </div>
                         ) : (
-                            book.characters?.map((character, index) => (
+                            book.characts.map((character, index) => (
                                 <Card
+                                    id={index}
                                     key={index}
                                     className="card hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                                 >

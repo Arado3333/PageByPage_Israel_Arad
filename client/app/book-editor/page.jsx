@@ -22,12 +22,16 @@ import { useRouter } from "next/navigation";
 import SaveModal from "./SaveModal";
 import StatusMessage from "./StatusMessage";
 
+import Draft from "../../lib/models/draft.model.js";
+
 export default function BookEditorPage() {
     let numPages = 1;
+
     const [currentPage, setCurrentPage] = useState(1);
     const [pages, setPages] = useState([
         { id: numPages, title: "", content: "" },
     ]);
+    const [currentDrafts, setCurrentDrafts] = useState([]);
     const [bookmarks, setBookmarks] = useState([]);
     const [showBookmarks, setShowBookmarks] = useState(false);
     const [wordCount, setWordCount] = useState(0);
@@ -37,7 +41,6 @@ export default function BookEditorPage() {
     const [bookmarkName, setBookmarkName] = useState("");
     const [saveExistingBook, setSaveBook] = useState(false);
     const [fetchedProjects, setFetchedProjects] = useState(null);
-    const [currentDrafts, setCurrentDrafts] = useState([]);
     const [savedBookStatus, setSavedStatus] = useState({
         message: "",
         color: "",
@@ -47,6 +50,25 @@ export default function BookEditorPage() {
     const containerRef = useRef(null);
     const activeEditorRef = useRef(null);
     const router = useRouter();
+
+    // Ref to hold the Draft object
+    const draftRef = useRef(null);
+
+    // Initialize Draft object on mount
+    useEffect(() => {
+        draftRef.current = new Draft({
+            pages: [...pages],
+            wordCount: wordCount,
+        });
+    }, []);
+
+    // Update Draft object whenever pages or wordCount changes
+    useEffect(() => {
+        if (draftRef.current) {
+            draftRef.current.pages = [...pages];
+            draftRef.current.wordCount = wordCount;
+        }
+    }, [pages, wordCount]);
 
     // Calculate current page based on scroll position
     useEffect(() => {
@@ -89,20 +111,19 @@ export default function BookEditorPage() {
     };
 
     const addNewPage = () => {
-        setPages([...pages, { id: ++numPages, title: "", content: "" }]);
+        const newPageId = draftRef.current.addPage();
+        setPages([...pages, { id: newPageId, title: "", content: "" }]);
     };
 
     const updatePageContent = (pageId, content) => {
         const titleArr = content.split(" ");
         let draftTitle = "";
-        for (let i = 0; i < 3; i++) 
-        {
-            if (titleArr[i] == undefined) { break; }
+        for (let i = 0; i < 3; i++) {
+            if (titleArr[i] == undefined) {
+                break;
+            }
             draftTitle += titleArr[i] + " ";
         }
-
-        console.log(draftTitle);
-        
 
         setPages(
             pages.map((page) =>
@@ -163,6 +184,7 @@ export default function BookEditorPage() {
             JSON.stringify({
                 pages,
                 draftContent,
+                wordCount,
             })
         );
 
@@ -172,8 +194,7 @@ export default function BookEditorPage() {
         }, 1000);
     }
 
-    async function getBooksFromServer()
-    {
+    async function getBooksFromServer() {
         const { token, userID } = JSON.parse(sessionStorage.getItem("user"));
 
         //fetch projects from db
@@ -189,8 +210,24 @@ export default function BookEditorPage() {
         return await response.json();
     }
 
-    async function handleSaveExistingProject() {
+    function addToDraftPages(existingDrafts) {
+        //TODO: Handle the draft's new pages save. - not working properly
 
+        // const existingLength = existingDrafts.pages.length;
+        console.log(existingDrafts.pages);
+
+        if (!existingDrafts[0].checkForEmptyPages()) {
+            for (let i = 0; i < draftRef.current.pages.length; i++) {
+                existingDrafts[0].pages.push(
+                    draftRef.current.pages[existingLength + i]
+                );
+            }
+            return true;
+        }
+        return false;
+    }
+
+    async function handleSaveExistingProject() {
         const projects = await getBooksFromServer();
 
         setFetchedProjects(projects);
@@ -202,7 +239,6 @@ export default function BookEditorPage() {
     async function handleSaveProject(e) {
         e.preventDefault();
 
-        const keys = JSON.parse(sessionStorage.getItem("user"));
         const element = e.target;
         console.log(element);
 
@@ -219,29 +255,62 @@ export default function BookEditorPage() {
         // Initialize with existing drafts from the selected project
         const existingDrafts = selectedProject[0].drafts || [];
 
-        const draftContent = pages.map((page) => page.content).join("\\n\\n");
-
-        // Create the new draft object
-        const newDraft = { title: pages[0].title, pages, draftContent };
-
-        // Combine existing drafts with the new draft
-        const updatedDrafts = [...existingDrafts, newDraft];
-
-        console.log(updatedDrafts);
+        console.log(existingDrafts);
         
 
-        // Update the state with the combined drafts (optional, but good practice)
-        setCurrentDrafts(updatedDrafts);
+        const draftContent = pages.map((page) => page.content).join("\\n\\n");
 
-        // Store draft in sessionStorage
-        sessionStorage.setItem(
-            "bookDraft",
-            JSON.stringify({
-                pages,
-                draftContent,
-            })
-        );
+        //Update the Ref object
+        draftRef.current.title = pages[0].title;
+        draftRef.current.pages = pages;
+        draftRef.current.draftContent = draftContent;
+        draftRef.current.wordCount = wordCount;
 
+        if (!addToDraftPages(existingDrafts)) {
+            // Combine existing drafts with the new draft
+            const updatedDrafts = [...existingDrafts, draftRef.current];
+            console.log(updatedDrafts);
+
+            // Update the state with the combined drafts (optional, but good practice)
+            setCurrentDrafts(updatedDrafts);
+
+            // Store draft in sessionStorage
+            sessionStorage.setItem(
+                "bookDraft",
+                JSON.stringify({
+                    pages,
+                    draftContent,
+                    wordCount,
+                })
+            );
+
+            const result = updateToServer(
+                selectedProject,
+                updatedDrafts,
+                status
+            );
+
+            setSavedStatus(() =>
+                result.success
+                    ? {
+                          message: "Book saved successfully!",
+                          color: "green",
+                      }
+                    : {
+                          message:
+                              "Error while saving the book. Please try again later",
+                          color: "red",
+                      }
+            );
+
+            setTimeout(() => {
+                setSavedStatus("");
+            }, 3000);
+        }
+    }
+
+    async function updateToServer(selectedProject, updatedDrafts, status) {
+        const keys = JSON.parse(sessionStorage.getItem("user"));
 
         const response = await fetch(
             `http://localhost:5500/api/projects/${selectedProject[0]._id}`,
@@ -266,23 +335,7 @@ export default function BookEditorPage() {
         setSaveBook(false);
 
         const result = await response.json();
-
-        setSavedStatus(() =>
-            result.success
-                ? {
-                      message: "Book saved successfully!",
-                      color: "green",
-                  }
-                : {
-                      message:
-                          "Error while saving the book. Please try again later",
-                      color: "red",
-                  }
-        );
-
-        setTimeout(() => {
-            setSavedStatus("");
-        }, 3000);
+        return result;
     }
 
     return (
@@ -407,9 +460,14 @@ export default function BookEditorPage() {
                                                         <button className="px-4 py-2 bg-blue-500 text-white font-bold rounded-md shadow-sm hover:bg-navy-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
                                                             Confirm
                                                         </button>
-                                                        <button onClick={() => {
-                                                            setSaveBook(false);
-                                                        }} className="px-4 py-2 ml-4 bg-red-500 text-white font-bold rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
+                                                        <button
+                                                            onClick={() => {
+                                                                setSaveBook(
+                                                                    false
+                                                                );
+                                                            }}
+                                                            className="px-4 py-2 ml-4 bg-red-500 text-white font-bold rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300"
+                                                        >
                                                             Cancel
                                                         </button>
                                                     </div>
@@ -646,9 +704,15 @@ export default function BookEditorPage() {
                     <div className="status-bar">
                         <div className="status-content">
                             <div className="status-left">
-                                <span>Words: {wordCount.toLocaleString()}</span>
-                                <span>Pages: {pages.length}</span>
-                                <span>Current: Page {currentPage}</span>
+                                <span id="word-count">
+                                    Words: {wordCount.toLocaleString()}
+                                </span>
+                                <span id="page-count">
+                                    Pages: {pages.length}
+                                </span>
+                                <span id="current-page">
+                                    Current: Page {currentPage}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -659,7 +723,7 @@ export default function BookEditorPage() {
                     <div className="pages-container">
                         {pages.map((page, index) => (
                             <div key={index} className="page-wrapper">
-                                <div className="page">
+                                <div id={`page-${index + 1}`} className="page">
                                     <div
                                         ref={
                                             index === 0 ? activeEditorRef : null
@@ -689,6 +753,7 @@ export default function BookEditorPage() {
 
                         <div className="add-page">
                             <button
+                                id="add-page-btn"
                                 onClick={addNewPage}
                                 className="btn-secondary"
                             >

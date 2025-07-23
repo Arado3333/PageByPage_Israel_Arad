@@ -1,4 +1,5 @@
 import { MongoClient, ObjectId } from "mongodb";
+import Version from "../versions/version.model.js";
 
 export async function getProjectsFromDB() {
     let client = null;
@@ -44,8 +45,7 @@ export async function getProjectById(projectId) {
         let db = client.db(process.env.DB_NAME);
         return await db
             .collection("BookProjects")
-            .findOne({ _id: createFromHexString(projectId) })
-            .toArray();
+            .findOne({ _id: ObjectId.createFromHexString(projectId) });
     } catch (error) {
         console.error("Error fetching project from database:", error);
         throw error;
@@ -74,6 +74,14 @@ export async function updateToDB(id, project) {
     try {
         client = await MongoClient.connect(process.env.CONNECTION_STRING);
         let db = client.db(process.env.DB_NAME);
+
+        //Archive the recent project's version
+        const document = await getProjectById(id);
+        if (document) {
+            const prevVersion = new Version(id, document.drafts);
+            await db.collection("VersionHistory").insertOne(prevVersion);
+        }
+
         return await db
             .collection("BookProjects")
             .updateOne(
@@ -81,14 +89,15 @@ export async function updateToDB(id, project) {
                 { $set: project }
             );
     } catch (error) {
+        console.log(error);
+        
         throw new Error("Error saving project to database");
     } finally {
         if (client) client.close();
     }
 }
 
-export async function deleteFromDB(id)
-{
+export async function deleteFromDB(id) {
     let client = null;
 
     try {

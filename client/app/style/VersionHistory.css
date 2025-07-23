@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 /* Version History Component */
 .version-history {
   max-width: 1400px;
@@ -14,7 +19,6 @@
 /* Header */
 .vh-header {
   margin-bottom: 2rem;
-  flex-shrink: 0;
 }
 
 .vh-title {
