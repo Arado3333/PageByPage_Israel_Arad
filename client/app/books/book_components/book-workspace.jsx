@@ -18,10 +18,10 @@ import {
     Lightbulb,
     Eye,
 } from "lucide-react";
-import Note from "../../../lib/models/note.model.js";
-import Draft from "../../../lib/models/draft.model.js";
-import Character from "../../../lib/models/character.model.js";
-import Asset from "../../../lib/models/asset.model.js";
+import Note from "../../lib/models/note.model.js";
+import Draft from "../../lib/models/draft.model.js";
+import Character from "../../lib/models/character.model.js";
+import Asset from "../../lib/models/asset.model.js";
 
 export default function BookWorkspace({
     book,

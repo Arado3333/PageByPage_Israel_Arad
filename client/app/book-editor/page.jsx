@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import "../../app//style/BookEditor.css";
 import { useRouter } from "next/navigation";
-import SaveModal from "./SaveModal";
 import StatusMessage from "./StatusMessage";
 
 import Draft from "../lib/models/draft.model.js";

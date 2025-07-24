@@ -10,7 +10,7 @@ import NoteEditor from "./book_components/NoteEditor";
 import DraftEditor from "./book_components/DraftEditor";
 import CharacterEditor from "./book_components/CharacterEditor";
 import AssetEditor from "./book_components/AssetEditor";
-import Draft from "../../lib/models/draft.model.js";
+import Draft from "../lib/models/draft.model.js";
 
 export default function App() {
     const [currentView, setCurrentView] = useState("library");
@@ -156,7 +156,7 @@ export default function App() {
             JSON.parse(sessionStorage.getItem("bookDraft"))?.pages || [];
 
         // Use Draft class to create the drafts array
-        const drafts = new Draft(projectData.title, draftPages)
+        const drafts = new Draft(projectData.title, draftPages);
 
         const newBook = {
             userId: keys.userID,
