@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation";
 import SaveModal from "./SaveModal";
 import StatusMessage from "./StatusMessage";
 
-import Draft from "../../lib/models/draft.model.js";
+import Draft from "../lib/models/draft.model.js";
 
 export default function BookEditorPage() {
     let numPages = 1;
@@ -256,7 +256,6 @@ export default function BookEditorPage() {
         const existingDrafts = selectedProject[0].drafts || [];
 
         console.log(existingDrafts);
-        
 
         const draftContent = pages.map((page) => page.content).join("\\n\\n");
 

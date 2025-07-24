@@ -7,7 +7,7 @@ import { Textarea } from "../../books/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../../books/ui/card";
 import { Badge } from "../../books/ui/badge";
 import { ArrowLeft, Save, Trash2, Plus } from "lucide-react";
-import Draft from "../../../lib/models/draft.model.js";
+import Draft from "../../lib/models/draft.model.js";
 
 export default function DraftEditor({ book, section, onBack, onSave }) {
     const [title, setTitle] = useState("");
@@ -69,7 +69,9 @@ export default function DraftEditor({ book, section, onBack, onSave }) {
         // Update the draftRef.current with the latest content and title
         draftRef.current.pages = updatedPages;
         draftRef.current.title = title;
-        draftRef.current.draftContent = updatedPages.map(p => p.content).join("\n\n");
+        draftRef.current.draftContent = updatedPages
+            .map((p) => p.content)
+            .join("\n\n");
         draftRef.current.tag = tag;
 
         section = draftRef;
@@ -78,10 +80,15 @@ export default function DraftEditor({ book, section, onBack, onSave }) {
 
         if (updatedBook.drafts) {
             if (!draftRef.current.id) {
-                updatedBook.drafts = [...updatedBook.drafts, { ...draftRef.current }];
+                updatedBook.drafts = [
+                    ...updatedBook.drafts,
+                    { ...draftRef.current },
+                ];
             } else {
                 updatedBook.drafts = updatedBook.drafts.map((item) =>
-                    item.id === draftRef.current.id ? { ...draftRef.current } : item
+                    item.id === draftRef.current.id
+                        ? { ...draftRef.current }
+                        : item
                 );
             }
         } else {
