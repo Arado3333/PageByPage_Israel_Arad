@@ -5,7 +5,7 @@ import { Textarea } from "../../books/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../../books/ui/card";
 import { Badge } from "../../books/ui/badge";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
-import Note from "../../../lib/models/note.model.js";
+import Note from "../../lib/models/note.model.js";
 
 export default function NoteEditor({
     book,

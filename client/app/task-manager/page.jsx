@@ -2,7 +2,7 @@
 import "../../app/style/TaskManager.css";
 import { Calendar, CheckCircle, FileText, Plus, Tag, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import Task from "../../lib/models/task.model.js";
+import Task from "../lib/models/task.model.js";
 
 export default function GoalsProgress() {
     // State for interactive functionality

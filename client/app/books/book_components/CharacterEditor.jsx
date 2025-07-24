@@ -7,7 +7,7 @@ import { Textarea } from "../../books/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../../books/ui/card";
 import { Badge } from "../../books/ui/badge";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
-import Character from "../../../lib/models/character.model.js";
+import Character from "../../lib/models/character.model.js";
 
 export default function CharacterEditor({ book, character, onBack, onSave }) {
     const [name, setName] = useState("");
