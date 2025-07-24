@@ -210,17 +210,27 @@ export default function BookEditorPage() {
     }
 
     function addToDraftPages(existingDrafts) {
-        //TODO: Handle the draft's new pages save. - not working properly
+        //--> Type: Object
+        const draft = new Draft(
+            existingDrafts.title,
+            existingDrafts.pages,
+            existingDrafts.draftContent,
+            existingDrafts.tag,
+            existingDrafts.wordCount
+        );
 
-        // const existingLength = existingDrafts.pages.length;
-        console.log(existingDrafts.pages);
+        const existingLength = existingDrafts.pages.length;
+        const newPages = draftRef.current.pages.slice(existingLength);
+        console.log(draft);
 
-        if (!existingDrafts[0].checkForEmptyPages()) {
-            for (let i = 0; i < draftRef.current.pages.length; i++) {
-                existingDrafts[0].pages.push(
-                    draftRef.current.pages[existingLength + i]
-                );
+        if (!draft.hasEmptyPages()) {
+            for (let i = 0; i < newPages.length; i++) {
+                if (newPages[i]) {
+                    existingDrafts.pages.push(newPages[i]);
+                }
             }
+            console.log(existingDrafts.pages);
+
             return true;
         }
         return false;
@@ -254,7 +264,7 @@ export default function BookEditorPage() {
         // Initialize with existing drafts from the selected project
         const existingDrafts = selectedProject[0].drafts || [];
 
-        console.log(existingDrafts);
+        console.log(existingDrafts[0]);
 
         const draftContent = pages.map((page) => page.content).join("\\n\\n");
 
@@ -264,23 +274,13 @@ export default function BookEditorPage() {
         draftRef.current.draftContent = draftContent;
         draftRef.current.wordCount = wordCount;
 
-        if (!addToDraftPages(existingDrafts)) {
+        if (!addToDraftPages(existingDrafts[0])) {
             // Combine existing drafts with the new draft
             const updatedDrafts = [...existingDrafts, draftRef.current];
             console.log(updatedDrafts);
 
             // Update the state with the combined drafts (optional, but good practice)
             setCurrentDrafts(updatedDrafts);
-
-            // Store draft in sessionStorage
-            sessionStorage.setItem(
-                "bookDraft",
-                JSON.stringify({
-                    pages,
-                    draftContent,
-                    wordCount,
-                })
-            );
 
             const result = updateToServer(
                 selectedProject,
@@ -305,9 +305,39 @@ export default function BookEditorPage() {
                 setSavedStatus("");
             }, 3000);
         }
+
+        sessionStorage.setItem(
+            "bookDraft",
+            JSON.stringify({
+                pages,
+                draftContent,
+                wordCount,
+            })
+        );
+
+        const result = updateToServer(selectedProject, existingDrafts, status);
+
+        setSavedStatus(() => //TODO: Handle result message - red on success
+            result.success
+                ? {
+                      message: "Book saved successfully!",
+                      color: "green",
+                  }
+                : {
+                      message:
+                          "Error while saving the book. Please try again later",
+                      color: "red",
+                  }
+        );
+
+        setTimeout(() => {
+            setSavedStatus("");
+        }, 3000);
     }
 
     async function updateToServer(selectedProject, updatedDrafts, status) {
+        console.log(updatedDrafts);
+
         const keys = JSON.parse(sessionStorage.getItem("user"));
 
         const response = await fetch(
@@ -333,6 +363,8 @@ export default function BookEditorPage() {
         setSaveBook(false);
 
         const result = await response.json();
+        console.log(result);
+        
         return result;
     }
 

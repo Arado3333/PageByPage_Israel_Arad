@@ -1,3 +1,4 @@
+import "dotenv";
 import "dotenv/config"; //הגדרת השרת לקבלת משתני סביבה מהקובץ .env
 import cors from "cors";
 import express from "express";

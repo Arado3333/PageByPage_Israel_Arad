@@ -15,8 +15,20 @@ export async function getVersionsByProjectId(req, res) {
     }
 }
 
+export async function deleteAll(req, res) {
+    const projectId = req.params.projectId;
 
-export async function archiveVersion()
-{
-    
+    try {
+        const result = await Version.deleteAllByProjectId(projectId);
+        res.status(200).json({
+            success: true,
+            message: "Versions Deleted successfully",
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error deleting versions",
+            error,
+        });
+    }
 }

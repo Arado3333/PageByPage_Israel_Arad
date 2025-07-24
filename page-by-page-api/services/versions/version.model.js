@@ -1,4 +1,4 @@
-import { getVersionsFromDB } from "./versions.db.js";
+import { getVersionsFromDB, deleteAllFromDB } from "./versions.db.js";
 
 export default class Version {
     static id = 0;
@@ -14,6 +14,15 @@ export default class Version {
             return await getVersionsFromDB(projectId);
         } catch (error) {
             throw new Error("Error while fetching versions");
+        }
+    }
+
+    static async deleteAllByProjectId(projectId)
+    {
+        try {
+            return await deleteAllFromDB(projectId);
+        } catch (error) {
+            throw new Error("Error while deleting versions");
         }
     }
 }
