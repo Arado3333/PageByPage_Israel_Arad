@@ -2,6 +2,7 @@
 import "../style/Drafts.css";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Draft from "../lib/models/draft.model.js";
 
 const FADE_DURATION = 350; // ms
 
@@ -103,21 +104,22 @@ const DraftManager = () => {
     }, [drafts, searchTerm, statusFilter, sortBy]);
 
     const formatDate = (date) => {
+        if (!date) return "";
+        const parsedDate = typeof date === "string" ? new Date(date) : date;
         const now = new Date();
-        const diffTime = Math.abs(now - date);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-        if (diffDays === 1) return "Today";
-        if (diffDays === 2) return "Yesterday";
-        if (diffDays <= 7) return `${diffDays - 1} days ago`;
+        // Calculate difference in days
+        const diffTime = now - parsedDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-        return date.toLocaleDateString("en-US", {
+        if (diffDays === 0) return "Today";
+        if (diffDays === 1) return "Yesterday";
+        if (diffDays < 7) return `${diffDays} days ago`;
+
+        return parsedDate.toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
-            year:
-                date.getFullYear() !== now.getFullYear()
-                    ? "numeric"
-                    : undefined,
+            year: parsedDate.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
         });
     };
 
@@ -153,8 +155,6 @@ const DraftManager = () => {
         e.preventDefault();
         e.stopPropagation();
 
-        console.log(draft);
-
         setViewDraft(draft); //TODO: Handle draft view --> this is async so it won't render.
     };
 
@@ -171,12 +171,13 @@ const DraftManager = () => {
             setTimeout(() => {
                 document.querySelector("#add-page-btn").click();
 
-                let pagesElements = document.querySelector(`#page-${i+1}`)
-                pagesElements.querySelector('.page-content').textContent = toEdit.pages[i].content;
+                let pagesElements = document.querySelector(`#page-${i + 1}`);
+                pagesElements.querySelector(".page-content").textContent =
+                    toEdit.pages[i].content;
             }, 500);
         }
 
-        sessionStorage.setItem('draftContext', JSON.stringify(toEdit));
+        sessionStorage.setItem("draftContext", JSON.stringify(toEdit));
     };
 
     const handleDelete = (e, draft) => {
@@ -185,9 +186,50 @@ const DraftManager = () => {
         setDeleteConfirm(draft);
     };
 
-    const confirmDelete = () => {
+
+    const confirmDelete = async () => {
         if (deleteConfirm) {
             setDeletingDraftId(deleteConfirm.id);
+
+            // Find the project that contains this draft
+            let parentProject = null;
+            for (const book of books) {
+                if (
+                    Array.isArray(book.drafts) &&
+                    book.drafts.some((d) => d.id === deleteConfirm.id)
+                ) {
+                    parentProject = book;
+                    break;
+                }
+            }
+
+            if (!parentProject) {
+                // Fallback: just remove from UI
+                setTimeout(() => {
+                    setDrafts(
+                        drafts.filter((draft) => draft.id !== deleteConfirm.id)
+                    );
+                    setDeleteConfirm(null);
+                    setDeletingDraftId(null);
+                }, FADE_DURATION);
+                return;
+            }
+
+            try {
+                // Call backend to delete draft
+                await fetch(
+                    `http://localhost:5500/api/projects/${parentProject._id}/${deleteConfirm.id}`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+            } catch (err) {
+                // Optionally show error
+            }
+
             setTimeout(() => {
                 setDrafts(
                     drafts.filter((draft) => draft.id !== deleteConfirm.id)
@@ -218,11 +260,15 @@ const DraftManager = () => {
             lastModified: new Date(),
             wordCount: 0,
         };
-        setDrafts([newDraft, ...drafts]);
+
+        const nDraft = new Draft();
+        
+
+        setDrafts([nDraft, ...drafts]);
         setShowCreateModal(false);
-        setEditDraft({ ...newDraft });
+        setEditDraft({ ...nDraft });
         setTimeout(() => {
-            setHighlightedDraftId(newDraft.id);
+            setHighlightedDraftId(nDraft.id);
             newDraftRef.current?.scrollIntoView({
                 behavior: "smooth",
                 block: "center",
@@ -235,14 +281,15 @@ const DraftManager = () => {
         setShowCreateModal(false);
     };
 
-    const handleEditSave = () => { //TODO: Check relevance since we redirect to the existing book editor.
+    const handleEditSave = () => {
+        //TODO: Check relevance since we redirect to the existing book editor.
         setDrafts((prev) =>
             prev.map((d) =>
                 d.id === editDraft.id
                     ? {
                           ...editDraft,
                           lastModified: new Date(),
-                          wordCount: editDraft.snippet
+                          wordCount: editDraft.draftContent
                               .split(/\s+/)
                               .filter(Boolean).length,
                       }
@@ -414,11 +461,11 @@ const DraftManager = () => {
                                     </span>
                                 </div>
                                 <p className="dm-draft-snippet">
-                                    {draft.snippet}
+                                    {draft.draftContent}
                                 </p>
                                 <div className="dm-card-meta">
                                     <span className="dm-book-tag">
-                                        {draft.bookName}
+                                        {draft.tag}
                                     </span>
                                     <div className="dm-meta-info">
                                         {/* <span className="dm-word-count">
@@ -426,7 +473,7 @@ const DraftManager = () => {
                                             words
                                         </span>  --> doesn't work as expected */}
                                         <span className="dm-date">
-                                            {formatDate(draft.lastModified)}
+                                            {formatDate(draft.lastEdited)}
                                         </span>
                                     </div>
                                 </div>
@@ -527,7 +574,7 @@ const DraftManager = () => {
                                     marginBottom: 12,
                                 }}
                             >
-                                {viewDraft.snippet}
+                                {viewDraft.draftContent}
                             </p>
                             <div
                                 style={{
@@ -548,7 +595,7 @@ const DraftManager = () => {
                                 </div>
                                 <div>
                                     <strong>Last Modified:</strong>{" "}
-                                    {formatDate(viewDraft.lastModified)}
+                                    {formatDate(viewDraft.lastEdited)}
                                 </div>
                             </div>
                         </div>
@@ -635,11 +682,11 @@ const DraftManager = () => {
                                         minHeight: 80,
                                         fontFamily: "inherit",
                                     }}
-                                    value={editDraft.snippet}
+                                    value={editDraft.draftContent}
                                     onChange={(e) =>
                                         setEditDraft({
                                             ...editDraft,
-                                            snippet: e.target.value,
+                                            draftContent: e.target.value,
                                         })
                                     }
                                     required
@@ -652,7 +699,7 @@ const DraftManager = () => {
                                         marginTop: 2,
                                     }}
                                 >
-                                    {editDraft.snippet.length} characters
+                                    {editDraft.draftContent.length} characters
                                 </div>
                             </div>
                             <div

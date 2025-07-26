@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useAuth } from "../context/AuthContext"
@@ -21,6 +21,7 @@ import {
   Sun,
 } from "lucide-react"
 import "../style/AppLayout.css"
+import { BookContext } from "../context/BookContext"
 
 // Sidebar navigation structure
 const sidebarNavGroups = [
@@ -95,6 +96,8 @@ export default function AppLayout({ children }) {
   const [currentTime, setCurrentTime] = useState(new Date())
   const { user, logout, theme, toggleTheme } = useAuth()
   const pathname = usePathname()
+
+  
 
   // Update time
   useEffect(() => {

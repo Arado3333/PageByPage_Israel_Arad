@@ -1,4 +1,4 @@
-import { getBookProjects, createProject, getProjectsById, updateProject, deleteProject } from "./project.controller.js";
+import { getBookProjects, createProject, getProjectsById, updateProject, deleteProject, deleteDraftById } from "./project.controller.js";
 import { Router } from "express";
 
 const projectsRouter = Router();
@@ -10,6 +10,7 @@ projectsRouter
     .get("/:userId", getProjectsById)
     .post("/", createProject)
     .put("/:projectId", updateProject)
-    .delete("/:projectId", deleteProject);
+    .delete("/:projectId", deleteProject)
+    .delete("/:projectId/:draftId", deleteDraftById);
 
 export default projectsRouter;

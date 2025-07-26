@@ -9,7 +9,7 @@ const VersionHistory = () => {
     const [fetchedProjects, setFetchedProjects] = useState(null);
 
     // Mock version data
-    const [versions] = useState([
+    const [versions, setVersions] = useState([
         {
             id: 1,
             title: "Initial Draft",
@@ -87,6 +87,9 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
         }
 
         getProjectsFromServer();
+        const versions = getVersionsFromServer().then((res) =>
+            console.log(res.versions)
+        );
     }, []);
 
     async function getProjectsFromServer() {
@@ -102,7 +105,7 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
         );
         const projects = await response.json();
 
-        setFetchedProjects(projects);
+        setFetchedProjects(projects); //TODO: Handle versions render + changing the version objects with appropriate fields.
     }
 
     // Filter versions based on search
@@ -177,6 +180,28 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
             : null;
 
     // Event handlers
+
+    async function handleShowVersions(e) {
+        const {userID, token} = JSON.parse(sessionStorage.getItem("user"));
+
+        const name = e.target.value.split(", ")[0];
+        const project = fetchedProjects.filter(
+            (project) => project.title === name
+        );
+
+        const res = await fetch(`http://localhost:5500/api/versions/${project[0]._id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const result = await res.json();
+
+        // console.log(result.versions);
+        
+        setVersions(result.versions);
+    }
+
     const handleSearch = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
@@ -215,11 +240,14 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
                 </p>
 
                 {!fetchedProjects ? (
-                    <span className="text-gray mt-2 text-[1rem] bg-amber-100">Loading Projects...</span>
+                    <span className="text-gray mt-2 text-[1rem] bg-amber-100">
+                        Loading Projects...
+                    </span>
                 ) : (
                     <select
                         id="project"
                         className="mt-2 bg-amber-100 p-1 rounded-sm "
+                        onClick={handleShowVersions}
                     >
                         {fetchedProjects.map((project, index) => (
                             <option className="border-gray-500" key={index}>
