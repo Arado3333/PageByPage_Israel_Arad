@@ -176,6 +176,7 @@ const DraftManager = () => {
             }, 500);
         }
 
+        sessionStorage.setItem('draftContext', JSON.stringify(toEdit));
     };
 
     const handleDelete = (e, draft) => {

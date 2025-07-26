@@ -1,5 +1,5 @@
 import AppLayout from "../components/AppLayout"
 
 export default function DraftsLayout({ children }) {
-  return <AppLayout>{children}</AppLayout>
+  return (<AppLayout>{children}</AppLayout>)
 }

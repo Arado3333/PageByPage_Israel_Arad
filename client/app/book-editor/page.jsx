@@ -20,16 +20,11 @@ import {
 import "../../app//style/BookEditor.css";
 import { useRouter } from "next/navigation";
 import StatusMessage from "./StatusMessage";
-
 import Draft from "../lib/models/draft.model.js";
 
 export default function BookEditorPage() {
-    let numPages = 1;
-
     const [currentPage, setCurrentPage] = useState(1);
-    const [pages, setPages] = useState([
-        { id: numPages, title: "", content: "" },
-    ]);
+    const [pages, setPages] = useState([{ id: 1, title: "", content: "" }]);
     const [currentDrafts, setCurrentDrafts] = useState([]);
     const [bookmarks, setBookmarks] = useState([]);
     const [showBookmarks, setShowBookmarks] = useState(false);
@@ -55,10 +50,20 @@ export default function BookEditorPage() {
 
     // Initialize Draft object on mount
     useEffect(() => {
-        draftRef.current = new Draft({
-            pages: [...pages],
-            wordCount: wordCount,
-        });
+        const draftContext = JSON.parse(sessionStorage.getItem("draftContext"));
+        if (draftContext) {
+            setPages(draftContext.pages);
+
+            draftRef.current = new Draft({
+                pages: [...draftContext.pages],
+                wordCount: draftContext.wordCount,
+            });
+        } else {
+            draftRef.current = new Draft({
+                pages: [...pages],
+                wordCount: wordCount,
+            });
+        }
     }, []);
 
     // Update Draft object whenever pages or wordCount changes
@@ -209,33 +214,6 @@ export default function BookEditorPage() {
         return await response.json();
     }
 
-    function addToDraftPages(existingDrafts) {
-        //--> Type: Object
-        const draft = new Draft(
-            existingDrafts.title,
-            existingDrafts.pages,
-            existingDrafts.draftContent,
-            existingDrafts.tag,
-            existingDrafts.wordCount
-        );
-
-        const existingLength = existingDrafts.pages.length;
-        const newPages = draftRef.current.pages.slice(existingLength);
-        console.log(draft);
-
-        if (!draft.hasEmptyPages()) {
-            for (let i = 0; i < newPages.length; i++) {
-                if (newPages[i]) {
-                    existingDrafts.pages.push(newPages[i]);
-                }
-            }
-            console.log(existingDrafts.pages);
-
-            return true;
-        }
-        return false;
-    }
-
     async function handleSaveExistingProject() {
         const projects = await getBooksFromServer();
 
@@ -245,66 +223,46 @@ export default function BookEditorPage() {
         setPopWarnMessage(false);
     }
 
+    // State for selected draft and new draft creation
+    const [selectedDraftIndex, setSelectedDraftIndex] = useState(null);
+    const [createNewDraft, setCreateNewDraft] = useState(false);
+
     async function handleSaveProject(e) {
         e.preventDefault();
-
         const element = e.target;
-        console.log(element);
-
         const projectName = element
             .querySelector("#project")
             .value.split(", ")[0];
 
         const status = element.querySelector("#status").value;
 
-        const selectedProject = fetchedProjects.filter((project) => {
-            return project.title === projectName;
-        });
+        const selectedProject = fetchedProjects.filter(
+            (project) => project.title === projectName
+        );
 
-        // Initialize with existing drafts from the selected project
         const existingDrafts = selectedProject[0].drafts || [];
+        const draftContent = pages.map((page) => page.content).join("\n\n");
 
-        console.log(existingDrafts[0]);
-
-        const draftContent = pages.map((page) => page.content).join("\\n\\n");
-
-        //Update the Ref object
         draftRef.current.title = pages[0].title;
         draftRef.current.pages = pages;
         draftRef.current.draftContent = draftContent;
         draftRef.current.wordCount = wordCount;
 
-        if (!addToDraftPages(existingDrafts[0])) {
-            // Combine existing drafts with the new draft
-            const updatedDrafts = [...existingDrafts, draftRef.current];
-            console.log(updatedDrafts);
-
-            // Update the state with the combined drafts (optional, but good practice)
-            setCurrentDrafts(updatedDrafts);
-
-            const result = updateToServer(
-                selectedProject,
-                updatedDrafts,
-                status
-            );
-
-            setSavedStatus(() =>
-                result.success
-                    ? {
-                          message: "Book saved successfully!",
-                          color: "green",
-                      }
-                    : {
-                          message:
-                              "Error while saving the book. Please try again later",
-                          color: "red",
-                      }
-            );
-
-            setTimeout(() => {
-                setSavedStatus("");
-            }, 3000);
+        let updatedDrafts = [...existingDrafts];
+        if (createNewDraft || existingDrafts.length === 0) {
+            // Add a new draft
+            updatedDrafts.push({ ...draftRef.current });
+        } else if (
+            selectedDraftIndex !== null &&
+            updatedDrafts[selectedDraftIndex]
+        ) {
+            // Update the selected draft
+            updatedDrafts[selectedDraftIndex] = { ...draftRef.current };
+        } else {
+            // Fallback: update the first draft
+            updatedDrafts[0] = { ...draftRef.current };
         }
+        setCurrentDrafts(updatedDrafts);
 
         sessionStorage.setItem(
             "bookDraft",
@@ -315,24 +273,29 @@ export default function BookEditorPage() {
             })
         );
 
-        const result = updateToServer(selectedProject, existingDrafts, status);
+        const context = sessionStorage.getItem("draftContext");
+        if (context) {
+            sessionStorage.removeItem("draftContext");
+        }
 
-        setSavedStatus(() => //TODO: Handle result message - red on success
+        console.log(updatedDrafts);
+
+        // Optionally, call updateToServer here
+        const result = await updateToServer(
+            selectedProject,
+            updatedDrafts,
+            status
+        );
+        setSavedStatus(() =>
             result.success
-                ? {
-                      message: "Book saved successfully!",
-                      color: "green",
-                  }
+                ? { message: "Book saved successfully!", color: "green" }
                 : {
                       message:
                           "Error while saving the book. Please try again later",
                       color: "red",
                   }
         );
-
-        setTimeout(() => {
-            setSavedStatus("");
-        }, 3000);
+        setTimeout(() => setSavedStatus(""), 3000);
     }
 
     async function updateToServer(selectedProject, updatedDrafts, status) {
@@ -363,8 +326,7 @@ export default function BookEditorPage() {
         setSaveBook(false);
 
         const result = await response.json();
-        console.log(result);
-        
+
         return result;
     }
 
@@ -458,8 +420,6 @@ export default function BookEditorPage() {
                                                                 <option
                                                                     key={index}
                                                                 >
-                                                                    {" "}
-                                                                    {/* can add custom component with the options */}
                                                                     {project.title +
                                                                         ", " +
                                                                         project.author}
@@ -467,6 +427,132 @@ export default function BookEditorPage() {
                                                             )
                                                         )}
                                                     </select>
+
+                                                    {/* Draft selection */}
+                                                    <label
+                                                        htmlFor="draft"
+                                                        className="block text-gray-700 text-sm font-bold mt-4 mb-2"
+                                                    >
+                                                        Draft:
+                                                    </label>
+                                                    <select
+                                                        id="draft"
+                                                        value={
+                                                            createNewDraft
+                                                                ? "new"
+                                                                : selectedDraftIndex !==
+                                                                  null
+                                                                ? selectedDraftIndex
+                                                                : ""
+                                                        }
+                                                        onChange={(e) => {
+                                                            if (
+                                                                e.target
+                                                                    .value ===
+                                                                "new"
+                                                            ) {
+                                                                setCreateNewDraft(
+                                                                    true
+                                                                );
+                                                                setSelectedDraftIndex(
+                                                                    null
+                                                                );
+                                                            } else {
+                                                                setSelectedDraftIndex(
+                                                                    e.target
+                                                                        .value !==
+                                                                        ""
+                                                                        ? Number(
+                                                                              e
+                                                                                  .target
+                                                                                  .value
+                                                                          )
+                                                                        : null
+                                                                );
+                                                                setCreateNewDraft(
+                                                                    false
+                                                                );
+                                                            }
+                                                        }}
+                                                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                    >
+                                                        <option value="">
+                                                            -- Select Existing
+                                                            Draft --
+                                                        </option>
+                                                        {(() => {
+                                                            // Find the selected project
+                                                            const projectName =
+                                                                document
+                                                                    .getElementById(
+                                                                        "project"
+                                                                    )
+                                                                    ?.value?.split(
+                                                                        ", "
+                                                                    )[0];
+                                                            const project =
+                                                                fetchedProjects.find(
+                                                                    (p) =>
+                                                                        p.title ===
+                                                                        projectName
+                                                                );
+                                                            const options = [];
+                                                            if (
+                                                                project &&
+                                                                Array.isArray(
+                                                                    project.drafts
+                                                                )
+                                                            ) {
+                                                                options.push(
+                                                                    ...project.drafts.map(
+                                                                        (
+                                                                            draft,
+                                                                            idx
+                                                                        ) => (
+                                                                            <option
+                                                                                key={
+                                                                                    idx
+                                                                                }
+                                                                                value={
+                                                                                    idx
+                                                                                }
+                                                                            >
+                                                                                {draft.title ||
+                                                                                    `Draft ${
+                                                                                        idx +
+                                                                                        1
+                                                                                    }`}
+                                                                            </option>
+                                                                        )
+                                                                    )
+                                                                );
+                                                            }
+                                                            // Add "New Draft" option
+                                                            options.push(
+                                                                <option
+                                                                    key="new"
+                                                                    value="new"
+                                                                >
+                                                                    New Draft
+                                                                </option>
+                                                            );
+                                                            return options;
+                                                        })()}
+                                                    </select>
+                                                    <button
+                                                        type="button"
+                                                        className="mt-2 mb-4 px-3 py-1 bg-green-500 text-white rounded hover:bg-green-700"
+                                                        onClick={() => {
+                                                            setCreateNewDraft(
+                                                                true
+                                                            );
+                                                            setSelectedDraftIndex(
+                                                                null
+                                                            );
+                                                        }}
+                                                    >
+                                                        + Create New Draft
+                                                    </button>
 
                                                     <label
                                                         htmlFor="status"
@@ -491,8 +577,15 @@ export default function BookEditorPage() {
                                                             Confirm
                                                         </button>
                                                         <button
+                                                            type="button"
                                                             onClick={() => {
                                                                 setSaveBook(
+                                                                    false
+                                                                );
+                                                                setSelectedDraftIndex(
+                                                                    null
+                                                                );
+                                                                setCreateNewDraft(
                                                                     false
                                                                 );
                                                             }}
