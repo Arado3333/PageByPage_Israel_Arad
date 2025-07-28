@@ -87,9 +87,6 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
         }
 
         getProjectsFromServer();
-        const versions = getVersionsFromServer().then((res) =>
-            console.log(res.versions)
-        );
     }, []);
 
     async function getProjectsFromServer() {
@@ -108,16 +105,20 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
         setFetchedProjects(projects); //TODO: Handle versions render + changing the version objects with appropriate fields.
     }
 
+    /*
+            id: 1, --> version id
+            title: "Initial Draft", --> per draft
+            date: new Date("2024-01-10T09:30:00"), --> version date
+            wordCount: 2847, --> per draft
+            status: "draft",
+            content: `The ol --> per draft
+
+*/
+
     // Filter versions based on search
     const filteredVersions = useMemo(() => {
-        return versions.filter(
-            (version) =>
-                version.title
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                version.date
-                    .toLocaleDateString()
-                    .includes(searchTerm.toLowerCase())
+        return versions.filter((version) =>
+            version.title.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [versions, searchTerm]);
 
@@ -182,24 +183,48 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
     // Event handlers
 
     async function handleShowVersions(e) {
-        const {userID, token} = JSON.parse(sessionStorage.getItem("user"));
+        const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
 
         const name = e.target.value.split(", ")[0];
         const project = fetchedProjects.filter(
             (project) => project.title === name
         );
 
-        const res = await fetch(`http://localhost:5500/api/versions/${project[0]._id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
+        const res = await fetch(
+            `http://localhost:5500/api/versions/${project[0]._id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             }
-        });
+        );
 
         const result = await res.json();
 
-        // console.log(result.versions);
-        
-        setVersions(result.versions);
+        // Map DB version objects to UI version objects
+        const mappedVersions = (result.versions || []).map((ver) => {
+            // Use the first draft in the drafts array for display
+            const draft =
+                Array.isArray(ver.drafts) && ver.drafts.length > 0
+                    ? ver.drafts[0]
+                    : {};
+            return {
+                id: ver.versionId || ver._id, // Use versionId as unique id
+                title: draft.title || "Untitled Version",
+                date: draft.lastModified
+                    ? new Date(draft.lastModified)
+                    : new Date(),
+                wordCount: draft.wordCount || 0,
+                status: draft.status || "draft",
+                content: draft.content || draft.draftContent || "",
+                // Optionally keep reference to version object fields
+                versionId: ver.versionId,
+                projectId: ver.projectId,
+                _id: ver._id,
+            };
+        });
+
+        setVersions(mappedVersions);
     }
 
     const handleSearch = (e) => {
@@ -288,7 +313,7 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
                     </div>
 
                     <div className="vh-versions-list">
-                        {filteredVersions.map((version) => {
+                        {filteredVersions.map((version, index) => {
                             const statusConfig = getStatusConfig(
                                 version.status
                             );
@@ -296,7 +321,7 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
 
                             return (
                                 <div
-                                    key={version.id}
+                                    key={index}
                                     className={`vh-version-item ${
                                         isSelected ? "selected" : ""
                                     }`}

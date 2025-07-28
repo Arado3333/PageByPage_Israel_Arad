@@ -21,6 +21,7 @@ import "../../app//style/BookEditor.css";
 import { useRouter } from "next/navigation";
 import StatusMessage from "./StatusMessage";
 import Draft from "../lib/models/draft.model.js";
+import { getProjects, updateDataToServer } from "../api/routes.js";
 
 export default function BookEditorPage() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -201,17 +202,7 @@ export default function BookEditorPage() {
     async function getBooksFromServer() {
         const { token, userID } = JSON.parse(sessionStorage.getItem("user"));
 
-        //fetch projects from db
-        const response = await fetch(
-            `http://localhost:5500/api/projects/${userID}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                method: "GET",
-            }
-        );
-        return await response.json();
+        return await getProjects(userID, token);
     }
 
     async function handleSaveExistingProject() {
@@ -223,16 +214,28 @@ export default function BookEditorPage() {
         setPopWarnMessage(false);
     }
 
-    // State for selected draft and new draft creation
+    // State for selected project, draft, and new draft creation
+    const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
+    const [projectDrafts, setProjectDrafts] = useState([]);
     const [selectedDraftIndex, setSelectedDraftIndex] = useState(null);
     const [createNewDraft, setCreateNewDraft] = useState(false);
+
+    // Update projectDrafts when fetchedProjects or selectedProjectIndex changes
+    useEffect(() => {
+        if (fetchedProjects && fetchedProjects.length > 0) {
+            const drafts = fetchedProjects[selectedProjectIndex]?.drafts || [];
+            setProjectDrafts(drafts);
+        } else {
+            setProjectDrafts([]);
+        }
+    }, [fetchedProjects, selectedProjectIndex]);
 
     async function handleSaveProject(e) {
         e.preventDefault();
         const element = e.target;
         const projectName = element
             .querySelector("#project")
-            .value.split(", ")[0];
+            .textContent.split(", ")[0];
 
         const status = element.querySelector("#status").value;
 
@@ -280,7 +283,6 @@ export default function BookEditorPage() {
 
         console.log(updatedDrafts);
 
-        // Optionally, call updateToServer here
         const result = await updateToServer(
             selectedProject,
             updatedDrafts,
@@ -301,31 +303,17 @@ export default function BookEditorPage() {
     async function updateToServer(selectedProject, updatedDrafts, status) {
         console.log(updatedDrafts);
 
-        const keys = JSON.parse(sessionStorage.getItem("user"));
+        const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
 
-        const response = await fetch(
-            `http://localhost:5500/api/projects/${selectedProject[0]._id}`,
-            {
-                headers: {
-                    Authentication: `Bearer ${keys.token}`,
-                    "Content-Type": "application/json",
-                },
-                method: "PUT",
-                body: JSON.stringify({
-                    userId: keys.userID,
-                    author: selectedProject[0].author,
-                    title: selectedProject[0].title,
-                    genres: selectedProject[0].genres,
-                    status: status,
-                    description: selectedProject[0].description,
-                    drafts: updatedDrafts,
-                }),
-            }
-        );
+        const result = await updateDataToServer(
+            selectedProject,
+            updatedDrafts,
+            status,
+            userID,
+            token
+        ); //Calls from next api routes.js
 
         setSaveBook(false);
-
-        const result = await response.json();
 
         return result;
     }
@@ -401,6 +389,7 @@ export default function BookEditorPage() {
                                                 <form
                                                     onSubmit={handleSaveProject}
                                                     className="mt-2 px-7 py-3"
+                                                    name="save-draft"
                                                 >
                                                     <label
                                                         htmlFor="project"
@@ -411,6 +400,23 @@ export default function BookEditorPage() {
                                                     <select
                                                         id="project"
                                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                        value={
+                                                            selectedProjectIndex
+                                                        }
+                                                        onChange={(e) => {
+                                                            setSelectedProjectIndex(
+                                                                Number(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            );
+                                                            setSelectedDraftIndex(
+                                                                null
+                                                            );
+                                                            setCreateNewDraft(
+                                                                false
+                                                            );
+                                                        }}
                                                     >
                                                         {fetchedProjects.map(
                                                             (
@@ -419,6 +425,9 @@ export default function BookEditorPage() {
                                                             ) => (
                                                                 <option
                                                                     key={index}
+                                                                    value={
+                                                                        index
+                                                                    }
                                                                 >
                                                                     {project.title +
                                                                         ", " +
@@ -480,64 +489,26 @@ export default function BookEditorPage() {
                                                             -- Select Existing
                                                             Draft --
                                                         </option>
-                                                        {(() => {
-                                                            // Find the selected project
-                                                            const projectName =
-                                                                document
-                                                                    .getElementById(
-                                                                        "project"
-                                                                    )
-                                                                    ?.value?.split(
-                                                                        ", "
-                                                                    )[0];
-                                                            const project =
-                                                                fetchedProjects.find(
-                                                                    (p) =>
-                                                                        p.title ===
-                                                                        projectName
-                                                                );
-                                                            const options = [];
-                                                            if (
-                                                                project &&
-                                                                Array.isArray(
-                                                                    project.drafts
-                                                                )
-                                                            ) {
-                                                                options.push(
-                                                                    ...project.drafts.map(
-                                                                        (
-                                                                            draft,
-                                                                            idx
-                                                                        ) => (
-                                                                            <option
-                                                                                key={
-                                                                                    idx
-                                                                                }
-                                                                                value={
-                                                                                    idx
-                                                                                }
-                                                                            >
-                                                                                {draft.title ||
-                                                                                    `Draft ${
-                                                                                        idx +
-                                                                                        1
-                                                                                    }`}
-                                                                            </option>
-                                                                        )
-                                                                    )
-                                                                );
-                                                            }
-                                                            // Add "New Draft" option
-                                                            options.push(
+                                                        {projectDrafts.map(
+                                                            (draft, idx) => (
                                                                 <option
-                                                                    key="new"
-                                                                    value="new"
+                                                                    key={idx}
+                                                                    value={idx}
                                                                 >
-                                                                    New Draft
+                                                                    {draft.title ||
+                                                                        `Draft ${
+                                                                            idx +
+                                                                            1
+                                                                        }`}
                                                                 </option>
-                                                            );
-                                                            return options;
-                                                        })()}
+                                                            )
+                                                        )}
+                                                        <option
+                                                            key="new"
+                                                            value="new"
+                                                        >
+                                                            New Draft
+                                                        </option>
                                                     </select>
                                                     <button
                                                         type="button"

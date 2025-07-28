@@ -1,12 +1,11 @@
 import { getVersionsFromDB, deleteAllFromDB } from "./versions.db.js";
 
 export default class Version {
-    static id = 0;
-
-    constructor(projectId, drafts = []) {
-        this.versionId = Version.id++;
+    constructor(projectId, drafts = [], date = new Date().toISOString()) {
+        this.versionId = Date.now();
         this.projectId = projectId;
         this.drafts = drafts;
+        this.date = date;
     }
 
     static async getAllVersionsByProjectId(projectId) {
@@ -17,8 +16,7 @@ export default class Version {
         }
     }
 
-    static async deleteAllByProjectId(projectId)
-    {
+    static async deleteAllByProjectId(projectId) {
         try {
             return await deleteAllFromDB(projectId);
         } catch (error) {

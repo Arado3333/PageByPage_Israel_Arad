@@ -50,7 +50,8 @@ export default function BookWorkspace({
             drafts: [...book.drafts, newDraft],
             lastEdited: new Date().toISOString(),
         };
-        onUpdateBook(updatedBook);
+        
+        // onUpdateBook(updatedBook);
         // Immediately edit the new draft
         onEditSection(newDraft, "newDraft");
     };

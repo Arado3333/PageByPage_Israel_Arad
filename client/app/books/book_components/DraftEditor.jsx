@@ -22,23 +22,6 @@ export default function DraftEditor({ book, section, onBack, onSave }) {
         ?.split(/\s+/)
         .filter((word) => word.length > 0).length;
 
-    // Ref to hold the Draft object
-    const draftRef = useRef(null);
-
-    // Initialize Draft object on mount
-    useEffect(() => {
-        draftRef.current = new Draft({
-            pages: [...pages],
-        });
-    }, []);
-
-    // Update Draft object whenever pages or wordCount changes
-    useEffect(() => {
-        if (draftRef.current) {
-            draftRef.current.pages = [...pages];
-        }
-    }, [pages, wordCount]);
-
     useEffect(() => {
         if (section) {
             setTitle(section.title || section.name || "");
@@ -66,45 +49,49 @@ export default function DraftEditor({ book, section, onBack, onSave }) {
             idx === page - 1 ? { ...p, content } : p
         );
 
-        // Update the draftRef.current with the latest content and title
-        draftRef.current.pages = updatedPages;
-        draftRef.current.title = title;
-        draftRef.current.draftContent = updatedPages
-            .map((p) => p.content)
-            .join("\n\n");
-        draftRef.current.tag = tag;
+        // Build a new draft object from the current state
 
-        section = draftRef;
+        const draftObj = new Draft(
+            title,
+            updatedPages,
+            updatedPages.map((p) => p.content).join("\n\n"),
+            tag,
+            wordCount
+        );
+        
+        // Create a new drafts array
+        let newDrafts = Array.isArray(book.drafts) ? [...book.drafts] : [];
 
-        let updatedBook = { ...book };
+        console.log(newDrafts);
+        
 
-        if (updatedBook.drafts) {
-            if (!draftRef.current.id) {
-                updatedBook.drafts = [
-                    ...updatedBook.drafts,
-                    { ...draftRef.current },
-                ];
-            } else {
-                updatedBook.drafts = updatedBook.drafts.map((item) =>
-                    item.id === draftRef.current.id
-                        ? { ...draftRef.current }
-                        : item
-                );
-            }
+        const existingIdx = newDrafts.findIndex(
+            (item) => console.log(item.id + " " + draftObj.id)
+        );
+
+        if (existingIdx !== -1) {
+            // Update existing draft
+            newDrafts[existingIdx] = draftObj;
         } else {
-            console.error("Drafts array not found in book");
-            return;
+            // Add new draft
+            newDrafts.push(draftObj);
         }
+
+        // Create a new updatedBook object
+        const updatedBook = {
+            ...book,
+            drafts: newDrafts,
+        };
+
+        console.log(updatedBook);
 
         onSave(updatedBook);
         setHasChanges(false);
     };
 
     const handleAddPage = () => {
-        draftRef.current.addPage(); //Draft object update
-
         //UI Update
-        setPages((prev) => [...prev, { content: "" }]);
+        setPages((prev) => [...prev, { title: title, content: "" }]);
         setPage(pages.length + 1);
     };
 
