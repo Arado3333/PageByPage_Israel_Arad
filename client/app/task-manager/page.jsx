@@ -3,6 +3,7 @@ import "../../app/style/TaskManager.css";
 import { Calendar, CheckCircle, FileText, Plus, Tag, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import Task from "../lib/models/task.model.js";
+import { deleteTask, getTasks, updateTask } from "../api/routes.js";
 
 export default function GoalsProgress() {
     // State for interactive functionality
@@ -207,38 +208,13 @@ export default function GoalsProgress() {
 
     async function getTasksFromServer() {
         const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
-
-        const response = await fetch(
-            `http://localhost:5500/api/tasks/${userID}`,
-            {
-                headers: {
-                    Authentication: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-
-        const result = await response.json();
-        console.log(result.tasks); // --> will be indicating success or fail message
-        return result.tasks; // --> Array of task objects
+        return await getTasks(userID, token);
     }
 
     async function updateTaskToServer(task) {
         const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
 
-        const response = await fetch(`http://localhost:5500/api/tasks/new`, {
-            headers: {
-                Authentication: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            method: "POST",
-            body: JSON.stringify({
-                userId: userID,
-                task: task,
-            }),
-        });
-
-        const result = await response.json();
+        const result = await updateTask(task, userID, token);
         console.log(result); // --> will be indicating success or fail message
     }
 
@@ -247,20 +223,7 @@ export default function GoalsProgress() {
 
         const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
 
-        const response = await fetch(
-            `http://localhost:5500/api/tasks/${taskId}`,
-            {
-                headers: {
-                    Authentication: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                method: "DELETE",
-                body: JSON.stringify({
-                    userId: userID,
-                }),
-            }
-        );
-        const result = await response.json();
+        const result = await deleteTask(taskId, userID, token);
         console.log(result);
     }
 
@@ -298,21 +261,23 @@ export default function GoalsProgress() {
     const handleDeleteTask = (day, taskId) => {
         deleteTaskFromServer(taskId);
         setCalendarTasks((prev) => {
-          const updated = { ...prev };
-          if (updated[day]) {
-            updated[day] = updated[day].filter((task) => task._id !== taskId);
-            if (updated[day].length === 0) {
-              delete updated[day];
+            const updated = { ...prev };
+            if (updated[day]) {
+                updated[day] = updated[day].filter(
+                    (task) => task._id !== taskId
+                );
+                if (updated[day].length === 0) {
+                    delete updated[day];
+                }
             }
-          }
-          return updated;
+            return updated;
         });
         setSelectedDayData((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            tasks: prev.tasks.filter((task) => task._id !== taskId),
-          };
+            if (!prev) return prev;
+            return {
+                ...prev,
+                tasks: prev.tasks.filter((task) => task._id !== taskId),
+            };
         });
 
         setShowDayModal(false);

@@ -1,26 +1,18 @@
 "use client";
 
+import { getProjects } from "../api/routes";
 import AppLayout from "../components/AppLayout";
 import { BookContext } from "../context/BookContext"; //Not working YET
 
 export default function DraftsLayout({ children }) {
-    async function getProjects() {
+    async function getProjectsFromServer() {
         const { userId, token } = JSON.parse(sessionStorage.getItem("user"));
 
-        const response = await fetch(
-            `http://localhost:5500/api/projects/${userId}`,
-            {
-                headers: {
-                    Authentication: `Bearer ${token}`,
-                },
-            }
-        );
-
-        const books = await response.json();
+        const books = await getProjects(userId, token);
         return books;
     }
 
-    const books = getProjects();
+    const books = getProjectsFromServer();
 
     return (
         <BookContext.Provider value={books}>

@@ -1,4 +1,5 @@
 "use client";
+import { getProjects, getVersions } from "../api/routes";
 import "../style/VersionHistory.css";
 
 import { useState, useMemo, useEffect } from "react";
@@ -79,28 +80,13 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
     ]);
 
     useEffect(() => {
-        async function getVersionsFromServer(projectId) {
-            const response = await fetch(
-                `http://localhost:5500/api/versions/${projectId}`
-            );
-            return await response.json();
-        }
-
         getProjectsFromServer();
     }, []);
 
     async function getProjectsFromServer() {
         const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
 
-        const response = await fetch(
-            `http://localhost:5500/api/projects/${userID}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-        const projects = await response.json();
+        const projects = await getProjects(userID, token);
 
         setFetchedProjects(projects); //TODO: Handle versions render + changing the version objects with appropriate fields.
     }
@@ -190,16 +176,7 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
             (project) => project.title === name
         );
 
-        const res = await fetch(
-            `http://localhost:5500/api/versions/${project[0]._id}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-
-        const result = await res.json();
+        const result = await getVersions(project, token);
 
         // Map DB version objects to UI version objects
         const mappedVersions = (result.versions || []).map((ver) => {

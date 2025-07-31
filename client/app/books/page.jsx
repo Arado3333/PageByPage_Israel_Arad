@@ -11,6 +11,7 @@ import DraftEditor from "./book_components/DraftEditor";
 import CharacterEditor from "./book_components/CharacterEditor";
 import AssetEditor from "./book_components/AssetEditor";
 import Draft from "../lib/models/draft.model.js";
+import { createProject, deleteBook, deleteProject, getProjects, updateBook } from "../api/routes.js";
 
 export default function App() {
     const [currentView, setCurrentView] = useState("library");
@@ -22,20 +23,10 @@ export default function App() {
 
     const router = useRouter();
 
-    async function getProjects() {
+    async function fetchProjects() {
         const { token, userID } = JSON.parse(sessionStorage.getItem("user"));
 
-        //fetch projects from db
-        const response = await fetch(
-            `http://localhost:5500/api/projects/${userID}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                method: "GET",
-            }
-        );
-        const projects = await response.json();
+        const projects = await getProjects(userID, token);
         setBooks(projects);
         console.log(projects);
     }
@@ -43,7 +34,7 @@ export default function App() {
     useEffect(() => {
         const projectIds = JSON.parse(localStorage.getItem("projects")) || [];
         setProjectIds(projectIds);
-        getProjects();
+        fetchProjects();
     }, []);
 
     const handleOpenBook = (book) => {
@@ -111,41 +102,21 @@ export default function App() {
     async function updateBookToServer(updatedBook) {
         console.log("Attempting to update book on server:", updatedBook);
 
-        try {
-            const keys = JSON.parse(sessionStorage.getItem("user"));
-            if (!keys || !keys.token) {
-                console.error("User token not found in sessionStorage.");
-                return;
-            }
+        const keys = JSON.parse(sessionStorage.getItem("user"));
+        if (!keys || !keys.token) {
+            console.error("User token not found in sessionStorage.");
+            return;
+        }
 
-            const response = await fetch(
-                `http://localhost:5500/api/projects/${updatedBook._id}`, //projectId
-                {
-                    headers: {
-                        Authorization: `Bearer ${keys.token}`,
-                        "Content-Type": "application/json",
-                    },
-                    method: "PUT",
-                    body: JSON.stringify(updatedBook),
-                }
-            );
+        const result = await updateBook(updatedBook);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error(
-                    "Failed to update book on server:",
-                    response.status,
-                    errorData
-                );
-                // TODO: Handle server-side errors (e.g., show a toast notification)
-            } else {
-                const result = await response.json();
-                console.log("Book updated successfully on server:", result);
-                // TODO: Handle successful server update (e.g., show a success message)
-            }
-        } catch (error) {
-            console.error("Error sending update request to server:", error);
-            // TODO: Handle network or other errors
+        switch (result) {
+            case result.success:
+                console.log("updated successfuly to the server");
+                break;
+            case !result.success:
+                console.log("failed to update to the server");
+                break;
         }
     }
 
@@ -173,27 +144,7 @@ export default function App() {
         };
 
         // Send new project to server
-        const response = await fetch("http://localhost:5500/api/projects/", {
-            headers: {
-                Authentication: `Bearer ${keys.token}`,
-                "Content-Type": "application/json",
-            },
-            method: "POST",
-            body: JSON.stringify({
-                userId: newBook.userId,
-                author: newBook.author,
-                title: newBook.title,
-                genres: newBook.genres,
-                status: newBook.status,
-                description: newBook.description,
-                drafts: newBook.drafts,
-                notes: newBook.notes,
-                characters: newBook.characters,
-                assets: newBook.assets,
-            }),
-        });
-
-        const result = await response.json();
+        const result = await createProject(newBook, keys.token);
         console.log(result);
 
         const objToAdd = {
@@ -221,42 +172,8 @@ export default function App() {
             return book.title === projectName;
         });
 
-        const idToDelete = bookToDelete[0]._id;
-
-        const getBookResponse = await fetch(
-            `http://localhost:5500/api/books/${idToDelete}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                method: "GET",
-            }
-        );
-        const bookObj = await getBookResponse.json();
-
-        console.log(bookObj.book._id);
-
-        const delBookResponse = await fetch(
-            `http://localhost:5500/api/books/${bookObj.book._id}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                method: "DELETE",
-            }
-        );
-        const delBookConfirm = await delBookResponse.json();
-
-        const delProjResponse = await fetch(
-            `http://localhost:5500/api/projects/${idToDelete}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                method: "DELETE",
-            }
-        );
-        const projDeletionConfirm = await delProjResponse.json();
+        const projDeletionConfirm = await deleteProject(bookToDelete, token);
+        const delBookConfirm = await deleteBook(bookToDelete, token);
 
         if (projDeletionConfirm.success && delBookConfirm.success) {
             // Remove deleted book from state
@@ -268,7 +185,7 @@ export default function App() {
             ).filter((proj) => proj.projectName !== projectName);
             localStorage.setItem("projects", JSON.stringify(updatedProjectIds));
         }
-
+        
         router.push("/books");
     }
 

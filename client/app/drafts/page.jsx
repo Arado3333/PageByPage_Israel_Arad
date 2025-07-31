@@ -3,6 +3,7 @@ import "../style/Drafts.css";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Draft from "../lib/models/draft.model.js";
+import { deleteDraft, getProjects } from "../api/routes";
 
 const FADE_DURATION = 350; // ms
 
@@ -13,48 +14,34 @@ const DraftManager = () => {
 
     // Fetch drafts from server for the specific user on mount
     useEffect(() => {
-        async function getProjects() {
+        async function getProjectsFromServer() {
             const userStr = sessionStorage.getItem("user");
             if (!userStr) return;
             const { token, userID } = JSON.parse(userStr);
 
-            try {
-                const response = await fetch(
-                    `http://localhost:5500/api/projects/${userID}`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                        method: "GET",
-                    }
-                );
-                const projects = await response.json();
-                setBooks(projects);
-                // Flatten all drafts from all projects into a single array
-                let allDrafts = [];
-                projects.forEach((project) => {
-                    if (Array.isArray(project.drafts)) {
-                        project.drafts.forEach((draft) => {
-                            allDrafts.push({
-                                ...draft,
-                                bookName:
-                                    project.title ||
-                                    project.bookName ||
-                                    "Untitled Book",
-                                lastModified: draft.lastModified
-                                    ? new Date(draft.lastModified)
-                                    : new Date(),
-                            });
+            const projects = await getProjects(userID, token);
+            setBooks(projects);
+            // Flatten all drafts from all projects into a single array
+            let allDrafts = [];
+            projects.forEach((project) => {
+                if (Array.isArray(project.drafts)) {
+                    project.drafts.forEach((draft) => {
+                        allDrafts.push({
+                            ...draft,
+                            bookName:
+                                project.title ||
+                                project.bookName ||
+                                "Untitled Book",
+                            lastModified: draft.lastModified
+                                ? new Date(draft.lastModified)
+                                : new Date(),
                         });
-                    }
-                });
-                setDrafts(allDrafts);
-            } catch (err) {
-                setBooks([]);
-                setDrafts([]);
-            }
+                    });
+                }
+            });
+            setDrafts(allDrafts);
         }
-        getProjects();
+        getProjectsFromServer();
     }, []);
 
     const [searchTerm, setSearchTerm] = useState("");
@@ -119,7 +106,10 @@ const DraftManager = () => {
         return parsedDate.toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
-            year: parsedDate.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+            year:
+                parsedDate.getFullYear() !== now.getFullYear()
+                    ? "numeric"
+                    : undefined,
         });
     };
 
@@ -186,7 +176,6 @@ const DraftManager = () => {
         setDeleteConfirm(draft);
     };
 
-
     const confirmDelete = async () => {
         if (deleteConfirm) {
             setDeletingDraftId(deleteConfirm.id);
@@ -215,28 +204,20 @@ const DraftManager = () => {
                 return;
             }
 
-            try {
-                // Call backend to delete draft
-                await fetch(
-                    `http://localhost:5500/api/projects/${parentProject._id}/${deleteConfirm.id}`,
-                    {
-                        method: "DELETE",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
-            } catch (err) {
-                // Optionally show error
-            }
+            const res = await deleteDraft(parentProject, deletingDraftId);
 
-            setTimeout(() => {
-                setDrafts(
-                    drafts.filter((draft) => draft.id !== deleteConfirm.id)
-                );
-                setDeleteConfirm(null);
-                setDeletingDraftId(null);
-            }, FADE_DURATION);
+            if (res.success) {
+                setTimeout(() => {
+                    setDrafts(
+                        drafts.filter((draft) => draft.id !== deleteConfirm.id)
+                    );
+                    setDeleteConfirm(null);
+                    setDeletingDraftId(null);
+                }, FADE_DURATION);
+            }
+            else {
+                console.error(res.message)
+            }
         }
     };
 
@@ -262,7 +243,6 @@ const DraftManager = () => {
         };
 
         const nDraft = new Draft();
-        
 
         setDrafts([nDraft, ...drafts]);
         setShowCreateModal(false);

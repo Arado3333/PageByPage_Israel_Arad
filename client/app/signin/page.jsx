@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import "../style/SignIn.css";
-import { logIn } from "../signin/logIn";
+import { login } from "../api/routes.js";
 import FormField from "./components/FormField";
 
 export default function SignInPage() {
@@ -24,7 +24,9 @@ export default function SignInPage() {
         setError("");
         setIsLoading(true);
 
-        let res = await logIn(userInput.email, userInput.password);
+        let res = await login(userInput.email, userInput.password);
+        console.log(res);
+        
 
         setIsLoading(false);
         if (res.token) {
