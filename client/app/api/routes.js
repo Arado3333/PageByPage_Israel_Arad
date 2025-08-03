@@ -1,3 +1,8 @@
+"use server";
+
+import { cookies } from "next/headers";
+import { decrypt, getSessionToken, getSessionObject } from "../lib/session";
+
 export async function getProjects(userId, token) {
     //fetch projects from db
     const response = await fetch(
@@ -10,6 +15,37 @@ export async function getProjects(userId, token) {
         }
     );
     return await response.json();
+}
+
+export async function getProjectsWithCookies() { //with cookie data - server side
+
+    const cookieStore = await cookies();
+    const session = cookieStore.get("session");
+
+    const decrypted = await decrypt(session?.value);
+    const userId = decrypted.userId;
+    
+    //fetch projects from db
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVICE}/api/projects/${userId}`,
+        {
+            headers: {
+                Authorization: `Bearer ${session.value}`,
+            },
+            method: "GET",
+        }
+    );
+    return await response.json();
+}
+
+export async function getTokenFromCookies()
+{
+    return await getSessionToken();
+}
+
+export async function getSession()
+{
+    return await getSessionObject();
 }
 
 export async function updateDataToServer(
@@ -116,7 +152,6 @@ export async function deleteBook(bookToDelete, token) {
     );
     const bookObj = await getBookResponse.json();
 
-    console.log(bookObj.book._id);
 
     const delBookResponse = await fetch(
         `${process.env.NEXT_PUBLIC_SERVICE}/api/books/${bookObj.book._id}`,
@@ -160,9 +195,13 @@ export async function deleteDraft(parentProject, deleteConfirmId) {
     }
 }
 
-export async function getTasks(userID, token) {
+export async function getTasks() {
+
+    const sessionObj = await getSessionObject();
+    const token = await getSessionToken();
+
     const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVICE}/api/tasks/${userID}`,
+        `${process.env.NEXT_PUBLIC_SERVICE}/api/tasks/${sessionObj.userId}`,
         {
             headers: {
                 Authentication: `Bearer ${token}`,
@@ -212,10 +251,11 @@ export async function deleteTask(taskId, userID, token) {
     return await response.json();
 }
 
+//${process.env.NEXT_PUBLIC_SERVICE}
 export async function login(email, password) {
     try {
         let result = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVICE}/api/users/login`,
+            `http://localhost:5500/api/users/login`,
             {
                 method: "POST",
                 headers: {

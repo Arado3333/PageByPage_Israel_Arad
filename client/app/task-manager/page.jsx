@@ -207,8 +207,7 @@ export default function GoalsProgress() {
     };
 
     async function getTasksFromServer() {
-        const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
-        return await getTasks(userID, token);
+        return await getTasks();
     }
 
     async function updateTaskToServer(task) {

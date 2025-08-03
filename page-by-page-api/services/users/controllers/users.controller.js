@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 import { ObjectId } from "mongodb";
 
@@ -36,15 +35,13 @@ export async function login(req, res) {
     try {
         const { email, password } = req.body;
 
+        console.log(req.body);
+        
         const user = await User.login(email, password);
 
         if (user) {
             res.status(200).json({
                 message: "Login successful",
-                token: jwt.sign(user, process.env.JWT_SECRET, {
-                    expiresIn: "1h",
-                    algorithm: "HS256",
-                }),
                 userID: user._id
             });
         } else {

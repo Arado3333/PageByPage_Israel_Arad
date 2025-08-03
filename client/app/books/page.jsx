@@ -11,7 +11,7 @@ import DraftEditor from "./book_components/DraftEditor";
 import CharacterEditor from "./book_components/CharacterEditor";
 import AssetEditor from "./book_components/AssetEditor";
 import Draft from "../lib/models/draft.model.js";
-import { createProject, deleteBook, deleteProject, getProjects, updateBook } from "../api/routes.js";
+import { createProject, deleteBook, deleteProject, getProjectsWithCookies, getSession, getTokenFromCookies, updateBook } from "../api/routes.js";
 
 export default function App() {
     const [currentView, setCurrentView] = useState("library");
@@ -24,9 +24,7 @@ export default function App() {
     const router = useRouter();
 
     async function fetchProjects() {
-        const { token, userID } = JSON.parse(sessionStorage.getItem("user"));
-
-        const projects = await getProjects(userID, token);
+        const projects = await getProjectsWithCookies();
         setBooks(projects);
         console.log(projects);
     }
@@ -121,7 +119,8 @@ export default function App() {
     }
 
     const handleCreateProject = async (projectData) => {
-        const keys = JSON.parse(sessionStorage.getItem("user"));
+        const user = await getSession();
+        const token = await getTokenFromCookies();
 
         const draftPages =
             JSON.parse(sessionStorage.getItem("bookDraft"))?.pages || [];
@@ -130,7 +129,7 @@ export default function App() {
         const drafts = new Draft(projectData.title, draftPages);
 
         const newBook = {
-            userId: keys.userID,
+            userId: user.userId,
             title: projectData.title,
             author: projectData.author,
             status: projectData.status,
@@ -144,7 +143,7 @@ export default function App() {
         };
 
         // Send new project to server
-        const result = await createProject(newBook, keys.token);
+        const result = await createProject(newBook, token);
         console.log(result);
 
         const objToAdd = {
@@ -162,22 +161,26 @@ export default function App() {
 
         setCurrentView("library");
         setShowNewProjectForm(false);
+
+        window.location.reload(true);
     };
 
     async function handleDeleteConfirm(projectName) {
         //get the projectId and delete from server
-        const { token, userID } = JSON.parse(sessionStorage.getItem("user"));
+        const token = await getTokenFromCookies();
 
         const bookToDelete = books.filter((book) => {
             return book.title === projectName;
         });
 
-        const projDeletionConfirm = await deleteProject(bookToDelete, token);
+        console.log(bookToDelete);
+        
+        const projDeletionConfirm = await deleteProject(bookToDelete[0]._id, token);
         const delBookConfirm = await deleteBook(bookToDelete, token);
 
         if (projDeletionConfirm.success && delBookConfirm.success) {
             // Remove deleted book from state
-            setBooks(books.filter((book) => book._id !== idToDelete));
+            setBooks(books.filter((book) => book._id !== bookToDelete[0]._id));
 
             // Remove from localStorage projects
             const updatedProjectIds = (
@@ -185,8 +188,8 @@ export default function App() {
             ).filter((proj) => proj.projectName !== projectName);
             localStorage.setItem("projects", JSON.stringify(updatedProjectIds));
         }
-        
-        router.push("/books");
+
+        window.location.reload(true);
     }
 
     const renderCurrentView = () => {

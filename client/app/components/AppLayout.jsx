@@ -1,9 +1,8 @@
 "use client"
 
-import { useState, useEffect, useContext } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useAuth } from "../context/AuthContext"
 import {
   Book,
   Edit,
@@ -21,7 +20,7 @@ import {
   Sun,
 } from "lucide-react"
 import "../style/AppLayout.css"
-import { BookContext } from "../context/BookContext"
+import { logout } from "../lib/actions"
 
 // Sidebar navigation structure
 const sidebarNavGroups = [
@@ -94,11 +93,9 @@ const sidebarNavGroups = [
 export default function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
-  const { user, logout, theme, toggleTheme } = useAuth()
   const pathname = usePathname()
 
   
-
   // Update time
   useEffect(() => {
     const interval = setInterval(() => {
@@ -183,7 +180,7 @@ export default function AppLayout({ children }) {
               <div>{formatDate(currentTime)}</div>
             </div>
             <button
-              onClick={logout}
+              onClick={() => logout()} //TODO --> Add logout action//
               className="logout-button"
               aria-label="Sign Out"
               type="button"
@@ -221,16 +218,16 @@ export default function AppLayout({ children }) {
             </div>
             <div className="header-right">
               <button
-                onClick={toggleTheme}
+                // onClick={toggleTheme} //TODO --> Toggle theme handler
                 className="theme-toggle"
-                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                // aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
                 type="button"
               >
-                {theme === "dark" ? (
+                {/* {theme === "dark" ? (
                   <Sun className="theme-icon" role="img" />
                 ) : (
                   <Moon className="theme-icon" role="img" />
-                )}
+                )} */}
               </button>
               <Link
                 href="/settings"
@@ -240,7 +237,7 @@ export default function AppLayout({ children }) {
                 <Settings className="settings-icon" role="img" />
               </Link>
               <div className="user-avatar" aria-label="User avatar">
-                {user?.name?.charAt(0) || "U"}
+                {/* {user?.name?.charAt(0) || "U"} */}
               </div>
             </div>
           </div>

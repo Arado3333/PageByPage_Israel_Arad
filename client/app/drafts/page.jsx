@@ -3,7 +3,13 @@ import "../style/Drafts.css";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Draft from "../lib/models/draft.model.js";
-import { deleteDraft, getProjects } from "../api/routes";
+import {
+    deleteDraft,
+    getProjects,
+    getProjectsWithCookies,
+    getSession,
+    getTokenFromCookies,
+} from "../api/routes";
 
 const FADE_DURATION = 350; // ms
 
@@ -15,11 +21,8 @@ const DraftManager = () => {
     // Fetch drafts from server for the specific user on mount
     useEffect(() => {
         async function getProjectsFromServer() {
-            const userStr = sessionStorage.getItem("user");
-            if (!userStr) return;
-            const { token, userID } = JSON.parse(userStr);
 
-            const projects = await getProjects(userID, token);
+            const projects = await getProjectsWithCookies();
             setBooks(projects);
             // Flatten all drafts from all projects into a single array
             let allDrafts = [];
@@ -214,9 +217,8 @@ const DraftManager = () => {
                     setDeleteConfirm(null);
                     setDeletingDraftId(null);
                 }, FADE_DURATION);
-            }
-            else {
-                console.error(res.message)
+            } else {
+                console.error(res.message);
             }
         }
     };
