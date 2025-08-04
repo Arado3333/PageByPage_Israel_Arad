@@ -3,28 +3,15 @@
 import { cookies } from "next/headers";
 import { decrypt, getSessionToken, getSessionObject } from "../lib/session";
 
-export async function getProjects(userId, token) {
-    //fetch projects from db
-    const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVICE}/api/projects/${userId}`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            method: "GET",
-        }
-    );
-    return await response.json();
-}
-
-export async function getProjectsWithCookies() { //with cookie data - server side
+export async function getProjectsWithCookies() {
+    //with cookie data - server side
 
     const cookieStore = await cookies();
     const session = cookieStore.get("session");
 
     const decrypted = await decrypt(session?.value);
     const userId = decrypted.userId;
-    
+
     //fetch projects from db
     const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVICE}/api/projects/${userId}`,
@@ -38,23 +25,80 @@ export async function getProjectsWithCookies() { //with cookie data - server sid
     return await response.json();
 }
 
-export async function getTokenFromCookies()
+export async function getUserStats() {
+    const projects = await getProjectsWithCookies();
+
+    let sum = 0;
+
+    // Combine drafts from all projects
+    const drafts = projects.flatMap((project) => project.drafts || []);
+    const wordCounts = drafts.map((draft) => draft.wordCount);
+
+    wordCounts.forEach((count) => (sum += count));
+
+    // Gather all chapters from all projects
+    const allChapters = projects.flatMap((project) => project.chapters || []);
+
+    const stats = {
+        totalBooks: projects.length,
+        totalDrafts: drafts.length,
+        totalWords: sum,
+        chaptersCompleted: allChapters.length,
+    };
+
+    return stats;
+}
+
+export async function getRecentDrafts()
 {
+    const projects = await getProjectsWithCookies();
+    const drafts = projects.flatMap((project) => project.drafts || []); //All the drafts
+
+    return drafts.slice(0, 3);
+}
+
+export async function getWritingGoals() {
+
+    const today = new Date();
+    const projects = await getProjectsWithCookies();
+    const drafts = projects.flatMap((project) => project.drafts || []);
+    let todayWords = 0;
+    let yesterdayWords = 0;
+
+    let todayDrafts = drafts.filter((draft) => draft.lastEdited.split("T")[0] === new Date().toISOString().split("T")[0]);
+    todayDrafts.forEach((draft) => todayWords += draft.wordCount);
+
+    // Calculate yesterday's date in YYYY-MM-DD format
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split("T")[0];
+
+    let yesterdayDrafts = drafts.filter((draft) => draft.lastEdited.split("T")[0] === yesterdayStr);
+    yesterdayDrafts.filter((draft) => yesterdayWords += draft.wordCount);
+    
+
+    let obj = {
+        current: todayWords,
+        target: yesterdayWords,
+        percentage: todayWords === 0 ? 0 : Math.round((todayWords / yesterdayWords) * 100)
+    };
+
+    return obj;
+}
+
+
+export async function getTokenFromCookies() {
     return await getSessionToken();
 }
 
-export async function getSession()
-{
+export async function getSession() {
     return await getSessionObject();
 }
 
-export async function updateDataToServer(
-    selectedProject,
-    updatedData,
-    status,
-    userId,
-    token
-) {
+export async function updateDataToServer(selectedProject, updatedData, status) {
+    const { userId } = await getSession();
+    const token = await getSessionToken();
+
     const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVICE}/api/projects/${selectedProject[0]._id}`,
         {
@@ -80,14 +124,14 @@ export async function updateDataToServer(
 }
 
 export async function updateBook(updatedBook) {
-    console.log("Attempting to update book on server:", updatedBook);
+    const token = getSessionToken();
 
     try {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_SERVICE}/api/projects/${updatedBook._id}`, //projectId
             {
                 headers: {
-                    Authorization: `Bearer ${keys.token}`,
+                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
                 method: "PUT",
@@ -97,17 +141,18 @@ export async function updateBook(updatedBook) {
 
         if (!response.ok) {
             return await response.json();
-            // TODO: Handle server-side errors (e.g., show a toast notification)
         } else {
             return await response.json();
-            // TODO: Handle successful server update (e.g., show a success message)
         }
     } catch (error) {
         return error;
     }
 }
 
-export async function createProject(newProject, token) {
+export async function createProject(newProject) {
+    const { userId } = await getSession();
+    const token = await getSessionToken();
+
     try {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_SERVICE}/api/projects/`,
@@ -118,7 +163,7 @@ export async function createProject(newProject, token) {
                 },
                 method: "POST",
                 body: JSON.stringify({
-                    userId: newProject.userId,
+                    userId: userId,
                     author: newProject.author,
                     title: newProject.title,
                     genres: newProject.genres,
@@ -151,7 +196,6 @@ export async function deleteBook(bookToDelete, token) {
         }
     );
     const bookObj = await getBookResponse.json();
-
 
     const delBookResponse = await fetch(
         `${process.env.NEXT_PUBLIC_SERVICE}/api/books/${bookObj.book._id}`,
@@ -196,7 +240,6 @@ export async function deleteDraft(parentProject, deleteConfirmId) {
 }
 
 export async function getTasks() {
-
     const sessionObj = await getSessionObject();
     const token = await getSessionToken();
 
@@ -215,7 +258,10 @@ export async function getTasks() {
     return result.tasks; // --> Array of task objects
 }
 
-export async function updateTask(task, userID, token) {
+export async function updateTask(task) {
+    const sessionObj = await getSessionObject();
+    const token = await getSessionToken();
+
     const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVICE}/api/tasks/new`,
         {
@@ -225,8 +271,8 @@ export async function updateTask(task, userID, token) {
             },
             method: "POST",
             body: JSON.stringify({
-                userId: userID,
                 task: task,
+                userId: sessionObj.userId,
             }),
         }
     );
@@ -234,7 +280,10 @@ export async function updateTask(task, userID, token) {
     return await response.json();
 }
 
-export async function deleteTask(taskId, userID, token) {
+export async function deleteTask(taskId) {
+    const sessionObj = await getSessionObject();
+    const token = await getSessionToken();
+
     const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVICE}/api/tasks/${taskId}`,
         {
@@ -244,18 +293,17 @@ export async function deleteTask(taskId, userID, token) {
             },
             method: "DELETE",
             body: JSON.stringify({
-                userId: userID,
+                userId: sessionObj.userId,
             }),
         }
     );
     return await response.json();
 }
 
-//${process.env.NEXT_PUBLIC_SERVICE}
 export async function login(email, password) {
     try {
         let result = await fetch(
-            `http://localhost:5500/api/users/login`,
+            `${process.env.NEXT_PUBLIC_SERVICE}/api/users/login`,
             {
                 method: "POST",
                 headers: {

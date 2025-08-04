@@ -22,9 +22,11 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
     useEffect(() => {
         if (section) {
             console.log(section);
-            
+
             setTitle(section.title || section.name || "");
-            setContent(section.pages[page - 1].content || section.notes || "");
+            setContent(
+                section.pages?.[page - 1]?.content || section.notes || ""
+            );
             setTag(section.tag || "");
             setRole(section.role || "");
             setType(section.type || "");
@@ -35,6 +37,35 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
     useEffect(() => {
         setHasChanges(true);
     }, [title, content, tag, role, type, description]);
+
+    function removeEmptyPages(pagesArr) {
+        const removed = pagesArr.filter(
+            (page) => page.title !== "" && page.content !== ""
+        );
+        // If all pages are empty, keep the first one (or create a default)
+        return removed.length > 0
+            ? removed
+            : [pagesArr[0] || { title: "", content: "" }];
+    }
+
+    function extractChaptersFromDrafts(drafts) {
+        let chapterObjs = [];
+        if (!Array.isArray(drafts)) return [];
+        const chapters = drafts.filter((draft) => draft.tag === "chapter");
+
+        chapters.forEach((chapter) => {
+            const chapObj = {
+                id: `chapter_${Date.now()}`,
+                draftId: chapter.id,
+                title: chapter.title,
+                pages: removeEmptyPages(chapter.pages) || chapter.pages,
+            };
+
+            chapterObjs.push(chapObj);
+        });
+
+        return chapterObjs;
+    }
 
     const handleSave = () => {
         let updatedSection = {
@@ -59,7 +90,7 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
                 break;
             case "draft":
                 updatedSection.title = title;
-                updatedSection.pages[page - 1].content += content;
+                updatedSection.pages[page - 1].content = content;
                 break;
             case "note":
                 updatedSection.title = title;
@@ -73,7 +104,6 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
         }
 
         let updatedBook = { ...book };
-        console.log("updated inside workspace: " + updatedBook);
 
         // Determine which array to update and perform the update
         const sectionTypeKey = section.type + "s"; // e.g., 'draft' -> 'drafts'
@@ -90,28 +120,41 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
             return;
         }
 
+        const chapters = extractChaptersFromDrafts(updatedBook.drafts) || [];
+        updatedBook = { ...updatedBook, chapters: chapters };
+
+        for (let i = 0; i < updatedBook.drafts.length; i++) {
+            let currentDraft = updatedBook.drafts[i];
+            currentDraft.pages = removeEmptyPages(currentDraft.pages);
+        }
+
         onSave(updatedBook);
         setHasChanges(false);
     };
 
     const handleDelete = () => {
         if (window.confirm("Are you sure you want to delete this item?")) {
-            const updatedBook = { ...book };
+            let updatedBook = { ...book };
+            let chapters = extractChaptersFromDrafts(updatedBook.drafts);
 
             if (section.type === "draft") {
-                updatedBook.drafts = book.drafts.filter(
-                    (draft) => draft.id !== section.id
+                updatedBook.drafts =
+                    book.drafts?.filter((draft) => draft.id !== section.id) ||
+                    [];
+
+                updatedBook.chapters = chapters.filter(
+                    (chapter) => chapter.draftId !== section.id
                 );
             } else if (section.type === "note") {
-                updatedBook.notes = book.notes.filter(
+                updatedBook.notes = book.notes?.filter(
                     (note) => note.id !== section.id
                 );
             } else if (section.type === "character") {
-                updatedBook.characters = book.characters.filter(
+                updatedBook.characters = book.characters?.filter(
                     (character) => character.id !== section.id
                 );
             } else if (section.type === "asset") {
-                updatedBook.assets = book.assets.filter(
+                updatedBook.assets = book.assets?.filter(
                     (asset) => asset.id !== section.id
                 );
             }
@@ -145,8 +188,6 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
     };
 
     return (
-
-        
         <div className="container mx-auto px-4 py-6 max-w-4xl">
             <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-6">
                 <div className="flex flex-col sm:flex-row items-start gap-4 w-full sm:w-auto">

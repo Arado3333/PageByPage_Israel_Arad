@@ -11,7 +11,15 @@ import DraftEditor from "./book_components/DraftEditor";
 import CharacterEditor from "./book_components/CharacterEditor";
 import AssetEditor from "./book_components/AssetEditor";
 import Draft from "../lib/models/draft.model.js";
-import { createProject, deleteBook, deleteProject, getProjectsWithCookies, getSession, getTokenFromCookies, updateBook } from "../api/routes.js";
+import {
+    createProject,
+    deleteBook,
+    deleteProject,
+    getProjectsWithCookies,
+    getSession,
+    getTokenFromCookies,
+    updateBook,
+} from "../api/routes.js";
 
 export default function App() {
     const [currentView, setCurrentView] = useState("library");
@@ -61,6 +69,9 @@ export default function App() {
             case "asset":
                 setCurrentView("assetEditor");
                 break;
+            case "chapter":
+                setCurrentView("draftCreate"); 
+                break;
             default:
                 setCurrentView("editor");
                 break;
@@ -72,11 +83,14 @@ export default function App() {
     }
 
     const handleUpdateBook = (updatedBook) => {
+        console.log(updatedBook);
+
         setBooks(
             books.map((book) =>
                 book.id === updatedBook.id ? updatedBook : book
             )
         );
+
         setSelectedBook(updatedBook);
         updateBookToServer(updatedBook);
     };
@@ -100,12 +114,6 @@ export default function App() {
     async function updateBookToServer(updatedBook) {
         console.log("Attempting to update book on server:", updatedBook);
 
-        const keys = JSON.parse(sessionStorage.getItem("user"));
-        if (!keys || !keys.token) {
-            console.error("User token not found in sessionStorage.");
-            return;
-        }
-
         const result = await updateBook(updatedBook);
 
         switch (result) {
@@ -119,9 +127,6 @@ export default function App() {
     }
 
     const handleCreateProject = async (projectData) => {
-        const user = await getSession();
-        const token = await getTokenFromCookies();
-
         const draftPages =
             JSON.parse(sessionStorage.getItem("bookDraft"))?.pages || [];
 
@@ -129,7 +134,6 @@ export default function App() {
         const drafts = new Draft(projectData.title, draftPages);
 
         const newBook = {
-            userId: user.userId,
             title: projectData.title,
             author: projectData.author,
             status: projectData.status,
@@ -143,7 +147,7 @@ export default function App() {
         };
 
         // Send new project to server
-        const result = await createProject(newBook, token);
+        const result = await createProject(newBook);
         console.log(result);
 
         const objToAdd = {
@@ -174,8 +178,11 @@ export default function App() {
         });
 
         console.log(bookToDelete);
-        
-        const projDeletionConfirm = await deleteProject(bookToDelete[0]._id, token);
+
+        const projDeletionConfirm = await deleteProject(
+            bookToDelete[0]._id,
+            token
+        );
         const delBookConfirm = await deleteBook(bookToDelete, token);
 
         if (projDeletionConfirm.success && delBookConfirm.success) {

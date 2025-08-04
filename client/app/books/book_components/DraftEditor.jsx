@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../../books/ui/button";
 import { Input } from "../../books/ui/input";
 import { Textarea } from "../../books/ui/textarea";
@@ -50,38 +50,59 @@ export default function DraftEditor({ book, section, onBack, onSave }) {
         );
 
         // Build a new draft object from the current state
-
-        const draftObj = new Draft(
+        let draftObj = new Draft(
             title,
             updatedPages,
             updatedPages.map((p) => p.content).join("\n\n"),
             tag,
             wordCount
         );
-        
+
+        //If the tag is chapter --> create new chapter and add it to the updatedBook
+        function createChapter(draft) {
+            let chap = null;
+
+            if (draft.tag == "chapter") {
+                chap = {
+                    id: `chapter_${Date.now()}`,
+                    draftId: draft.id,
+                    title: draft.title,
+                    pages: draft.pages,
+                };
+            }
+            return chap;
+        }
+
+        const chapter = createChapter(draftObj);
+
         // Create a new drafts array
         let newDrafts = Array.isArray(book.drafts) ? [...book.drafts] : [];
 
-        console.log(newDrafts);
-        
-
-        const existingIdx = newDrafts.findIndex(
-            (item) => console.log(item.id + " " + draftObj.id)
+        const existingIdx = newDrafts.findIndex((item) =>
+            console.log(item.id + " " + draftObj.id)
         );
 
         if (existingIdx !== -1) {
             // Update existing draft
-            newDrafts[existingIdx] = draftObj;
+            newDrafts[existingIdx] = { ...draftObj };
         } else {
             // Add new draft
-            newDrafts.push(draftObj);
+            newDrafts.push({ ...draftObj });
         }
 
         // Create a new updatedBook object
-        const updatedBook = {
+        let updatedBook = {
             ...book,
-            drafts: newDrafts,
+            drafts: newDrafts
         };
+
+        if (chapter && !updatedBook.chapters) {
+            updatedBook = {...updatedBook, chapters: [chapter]}
+        }
+
+        if (chapter && updatedBook.chapters) {
+            updatedBook = {...updatedBook, chapters: [...updatedBook.chapters, chapter]}
+        }
 
         console.log(updatedBook);
 

@@ -1,39 +1,30 @@
+"use client";
 
-import { getProjectsWithCookies } from "../../app/api/routes.js";
+import { use } from "react";
 
-export default async function WritingProgressStats() {
-
-    const projects = await getProjectsWithCookies();
+export default function WritingProgressStats({ statsPromise }) {
+    const stats = use(statsPromise);
     
-     const dummyProgress = {
-        totalBooks: 3,
-        totalDrafts: 8,
-        totalWords: 124580,
-        chaptersCompleted: 24,
-    };
-
     return (
         <div className="card-content">
             <div className="stats-grid">
                 <div className="stat-item">
-                    <div className="stat-value">{dummyProgress.totalBooks}</div>
+                    <div className="stat-value">{stats.totalBooks}</div>
                     <div className="stat-label">Books</div>
                 </div>
                 <div className="stat-item">
-                    <div className="stat-value">
-                        {dummyProgress.totalDrafts}
-                    </div>
+                    <div className="stat-value">{stats.totalDrafts}</div>
                     <div className="stat-label">Drafts</div>
                 </div>
                 <div className="stat-item">
                     <div className="stat-value">
-                        {dummyProgress.totalWords.toLocaleString()}
+                        {stats.totalWords.toLocaleString()}
                     </div>
                     <div className="stat-label">Total Words</div>
                 </div>
                 <div className="stat-item">
                     <div className="stat-value">
-                        {dummyProgress.chaptersCompleted}
+                        {stats.chaptersCompleted? stats.chaptersCompleted : 0}
                     </div>
                     <div className="stat-label">Chapters</div>
                 </div>

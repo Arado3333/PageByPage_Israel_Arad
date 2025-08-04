@@ -21,7 +21,6 @@ const DraftManager = () => {
     // Fetch drafts from server for the specific user on mount
     useEffect(() => {
         async function getProjectsFromServer() {
-
             const projects = await getProjectsWithCookies();
             setBooks(projects);
             // Flatten all drafts from all projects into a single array
@@ -181,8 +180,6 @@ const DraftManager = () => {
 
     const confirmDelete = async () => {
         if (deleteConfirm) {
-            setDeletingDraftId(deleteConfirm.id);
-
             // Find the project that contains this draft
             let parentProject = null;
             for (const book of books) {
@@ -195,19 +192,7 @@ const DraftManager = () => {
                 }
             }
 
-            if (!parentProject) {
-                // Fallback: just remove from UI
-                setTimeout(() => {
-                    setDrafts(
-                        drafts.filter((draft) => draft.id !== deleteConfirm.id)
-                    );
-                    setDeleteConfirm(null);
-                    setDeletingDraftId(null);
-                }, FADE_DURATION);
-                return;
-            }
-
-            const res = await deleteDraft(parentProject, deletingDraftId);
+            const res = await deleteDraft(parentProject, deleteConfirm.id);
 
             if (res.success) {
                 setTimeout(() => {
@@ -234,15 +219,6 @@ const DraftManager = () => {
     };
 
     const handleCreateConfirm = () => {
-        const newDraft = {
-            id: Math.max(...drafts.map((d) => d.id)) + 1,
-            title: "Untitled Draft",
-            snippet: "Start writing your new draft here...",
-            bookName: "New Book",
-            status: "draft",
-            lastModified: new Date(),
-            wordCount: 0,
-        };
 
         const nDraft = new Draft();
 

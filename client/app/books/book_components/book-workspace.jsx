@@ -17,6 +17,7 @@ import {
     ImageIcon,
     Lightbulb,
     Eye,
+    BookOpenText
 } from "lucide-react";
 import Note from "../../lib/models/note.model.js";
 import Draft from "../../lib/models/draft.model.js";
@@ -44,14 +45,7 @@ export default function BookWorkspace({
         const newDraft = new Draft("New Draft", [
             { id: 1, title: "", content: "" },
         ]); //initializes new empty draft object
-        
-        const updatedBook = {
-            ...book,
-            drafts: [...book.drafts, newDraft],
-            lastEdited: new Date().toISOString(),
-        };
-        
-        // onUpdateBook(updatedBook);
+
         // Immediately edit the new draft
         onEditSection(newDraft, "newDraft");
     };
@@ -60,7 +54,7 @@ export default function BookWorkspace({
         const newNote = new Note(); //initializes new empty note --> model
         const updatedBook = {
             ...book,
-            notes: [...book.notes, newNote],
+            notes: [...book.notes, { ...newNote }],
             lastEdited: new Date().toISOString(),
         };
         onUpdateBook(updatedBook);
@@ -71,10 +65,10 @@ export default function BookWorkspace({
     const handleAddCharacter = () => {
         const newCharacter = new Character();
         console.log(newCharacter);
-        
+
         const updatedBook = {
             ...book,
-            characts: [...book.characts, newCharacter],
+            characts: [...book.characts, {...newCharacter}],
             lastEdited: new Date().toISOString(),
         };
         onUpdateBook(updatedBook);
@@ -87,7 +81,7 @@ export default function BookWorkspace({
 
         const updatedBook = {
             ...book,
-            assets: [...book.assets, newAsset],
+            assets: [...book.assets, {...newAsset}],
             lastEdited: new Date().toISOString(),
         };
         onUpdateBook(updatedBook);
@@ -98,6 +92,11 @@ export default function BookWorkspace({
     const handleViewAsset = (asset) => {
         // For now, just edit the asset
         onEditSection(asset, "asset");
+    };
+
+    const handleViewChapter = (chapter) => {
+        // For now, just edit the asset
+        onEditSection(chapter, "chapter"); //TODO: Add the chapter section to the editor
     };
 
     const getStatusColor = (status) => {
@@ -118,7 +117,9 @@ export default function BookWorkspace({
     };
 
     const filteredDrafts = book.drafts.filter((draft) => {
-        const matchesSearch = draft.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = draft.title
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
         const matchesTag = tagFilter === "All" || draft.tag === tagFilter;
         return matchesSearch && matchesTag;
     });
@@ -196,7 +197,7 @@ export default function BookWorkspace({
                 onValueChange={handleTabChange}
                 className="space-y-4"
             >
-                <TabsList className="grid grid-cols-4 p-1 rounded-lg bg-muted overflow-x-auto">
+                <TabsList className="grid grid-cols-5 p-1 rounded-lg bg-muted overflow-x-auto">
                     <TabsTrigger
                         value="drafts"
                         className={`flex items-center gap-2 transition-all ${
@@ -246,6 +247,18 @@ export default function BookWorkspace({
                         <ImageIcon className="w-4 h-4" />
                         <span className="hidden sm:inline">Assets</span>
                         <span className="sm:hidden">{book.assets.length}</span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="chapters"
+                        className={`flex items-center gap-2 transition-all ${
+                            activeTab === "chapters"
+                                ? "tab-active"
+                                : "tab-inactive"
+                        }`}
+                    >
+                        <BookOpenText className="w-4 h-4" />
+                        <span className="hidden sm:inline">Chapters</span>
+                        <span className="sm:hidden">{book.chapters?.length}</span>
                     </TabsTrigger>
                 </TabsList>
 
@@ -300,7 +313,7 @@ export default function BookWorkspace({
                                     </CardHeader>
                                     <CardContent className="mobile-p">
                                         <p className="text-sm line-clamp-3 mb-3 text-muted">
-                                            {draft.pages[0].content}
+                                            {draft.pages?.[0]?.content || "No Content"}
                                         </p>
                                         <Button
                                             variant="outline"
@@ -498,6 +511,56 @@ export default function BookWorkspace({
                                             size="sm"
                                             onClick={() =>
                                                 handleViewAsset(asset)
+                                            }
+                                            className="btn-outline w-full transition-all hover:scale-105"
+                                        >
+                                            <Eye className="w-4 h-4 mr-2" />
+                                            View
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        )}
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="chapters">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-4">
+                        <h3 className="text-lg font-semibold">
+                            Chapters
+                        </h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {book.chapters?.length === 0 ? (
+                            <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
+                                <BookOpenText
+                                    className="w-12 h-12 mx-auto mb-4"
+                                    style={{ color: "var(--muted-foreground)" }}
+                                />
+                                <p className="text-muted">
+                                    Your finished chapters will appear here.
+                                </p>
+                            </div>
+                        ) : (
+                            book.chapters?.map((chapter, index) => (
+                                <Card
+                                    key={index}
+                                    className="card hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                                >
+                                    <CardHeader className="pb-3 mobile-p">
+                                        <CardTitle className="text-base">
+                                            {chapter.title}
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="mobile-p">
+                                        <p className="text-sm line-clamp-3 mb-3 text-muted">
+                                            {chapter.pages[0].content}
+                                        </p>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                handleViewChapter(chapter)
                                             }
                                             className="btn-outline w-full transition-all hover:scale-105"
                                         >

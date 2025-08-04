@@ -20,7 +20,8 @@ export default class Project {
         drafts = [],
         notes = [],
         characts = [],
-        assets = []
+        assets = [],
+        chapters = []
     ) {
         this.userId = userId;
         this.author = author;
@@ -32,6 +33,7 @@ export default class Project {
         this.notes = notes;
         this.characts = characts;
         this.assets = assets;
+        this.chapters = chapters;
     }
 
     static async getAllProjects() {

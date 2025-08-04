@@ -210,24 +210,7 @@ export default function GoalsProgress() {
         return await getTasks();
     }
 
-    async function updateTaskToServer(task) {
-        const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
-
-        const result = await updateTask(task, userID, token);
-        console.log(result); // --> will be indicating success or fail message
-    }
-
-    async function deleteTaskFromServer(taskId) {
-        console.log(taskId);
-
-        const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
-
-        const result = await deleteTask(taskId, userID, token);
-        console.log(result);
-    }
-
-    // Handle task form submission - WORKING NOW
-    const handleTaskSubmit = (e) => {
+    const handleTaskSubmit = async (e) => {
         e.preventDefault();
         if (newTaskForm.title && newTaskForm.category) {
             const targetDay = newTaskForm.day || selectedDay;
@@ -243,12 +226,15 @@ export default function GoalsProgress() {
                 currentYear
             );
 
+            const taskToUpdate = { ...newTask };
+
+            const result = await updateTask(taskToUpdate);
+            console.log(result); // --> will be indicating success or fail message
+
             setCalendarTasks((prev) => ({
                 ...prev,
                 [targetDay]: [...(prev[targetDay] || []), newTask],
             }));
-
-            updateTaskToServer(newTask);
 
             setShowNewTaskModal(false);
             setNewTaskForm({ title: "", category: "", date: "", day: null });
@@ -257,8 +243,10 @@ export default function GoalsProgress() {
     };
 
     // Handle task deletion - WORKING NOW
-    const handleDeleteTask = (day, taskId) => {
-        deleteTaskFromServer(taskId);
+    const handleDeleteTask = async (day, taskId) => {
+        const result = await deleteTask(taskId);
+        console.log(result);
+        
         setCalendarTasks((prev) => {
             const updated = { ...prev };
             if (updated[day]) {

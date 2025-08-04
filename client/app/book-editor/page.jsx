@@ -21,7 +21,10 @@ import "../../app//style/BookEditor.css";
 import { useRouter } from "next/navigation";
 import StatusMessage from "./StatusMessage";
 import Draft from "../lib/models/draft.model.js";
-import { getProjectsWithCookies, updateDataToServer } from "../api/routes.js";
+import {
+    getProjectsWithCookies,
+    updateDataToServer,
+} from "../api/routes.js";
 
 export default function BookEditorPage() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -199,7 +202,6 @@ export default function BookEditorPage() {
         }, 1000);
     }
 
-
     async function handleSaveExistingProject() {
         const projects = await getProjectsWithCookies();
 
@@ -298,15 +300,11 @@ export default function BookEditorPage() {
     async function updateToServer(selectedProject, updatedDrafts, status) {
         console.log(updatedDrafts);
 
-        const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
-
         const result = await updateDataToServer(
             selectedProject,
             updatedDrafts,
             status,
-            userID,
-            token
-        ); //Calls from next api routes.js
+        ); 
 
         setSaveBook(false);
 

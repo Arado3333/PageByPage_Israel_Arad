@@ -89,7 +89,8 @@ export async function updateProject(req, res) {
         updateData.drafts,
         updateData.notes,
         updateData.characts,
-        updateData.assets
+        updateData.assets,
+        updateData.chapters
     );
 
     try {
@@ -110,9 +111,9 @@ export async function updateProject(req, res) {
 export async function deleteDraftById(req, res) {
     const { projectId, draftId } = req.params;
 
-    try {  
+    try {
         const confirm = await Project.deleteDraftById(projectId, draftId);
-        
+
         if (confirm) {
             res.status(200).json({
                 success: true,

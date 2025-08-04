@@ -7,11 +7,8 @@ import UpcomingTasksCard from "../../components/overview/UpcomingTasksCard";
 import RecentDraftsCard from "../../components/overview/RecentDraftsCard";
 import AISuggestionsCard from "../../components/overview/AISuggestionsCard";
 import QuickActionsCard from "../../components/overview/QuickActionsCard";
-import WritingProgressStats from "../../components/overview/WritingProgressStats";
-import { getProjects } from "../api/routes.js";
 
 export default function DashboardPage() {
-
     return (
         <div className="dashboard-container">
             <h1 className="dashboard-title">Welcome back, Writer</h1>
@@ -21,7 +18,8 @@ export default function DashboardPage() {
 
             {
                 <div className="dashboard-grid">
-                    <WritingProgressCard/>
+                    <WritingProgressCard />
+
                     <DailyGoalCard />
                     <WritingStreakCard />
                     <UpcomingTasksCard />

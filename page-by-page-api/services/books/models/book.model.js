@@ -1,12 +1,13 @@
 import { getBooksFromDB, saveBookToDB, updateBookInDB, deleteBookFromDB, findBookByProjectId } from "../config/books.db.js";
 
 export default class Book {
-    constructor(projectId, title, author, genres = [], coverImg = null) {
+    constructor(projectId, title, author, genres = [], coverImg = null, chapters = []) {
         this.projectId = projectId;
         this.title = title;
         this.author = author;
         this.genres = genres;
         this.coverImg = coverImg; //base64URL | cloudinary signed URL
+        this.chapters = chapters;
         this.createdAt = new Date().toString();
     }
 

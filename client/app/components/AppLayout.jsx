@@ -20,7 +20,7 @@ import {
   Sun,
 } from "lucide-react"
 import "../style/AppLayout.css"
-import { logout } from "../lib/actions"
+import { logout } from "../lib/actions.js"
 
 // Sidebar navigation structure
 const sidebarNavGroups = [

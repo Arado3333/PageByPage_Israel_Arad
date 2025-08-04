@@ -16,6 +16,8 @@ export async function getTasksByUserId(req, res) {
 }
 
 export async function createTask(req, res) {
+    console.log(req.body);
+    
     const { task, userId } = req.body;
 
     const newTask = new Task(task, userId); //initiates new Task instance, duplicating client's Task instance.

@@ -1,5 +1,9 @@
 "use client";
-import { getProjects, getVersions } from "../api/routes";
+import {
+    getProjectsWithCookies,
+    getTokenFromCookies,
+    getVersions,
+} from "../api/routes";
 import "../style/VersionHistory.css";
 
 import { useState, useMemo, useEffect } from "react";
@@ -84,10 +88,7 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
     }, []);
 
     async function getProjectsFromServer() {
-        const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
-
-        const projects = await getProjects(userID, token);
-
+        const projects = await getProjectsWithCookies();
         setFetchedProjects(projects); //TODO: Handle versions render + changing the version objects with appropriate fields.
     }
 
@@ -169,7 +170,7 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
     // Event handlers
 
     async function handleShowVersions(e) {
-        const { userID, token } = JSON.parse(sessionStorage.getItem("user"));
+        const token = getTokenFromCookies();
 
         const name = e.target.value.split(", ")[0];
         const project = fetchedProjects.filter(
@@ -185,6 +186,16 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
                 Array.isArray(ver.drafts) && ver.drafts.length > 0
                     ? ver.drafts[0]
                     : {};
+            // Flatten pages if present
+            let fullContent = "";
+            if (Array.isArray(draft.pages) && draft.pages.length > 0) {
+                // Join all page contents with double newlines
+                fullContent = draft.pages
+                    .map((p) => p.content || "")
+                    .join("\n\n");
+            } else {
+                fullContent = draft.content || draft.draftContent || "";
+            }
             return {
                 id: ver.versionId || ver._id, // Use versionId as unique id
                 title: draft.title || "Untitled Version",
@@ -193,7 +204,7 @@ As she stepped inside, the floorboards groaned beneath her feet, and she noticed
                     : new Date(),
                 wordCount: draft.wordCount || 0,
                 status: draft.status || "draft",
-                content: draft.content || draft.draftContent || "",
+                content: fullContent,
                 // Optionally keep reference to version object fields
                 versionId: ver.versionId,
                 projectId: ver.projectId,

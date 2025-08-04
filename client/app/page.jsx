@@ -1,8 +1,9 @@
+import SignInPage from "./signin/page";
 
 export default function HomePage() {
   return (
     <>
-    <h1>App Entry</h1>
+    <SignInPage />
     </>
   )
 }

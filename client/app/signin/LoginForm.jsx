@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import "../style/SignIn.css";
 import FormField from "./components/FormField";
+import SubmitButton from "./SubmitButton";
 import { loginAct } from "../lib/actions.js";
 
 export default function LoginForm() {
@@ -18,9 +19,6 @@ export default function LoginForm() {
 
     const [rememberMe, setRememberMe] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
 
     return (
         <div className="auth-container">
@@ -29,14 +27,6 @@ export default function LoginForm() {
                     <h1 className="auth-title">Sign In</h1>
                     <p className="auth-subtitle">Welcome to Page by Page</p>
                 </div>
-
-                {error !== "" ? (
-                    <div className="auth-error">{error}</div>
-                ) : (
-                    success !== "" && (
-                        <div className="auth-success">{success}</div>
-                    )
-                )}
 
                 {state?.errors && <p className="auth-error">{state.errors}</p>}
 
@@ -116,12 +106,6 @@ export default function LoginForm() {
                         </Link>
                     </div>
 
-                    {isLoading && (
-                        <button className="auth-button">
-                            <RefreshCw className="loading-icon spinning" />
-                            Loading...
-                        </button>
-                    )}
                     <SubmitButton />
                 </form>
 
@@ -135,15 +119,5 @@ export default function LoginForm() {
                 </div>
             </div>
         </div>
-    );
-}
-
-function SubmitButton() {
-    const { pending } = useFormStatus();
-
-    return (
-        <button disabled={pending} type="submit" className="auth-button">
-            <span className="loading-icon">Sign In</span>
-        </button>
     );
 }
