@@ -1,4 +1,4 @@
-// File: /Users/araddavid/Documents/GitHub/PageByPage_Israel_Arad_Copy/client/app/drafts/layout.jsx
+// File: C:\Users\arado\Desktop\PageByPage_Israel_Arad_Copy\PageByPage_Israel_Arad_Copy\client\app\drafts\layout.jsx
 import * as entry from '../../../../app/drafts/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

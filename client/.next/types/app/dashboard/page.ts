@@ -1,4 +1,4 @@
-// File: /Users/araddavid/Documents/GitHub/PageByPage_Israel_Arad_Copy/client/app/dashboard/page.jsx
+// File: C:\Users\arado\Desktop\PageByPage_Israel_Arad_Copy\PageByPage_Israel_Arad_Copy\client\app\dashboard\page.jsx
 import * as entry from '../../../../app/dashboard/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

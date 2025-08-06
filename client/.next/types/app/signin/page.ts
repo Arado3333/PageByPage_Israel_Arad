@@ -1,4 +1,4 @@
-// File: /Users/araddavid/Documents/GitHub/PageByPage_Israel_Arad_Copy/client/app/signin/page.jsx
+// File: C:\Users\arado\Desktop\PageByPage_Israel_Arad_Copy\PageByPage_Israel_Arad_Copy\client\app\signin\page.jsx
 import * as entry from '../../../../app/signin/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -1,7 +1,7 @@
 {
-  "/task-manager/page": "app/task-manager/page.js",
+  "/page": "app/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
   "/book-editor/page": "app/book-editor/page.js",
   "/drafts/page": "app/drafts/page.js",
-  "/signin/page": "app/signin/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/books/page": "app/books/page.js"
 }
