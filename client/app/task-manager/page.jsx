@@ -214,8 +214,6 @@ export default function GoalsProgress() {
         e.preventDefault();
         if (newTaskForm.title && newTaskForm.category) {
             const targetDay = newTaskForm.day || selectedDay;
-            console.log("target Day: " + targetDay);
-            console.log("target Date: " + currentMonth + " " + currentYear);
 
             const newTask = new Task(
                 newTaskForm.title.substring(0, 12),

@@ -1,0 +1,64 @@
+{
+  "pages": {
+    "/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
+    ],
+    "/signin/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/signin/page.css",
+      "static/chunks/app/signin/page.js"
+    ],
+    "/dashboard/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/dashboard/layout.css",
+      "static/chunks/app/dashboard/layout.js"
+    ],
+    "/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/dashboard/page.css",
+      "static/chunks/app/dashboard/page.js"
+    ],
+    "/task-manager/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/task-manager/layout.css",
+      "static/chunks/app/task-manager/layout.js"
+    ],
+    "/task-manager/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/task-manager/page.css",
+      "static/chunks/app/task-manager/page.js"
+    ],
+    "/drafts/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/drafts/layout.css",
+      "static/chunks/app/drafts/layout.js"
+    ],
+    "/drafts/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/drafts/page.css",
+      "static/chunks/app/drafts/page.js"
+    ],
+    "/book-editor/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/book-editor/layout.css",
+      "static/chunks/app/book-editor/layout.js"
+    ],
+    "/book-editor/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/book-editor/page.css",
+      "static/chunks/app/book-editor/page.js"
+    ]
+  }
+}

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff, RefreshCw } from "lucide-react"
 import "../style/Register.css"
 
-export default function RegisterPage() {
+export default function RegisterPage() { //TODO: Create server action for registeration and redirection to the dashboard page.
   const [email, setEmail] = useState("")
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
@@ -43,7 +43,7 @@ export default function RegisterPage() {
     setIsLoading(true);
     
     try {
-      let result = await fetch("http://localhost:5500/api/users", {
+      let result = await fetch(`${process.env.NEXT_PUBLIC_SERVICE}/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,7 +125,7 @@ export default function RegisterPage() {
                 onClick={() => setShowPassword(!showPassword)}
                 tabIndex="-1"
               >
-                {showPassword ? <EyeOff className="password-icon" /> : <Eye className="password-icon" />}
+                {showPassword ? <EyeOff color="black" className="password-icon" /> : <Eye color="black" className="password-icon" />}
               </button>
             </div>
           </div>
@@ -149,7 +149,7 @@ export default function RegisterPage() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 tabIndex="-1"
               >
-                {showConfirmPassword ? <EyeOff className="password-icon" /> : <Eye className="password-icon" />}
+                {showConfirmPassword ? <EyeOff color="black" className="password-icon" /> : <Eye color="black" className="password-icon" />}
               </button>
             </div>
           </div>

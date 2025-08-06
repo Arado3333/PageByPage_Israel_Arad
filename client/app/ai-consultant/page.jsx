@@ -37,7 +37,7 @@ export default function AIConsultantPage()
   {
     try {
       let chat = ai.chats.create({
-          model: "gemini-2.0-flash",
+          model: "gemini-2.5-flash",
           history: messages.slice(1),
           config: {
               temperature: 0.5,

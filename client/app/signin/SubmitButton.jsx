@@ -1,7 +1,6 @@
 "use client";
 import "../style/SignIn.css";
 import { useFormStatus } from "react-dom";
-import { RefreshCw } from "lucide-react";
 
 export default function SubmitButton() {
     const { pending } = useFormStatus();

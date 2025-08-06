@@ -6,7 +6,6 @@ import WritingStreakCard from "../../components/overview/WritingStreakCard";
 import UpcomingTasksCard from "../../components/overview/UpcomingTasksCard";
 import RecentDraftsCard from "../../components/overview/RecentDraftsCard";
 import AISuggestionsCard from "../../components/overview/AISuggestionsCard";
-import QuickActionsCard from "../../components/overview/QuickActionsCard";
 
 export default function DashboardPage() {
     return (
@@ -19,13 +18,11 @@ export default function DashboardPage() {
             {
                 <div className="dashboard-grid">
                     <WritingProgressCard />
-
                     <DailyGoalCard />
                     <WritingStreakCard />
                     <UpcomingTasksCard />
                     <RecentDraftsCard />
                     <AISuggestionsCard />
-                    <QuickActionsCard />
                     <div className="dashboard-card footer-card">
                         <div className="card-header">
                             <h2 className="card-title">About Page by Page</h2>

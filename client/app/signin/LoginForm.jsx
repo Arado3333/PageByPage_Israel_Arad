@@ -1,9 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
-import { Eye, EyeOff, RefreshCw } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import "../style/SignIn.css";
 import FormField from "./components/FormField";
 import SubmitButton from "./SubmitButton";
@@ -72,9 +71,15 @@ export default function LoginForm() {
                                 tabIndex="-1"
                             >
                                 {showPassword ? (
-                                    <EyeOff className="password-icon" />
+                                    <EyeOff
+                                        className="password-icon"
+                                        color="#000000"
+                                    />
                                 ) : (
-                                    <Eye className="password-icon" />
+                                    <Eye
+                                        className="password-icon"
+                                        color="#000000"
+                                    />
                                 )}
                             </button>
                         </div>

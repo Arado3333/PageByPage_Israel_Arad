@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 /* Draft Manager - Using ONLY your CSS variables */
 .draft-manager {
   max-width: 1200px;
