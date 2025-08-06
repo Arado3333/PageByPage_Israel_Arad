@@ -21,8 +21,8 @@ function getStatusConfig(status) {
 
 function formatDate(date) {
     if (!date) return "";
-    const d = new Date(date);
-    return d.toLocaleDateString();
+    let d = new Date(date);
+    return d.toDateString();
 }
 
 export default function DraftsContent({ draftsPromise, booksPromise }) {
@@ -58,7 +58,7 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
 
             const matchesStatus =
                 statusFilter === "all" || draft.status === statusFilter;
-
+            
             return matchesSearch && matchesStatus;
         });
 
@@ -84,6 +84,8 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
                     return 0;
             }
         });
+
+        console.log(filtered);
         return filtered;
     }, [drafts, searchTerm, statusFilter, sortBy]);
 
@@ -279,9 +281,6 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
                     })
                 )}
             </div>
-
-            {/* Modals for view, edit, delete, create go here, similar to the original code */}
-            {/* ...existing code for modals and styles... */}
 
             {viewDraft && (
                 <div
