@@ -93,15 +93,18 @@ export default function DraftEditor({ book, section, onBack, onSave }) {
         // Create a new updatedBook object
         let updatedBook = {
             ...book,
-            drafts: newDrafts
+            drafts: newDrafts,
         };
 
         if (chapter && !updatedBook.chapters) {
-            updatedBook = {...updatedBook, chapters: [chapter]}
+            updatedBook = { ...updatedBook, chapters: [chapter] };
         }
 
         if (chapter && updatedBook.chapters) {
-            updatedBook = {...updatedBook, chapters: [...updatedBook.chapters, chapter]}
+            updatedBook = {
+                ...updatedBook,
+                chapters: [...updatedBook.chapters, chapter],
+            };
         }
 
         console.log(updatedBook);

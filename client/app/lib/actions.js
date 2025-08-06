@@ -19,7 +19,6 @@ export async function loginAct(prevState, formData) {
     await createSession(result.userID);
 
     redirect("/dashboard");
-
 }
 
 export async function logout() {

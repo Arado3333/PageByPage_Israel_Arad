@@ -2,8 +2,9 @@
 import "../style/Drafts.css";
 import Draft from "../lib/models/draft.model.js";
 import { useState, useMemo, use } from "react";
+import { getProjectsWithCookies, updateDataToServer } from "../api/routes";
 
-export default function Header({ booksPromise }) {
+export default function Header() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
@@ -11,7 +12,7 @@ export default function Header({ booksPromise }) {
     const [drafts, setDrafts] = useState([]);
     const [editDraft, setEditDraft] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    const books = use(booksPromise);
+    const [books, setBooks] = useState([]);
 
     const [highlightedDraftId, setHighlightedDraftId] = useState(null);
 
@@ -56,7 +57,7 @@ export default function Header({ booksPromise }) {
         setShowCreateModal(true);
     };
 
-    const handleCreateConfirm = () => {
+    const handleCreateConfirm = async() => {
         const nDraft = new Draft();
         setDrafts([...drafts, nDraft]);
         setShowCreateModal(false);
@@ -66,7 +67,24 @@ export default function Header({ booksPromise }) {
             setHighlightedDraftId(nDraft.id);
             setTimeout(() => setHighlightedDraftId(null), 1000);
         }, 100);
+
+        const books = await getProjectsWithCookies();
+        setBooks(books)
     };
+
+    async function handleUpdateProject()
+    {
+        const selectedProject = document.querySelector("#selected-book").value;
+        let newEditDraft = {...editDraft, pages: [{id: 1, title: editDraft.title, content: editDraft.draftContent}]};
+        const projectObj = books.filter((book) => book.title === selectedProject);
+        const drafts = projectObj.drafts;
+        let allDrafts = [...drafts, newEditDraft];
+        console.log(allDrafts);
+        
+        
+        const updated = await updateDataToServer(projectObj, allDrafts);
+        console.log(updated);
+    }
 
     const handleEditCancel = () => {
         setEditDraft(null);
@@ -88,6 +106,8 @@ export default function Header({ booksPromise }) {
         const value = e.target.value;
         setSortBy(value);
     };
+
+
     return (
         <div className="dm-header">
             <div className="dm-header-content">
@@ -231,6 +251,7 @@ export default function Header({ booksPromise }) {
                             className="dm-modal-content"
                             onSubmit={(e) => {
                                 e.preventDefault();
+                                handleUpdateProject();
                                 setIsEditing(false);
                                 setEditDraft(null);
                             }}
@@ -342,7 +363,7 @@ export default function Header({ booksPromise }) {
                                                 .filter(Boolean)
                                         ),
                                     ].map((name) => (
-                                        <option key={name} value={name}>
+                                        <option id="selected-book" key={name} value={name}>
                                             {name}
                                         </option>
                                     ))}

@@ -233,7 +233,7 @@ export async function getProjectsWithCookies() {
 export async function updateDataToServer(selectedProject, updatedData, status) {
     const { userId } = await getSession();
     const token = await getSessionToken();
-
+    
     const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVICE}/api/projects/${selectedProject[0]._id}`,
         {
