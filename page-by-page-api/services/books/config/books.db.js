@@ -24,7 +24,7 @@ export async function findBookByProjectId(id)
     try {
         client = await MongoClient.connect(process.env.CONNECTION_STRING);
         let db = client.db(process.env.DB_NAME);
-        return await db.collection("Books").findOne({ projectId: ObjectId.createFromHexString(id), isDeleted: { $exists: false } });
+        return await db.collection("Books").findOne({ projectId: id ?? ObjectId.createFromHexString(id) , isDeleted: { $exists: false } });
         
     } catch (error) {
         console.error("Error finding book by projectId:", error);

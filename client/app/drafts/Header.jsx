@@ -1,18 +1,19 @@
 "use client";
 import "../style/Drafts.css";
 import Draft from "../lib/models/draft.model.js";
-import { useState, useMemo, use } from "react";
+import { useState, useMemo, use, useActionState } from "react";
 import { getProjectsWithCookies, updateDataToServer } from "../api/routes";
+import { updateProjectData } from "../lib/actions";
 
 export default function Header() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [sortBy, setSortBy] = useState("newest");
+    const [books, setBooks] = useState([]);
     const [drafts, setDrafts] = useState([]);
     const [editDraft, setEditDraft] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [books, setBooks] = useState([]);
 
     const [highlightedDraftId, setHighlightedDraftId] = useState(null);
 
@@ -57,7 +58,7 @@ export default function Header() {
         setShowCreateModal(true);
     };
 
-    const handleCreateConfirm = async() => {
+    const handleCreateConfirm = async () => {
         const nDraft = new Draft();
         setDrafts([...drafts, nDraft]);
         setShowCreateModal(false);
@@ -69,22 +70,10 @@ export default function Header() {
         }, 100);
 
         const books = await getProjectsWithCookies();
-        setBooks(books)
+        setBooks(books);
     };
 
-    async function handleUpdateProject()
-    {
-        const selectedProject = document.querySelector("#selected-book").value;
-        let newEditDraft = {...editDraft, pages: [{id: 1, title: editDraft.title, content: editDraft.draftContent}]};
-        const projectObj = books.filter((book) => book.title === selectedProject);
-        const drafts = projectObj.drafts;
-        let allDrafts = [...drafts, newEditDraft];
-        console.log(allDrafts);
-        
-        
-        const updated = await updateDataToServer(projectObj, allDrafts);
-        console.log(updated);
-    }
+    const [state, updateAction] = useActionState(updateProjectData, editDraft);
 
     const handleEditCancel = () => {
         setEditDraft(null);
@@ -106,7 +95,6 @@ export default function Header() {
         const value = e.target.value;
         setSortBy(value);
     };
-
 
     return (
         <div className="dm-header">
@@ -188,12 +176,6 @@ export default function Header() {
                 </div>
             </div>
 
-            <div className="dm-results-info">
-                {filteredAndSortedDrafts.length}{" "}
-                {filteredAndSortedDrafts.length === 1 ? "draft" : "drafts"}{" "}
-                found
-            </div>
-
             {showCreateModal && (
                 <div
                     className="dm-modal-overlay"
@@ -235,7 +217,12 @@ export default function Header() {
             )}
 
             {isEditing && editDraft && (
-                <div className="dm-modal-overlay" onClick={handleEditCancel}>
+                <div
+                    className="dm-modal-overlay"
+                    onKeyDown={(e) => {
+                        e.key === "Escape" && handleEditCancel();
+                    }}
+                >
                     <div
                         className="dm-modal"
                         style={{ animation: "fadeIn 0.3s" }}
@@ -248,13 +235,8 @@ export default function Header() {
                             <h3 className="dm-modal-title">Edit Draft</h3>
                         </div>
                         <form
+                            action={updateAction}
                             className="dm-modal-content"
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                handleUpdateProject();
-                                setIsEditing(false);
-                                setEditDraft(null);
-                            }}
                         >
                             <div
                                 className="form-group"
@@ -272,6 +254,7 @@ export default function Header() {
                                 <input
                                     id="edit-title"
                                     className="dm-search-input"
+                                    name="title"
                                     style={{ marginTop: 4 }}
                                     value={editDraft.title || ""}
                                     onChange={(e) =>
@@ -301,6 +284,7 @@ export default function Header() {
                                 <textarea
                                     id="edit-snippet"
                                     className="dm-search-input"
+                                    name="snippet"
                                     style={{
                                         marginTop: 4,
                                         minHeight: 80,
@@ -343,6 +327,7 @@ export default function Header() {
                                 <select
                                     id="edit-book"
                                     className="dm-search-input"
+                                    name="book"
                                     style={{ marginTop: 4 }}
                                     value={editDraft.bookName || ""}
                                     onChange={(e) =>
@@ -363,7 +348,11 @@ export default function Header() {
                                                 .filter(Boolean)
                                         ),
                                     ].map((name) => (
-                                        <option id="selected-book" key={name} value={name}>
+                                        <option
+                                            id="selected-book"
+                                            key={name}
+                                            value={name}
+                                        >
                                             {name}
                                         </option>
                                     ))}

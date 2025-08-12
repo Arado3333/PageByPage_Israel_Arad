@@ -18,7 +18,7 @@ export default function RecentDraftsContent({ draftsPromise }) {
                             <h3 className="draft-title">{draft.title}</h3>
                             <p className="draft-meta">
                                 Modified {draft.lastModified} •{" "}
-                                {draft.wordCount.toLocaleString()} words
+                                {draft?.wordCount?.toLocaleString("en-US")} words
                             </p>
                         </div>
                         <a href="/book-editor" className="draft-action flex-shrink-0 ml-2 p-1 rounded">

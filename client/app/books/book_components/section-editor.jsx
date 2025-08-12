@@ -48,14 +48,14 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
             : [pagesArr[0] || { title: "", content: "" }];
     }
 
-    function extractChaptersFromDrafts(drafts) {
+    function extractChaptersFromDrafts(drafts) { //returns even existing chapters with new ids
         let chapterObjs = [];
         if (!Array.isArray(drafts)) return [];
         const chapters = drafts.filter((draft) => draft.tag === "chapter");
 
         chapters.forEach((chapter) => {
             const chapObj = {
-                id: `chapter_${Date.now()}`,
+                id: `chapter_${Date.now() * Math.floor(Math.random() * 20) + 1}`,
                 draftId: chapter.id,
                 title: chapter.title,
                 pages: removeEmptyPages(chapter.pages) || chapter.pages,
@@ -128,6 +128,8 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
             currentDraft.pages = removeEmptyPages(currentDraft.pages);
         }
 
+        console.log(updatedBook);
+        
         onSave(updatedBook);
         setHasChanges(false);
     };

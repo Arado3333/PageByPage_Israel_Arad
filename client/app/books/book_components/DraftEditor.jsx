@@ -15,7 +15,7 @@ export default function DraftEditor({ book, section, onBack, onSave }) {
     const [page, setPage] = useState(1);
     const [tag, setTag] = useState("");
     const [hasChanges, setHasChanges] = useState(false);
-    const [maxPages, setMaxPages] = useState(section.pages.length || null);
+    const [maxPages, setMaxPages] = useState(section.pages.length || 0);
     const [pages, setPages] = useState(section.pages ? [...section.pages] : []);
 
     let wordCount = content

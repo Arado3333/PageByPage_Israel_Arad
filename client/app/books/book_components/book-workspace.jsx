@@ -1,4 +1,6 @@
 "use client";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import BookPdf from './BookPdf';
 
 import { useEffect, useState } from "react";
 import { Button } from "../../books/ui/button";
@@ -17,12 +19,13 @@ import {
     ImageIcon,
     Lightbulb,
     Eye,
-    BookOpenText
+    BookOpenText,
 } from "lucide-react";
 import Note from "../../lib/models/note.model.js";
 import Draft from "../../lib/models/draft.model.js";
 import Character from "../../lib/models/character.model.js";
 import Asset from "../../lib/models/asset.model.js";
+import { updateBook } from "../../api/routes";
 
 export default function BookWorkspace({
     book,
@@ -68,7 +71,7 @@ export default function BookWorkspace({
 
         const updatedBook = {
             ...book,
-            characts: [...book.characts, {...newCharacter}],
+            characts: [...book.characts, { ...newCharacter }],
             lastEdited: new Date().toISOString(),
         };
         onUpdateBook(updatedBook);
@@ -81,7 +84,7 @@ export default function BookWorkspace({
 
         const updatedBook = {
             ...book,
-            assets: [...book.assets, {...newAsset}],
+            assets: [...book.assets, { ...newAsset }],
             lastEdited: new Date().toISOString(),
         };
         onUpdateBook(updatedBook);
@@ -135,6 +138,12 @@ export default function BookWorkspace({
     const handleTabChange = (value) => {
         setActiveTab(value);
     };
+
+    const [showPdfDownload, setShowPdfDownload] = useState(false);
+    async function handleFinalizeBook() {
+        // Optionally update the latest version to server here
+        setShowPdfDownload(true);
+    }
 
     return (
         <div className="container mx-auto px-4 py-6 max-w-7xl">
@@ -258,7 +267,9 @@ export default function BookWorkspace({
                     >
                         <BookOpenText className="w-4 h-4" />
                         <span className="hidden sm:inline">Chapters</span>
-                        <span className="sm:hidden">{book.chapters?.length}</span>
+                        <span className="sm:hidden">
+                            {book.chapters?.length}
+                        </span>
                     </TabsTrigger>
                 </TabsList>
 
@@ -288,7 +299,6 @@ export default function BookWorkspace({
                                 </p>
                             </div>
                         ) : (
-                            //TODO: save the drafts object in DB as chapters according to this pattern.
                             filteredDrafts.map((draft, index) => (
                                 <Card
                                     key={index}
@@ -313,7 +323,8 @@ export default function BookWorkspace({
                                     </CardHeader>
                                     <CardContent className="mobile-p">
                                         <p className="text-sm line-clamp-3 mb-3 text-muted">
-                                            {draft.pages?.[0]?.content || "No Content"}
+                                            {draft.pages?.[0]?.content ||
+                                                "No Content"}
                                         </p>
                                         <Button
                                             variant="outline"
@@ -526,9 +537,24 @@ export default function BookWorkspace({
 
                 <TabsContent value="chapters">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-4">
-                        <h3 className="text-lg font-semibold">
-                            Chapters
-                        </h3>
+                        <h3 className="text-lg font-semibold">Chapters</h3>
+                        <Button
+                            onClick={handleFinalizeBook}
+                            size="sm"
+                            className="btn-primary transition-all hover:scale-105 mobile-full"
+                        >
+                            <BookOpenText className="w-4 h-4 mr-2" />
+                            Finalize Book
+                        </Button>
+                        {showPdfDownload && (
+                            <PDFDownloadLink
+                                document={<BookPdf book={book} />}
+                                fileName={`${book.title || 'book'}.pdf`}
+                                style={{ marginLeft: 16 }}
+                            >
+                                {({ loading }) => loading ? 'Preparing PDF...' : 'Download PDF'}
+                            </PDFDownloadLink>
+                        )}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {book.chapters?.length === 0 ? (

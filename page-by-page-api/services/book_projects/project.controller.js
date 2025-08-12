@@ -93,6 +93,28 @@ export async function updateProject(req, res) {
         updateData.chapters
     );
 
+    let book = await Book.getBookByProjectId(projectId);
+
+    if (book) {
+        const updated = new Book(
+            projectId,
+            updatedProject.title,
+            updatedProject.author,
+            updatedProject.genres,
+            null,
+            updatedProject.chapters
+        );
+        const result = await updated.update(
+            typeof book._id === "string" ? book._id : book._id.toString()
+        );
+        if (!result.acknowledged) {
+            res.status(500).json({
+                success: false,
+                message: "Error while updating book"
+            })
+        }
+    }
+
     try {
         await updatedProject.updateProjectById(projectId);
         if (!updatedProject) {

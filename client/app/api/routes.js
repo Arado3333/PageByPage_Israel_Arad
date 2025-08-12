@@ -109,6 +109,15 @@ export async function getWritingGoals() {
     const today = new Date();
     const projects = await getProjectsWithCookies();
     const drafts = projects.flatMap((project) => project.drafts || []);
+
+    if (drafts.length > 0) {
+        return {
+            current: 0,
+            target: 0,
+            percentage: 0,
+        };
+    }
+
     let todayWords = 0;
     let yesterdayWords = 0;
 
@@ -159,7 +168,6 @@ export async function askAI() {
     const allChapters = projects.flatMap((project) => project.chapters || []);
 
     console.log(allChapters);
-    
 
     let allSuggestions = [];
 
@@ -167,7 +175,11 @@ export async function askAI() {
         // Prepare the prompt for this chapter
         const chapterPrompt = `
         Chapter Title: ${chapter.title || "Untitled"}
-        Pages: ${Array.isArray(chapter.pages) ? chapter.pages.map((p, i) => `Page ${i + 1}: ${p}`).join("\n") : "No pages provided."}
+        Pages: ${
+            Array.isArray(chapter.pages)
+                ? chapter.pages.map((p, i) => `Page ${i + 1}: ${p}`).join("\n")
+                : "No pages provided."
+        }
         Content: ${chapter.content || "No content provided."}
         `;
 
@@ -177,19 +189,22 @@ export async function askAI() {
             config: {
                 systemInstruction: recommedPrompt,
                 maxOutputTokens: 2000,
-                temperature: 0.3
+                temperature: 0.3,
             },
             contents: {
                 parts: [{ text: chapterPrompt }],
-            }
+            },
         });
 
         // Parse and store the suggestion
         let suggestion;
         try {
-            let rawText = response.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+            let rawText =
+                response.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
             // Remove markdown code block notation (e.g., ```json ... ```)
-            rawText = rawText.replace(/```(?:json)?\s*([\s\S]*?)\s*```/gi, "$1").trim();
+            rawText = rawText
+                .replace(/```(?:json)?\s*([\s\S]*?)\s*```/gi, "$1")
+                .trim();
             suggestion = JSON.parse(rawText);
         } catch (e) {
             suggestion = { error: "Invalid JSON from AI", raw: response };
@@ -197,14 +212,12 @@ export async function askAI() {
         allSuggestions.push({
             chapterId: chapter._id,
             improvementTitle: suggestion.improvementTitle,
-            improveTip: suggestion.improveTip
+            improveTip: suggestion.improveTip,
         });
-        
     }
-    
+
     return allSuggestions;
 }
-
 
 //CRUD with Express
 
@@ -233,7 +246,7 @@ export async function getProjectsWithCookies() {
 export async function updateDataToServer(selectedProject, updatedData, status) {
     const { userId } = await getSession();
     const token = await getSessionToken();
-    
+
     const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVICE}/api/projects/${selectedProject[0]._id}`,
         {

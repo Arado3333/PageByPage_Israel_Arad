@@ -58,7 +58,7 @@ export async function addBook(req, res) {
 
 export async function updateBook(req, res) {
     let { id } = req.params;
-    let { title, author, genres, coverImg } = req.body;
+    let { title, author, genres, coverImg, chapters } = req.body;
 
     if (!id) {
         return res.status(400).json({ message: "Book ID is required" });
