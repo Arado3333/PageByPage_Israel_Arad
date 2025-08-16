@@ -332,8 +332,9 @@ export async function createProject(newProject) {
 }
 
 export async function deleteBook(bookToDelete, token) {
-    const idToDelete = bookToDelete[0]._id;
-
+    const idToDelete = bookToDelete[0]._id; //ProjectId
+    console.log(idToDelete);
+    
     const getBookResponse = await fetch(
         `${process.env.NEXT_PUBLIC_SERVICE}/api/books/${idToDelete}`,
         {

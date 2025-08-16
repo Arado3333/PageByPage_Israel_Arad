@@ -1,6 +1,6 @@
 "use client";
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import BookPdf from './BookPdf';
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import BookPdf from "./BookPdf";
 
 import { useEffect, useState } from "react";
 import { Button } from "../../books/ui/button";
@@ -25,12 +25,13 @@ import Note from "../../lib/models/note.model.js";
 import Draft from "../../lib/models/draft.model.js";
 import Character from "../../lib/models/character.model.js";
 import Asset from "../../lib/models/asset.model.js";
-import { updateBook } from "../../api/routes";
+import AssetViewer from "./AssetViewer";
 
 export default function BookWorkspace({
     book,
     onBack,
     onEditSection,
+    onViewSection,
     onUpdateBook,
 }) {
     const [searchTerm, setSearchTerm] = useState("");
@@ -82,19 +83,13 @@ export default function BookWorkspace({
     const handleAddAsset = () => {
         const newAsset = new Asset("New Asset", "image", "");
 
-        const updatedBook = {
-            ...book,
-            assets: [...book.assets, { ...newAsset }],
-            lastEdited: new Date().toISOString(),
-        };
-        onUpdateBook(updatedBook);
         // Immediately edit the new asset
         onEditSection(newAsset, "asset");
     };
 
     const handleViewAsset = (asset) => {
-        // For now, just edit the asset
-        onEditSection(asset, "asset");
+        console.log(asset);
+        onViewSection(asset, "asset");
     };
 
     const handleViewChapter = (chapter) => {
@@ -546,16 +541,18 @@ export default function BookWorkspace({
                             <BookOpenText className="w-4 h-4 mr-2" />
                             Finalize Book
                         </Button>
-                        {showPdfDownload && (
-                            <PDFDownloadLink
-                                document={<BookPdf book={book} />}
-                                fileName={`${book.title || 'book'}.pdf`}
-                                style={{ marginLeft: 16 }}
-                            >
-                                {({ loading }) => loading ? 'Preparing PDF...' : 'Download PDF'}
-                            </PDFDownloadLink>
-                        )}
                     </div>
+                    {showPdfDownload && (
+                        <PDFDownloadLink
+                            document={<BookPdf book={book} />}
+                            fileName={`${book.title || "book"}.pdf`}
+                            style={{ marginLeft: 16 }}
+                        >
+                            {({ loading }) =>
+                                loading ? "Preparing PDF..." : "Download PDF"
+                            }
+                        </PDFDownloadLink>
+                    )}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {book.chapters?.length === 0 ? (
                             <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">

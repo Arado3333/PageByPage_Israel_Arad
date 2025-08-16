@@ -96,7 +96,7 @@ export async function deleteBook(req, res) {
 
     //בקשה למחיקת ספר
     try {
-        const result = await Book.delete(req.params.id);
+        const result = await Book.delete(id);
         return res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: "Error while deleting the book" });

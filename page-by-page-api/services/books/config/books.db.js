@@ -7,7 +7,10 @@ export async function getBooksFromDB() {
         console.log("opening connection to database");
         client = await MongoClient.connect(process.env.CONNECTION_STRING);
         let db = client.db(process.env.DB_NAME);
-        return await db.collection("Books").find({isDeleted: { $exists: false } }).toArray();
+        return await db
+            .collection("Books")
+            .find({ isDeleted: { $exists: false } })
+            .toArray();
     } catch (error) {
         console.error("Error fetching books from database:", error);
         throw error;
@@ -17,15 +20,21 @@ export async function getBooksFromDB() {
     }
 }
 
-export async function findBookByProjectId(id)
-{
+export async function findBookByProjectId(id) {
     let client = null;
-
+    
     try {
         client = await MongoClient.connect(process.env.CONNECTION_STRING);
         let db = client.db(process.env.DB_NAME);
-        return await db.collection("Books").findOne({ projectId: id ?? ObjectId.createFromHexString(id) , isDeleted: { $exists: false } });
+        const document = await db
+            .collection("Books")
+            .findOne({ projectId: ObjectId.createFromHexString(id) });
         
+        if (!document) {
+            return await db.collection("Books").findOne({projectId: id});
+        }
+        
+        return document;
     } catch (error) {
         console.error("Error finding book by projectId:", error);
         throw error;
@@ -71,10 +80,9 @@ export async function updateBookInDB(id, book) {
     }
 }
 
-
 export async function deleteBookFromDB(id) {
     let client = null;
-    
+
     try {
         let client = await MongoClient.connect(process.env.CONNECTION_STRING);
         let db = client.db(process.env.DB_NAME);
@@ -84,8 +92,7 @@ export async function deleteBookFromDB(id) {
     } catch (error) {
         console.error("Error deleting book from database:", error);
         throw error;
-    }
-    finally {
+    } finally {
         if (client) {
             client.close();
         }

@@ -3,7 +3,7 @@ import "../style/Drafts.css";
 import Draft from "../lib/models/draft.model.js";
 import { useState, useMemo, use, useActionState } from "react";
 import { getProjectsWithCookies, updateDataToServer } from "../api/routes";
-import { updateProjectData } from "../lib/actions";
+import { updateProjectData } from "../lib/actions.js";
 
 export default function Header() {
     const [showCreateModal, setShowCreateModal] = useState(false);

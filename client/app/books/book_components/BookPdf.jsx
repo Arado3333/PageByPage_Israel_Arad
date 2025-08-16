@@ -4,8 +4,8 @@ const styles = StyleSheet.create({
     page: { padding: 32 },
     title: { fontSize: 20, fontWeight: "bold", marginBottom: 16 },
     chapterTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
+        fontSize: 14,
+        fontWeight: "semi-bold",
         marginBottom: 8,
         marginTop: 16,
     },
