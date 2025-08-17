@@ -9,6 +9,7 @@ import {
     Italic,
     Underline as UnderlineIcon,
     AlignLeft,
+    AlignRight,
     List,
     Quote,
     Sparkles,
@@ -52,6 +53,11 @@ const htmlToText = (html = "") => {
 
 // Child page editor: one Tiptap instance per page
 function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
+    // Helper to detect RTL (Hebrew, Arabic, etc.)
+    function isRTL(text) {
+        return /[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/.test(text);
+    }
+
     const editor = useEditor({
         immediatelyRender: false,
         editable: !isPreviewMode,
@@ -60,23 +66,29 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
             TextStyle,
             Color,
             FontSize.configure({ types: ["textStyle"] }),
-            Placeholder.configure({ placeholder }),
             TextAlign.configure({ types: ["heading", "paragraph"] }),
+            Placeholder.configure({ placeholder }),
             StarterKit.configure({
                 orderedList: { keepMarks: true },
                 bulletList: { keepMarks: true },
                 heading: { levels: [1, 2, 3, 4, 5, 6] },
+                text: true,
             }),
         ],
         onUpdate: ({ editor }) => {
-            const html = editor.getText();
-            const title = html.split(" ").slice(0, 3).join(" ");
+            const html = editor.getHTML();
+            const plain = editor.getText();
+            const title = plain.split(" ").slice(0, 3).join(" ");
             onUpdate(page.id, html, title);
         },
         editorProps: {
             attributes: {
-                class: "page-content", // Preserve your styling hook
+                class: "page-content",
                 spellCheck: "true",
+                style: isRTL(page.content || "")
+                    ? "text-align: right; direction: rtl;"
+                    : undefined,
+                dir: isRTL(page.content || "") ? "rtl" : undefined,
             },
         },
     });
@@ -89,8 +101,9 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
     // reflect external content changes (e.g., AI insertion fallback)
     useEffect(() => {
         if (!editor) return;
-        const current = editor.getHTML();
-        if (page.content && page.content !== current) {
+
+        // Force update the editor content whenever page.content changes
+        if (page.content) {
             editor.commands.setContent(page.content, false);
         }
     }, [page.content, editor]);
@@ -201,13 +214,6 @@ export default function BookEditorPage() {
         return () => container.removeEventListener("scroll", handleScroll);
     }, [pages.length]);
 
-    useEffect(() => {
-        if (fetchedProjects === null) {
-            setSaveBook(false);
-            setPopWarnMessage(true);
-        }
-    }, [popWarnMessage]);
-
     // Word count (from HTML contents)
     useEffect(() => {
         const all = pages.map((p) => htmlToText(p.content)).join(" ");
@@ -247,6 +253,9 @@ export default function BookEditorPage() {
             }
             case "justifyLeft":
                 chain.setTextAlign("left").run();
+                break;
+            case "justifyRight":
+                chain.setTextAlign("right").run();
                 break;
             case "insertUnorderedList":
                 chain.toggleBulletList().run();
@@ -320,6 +329,10 @@ export default function BookEditorPage() {
 
     async function handleSaveExistingProject() {
         const projects = await getProjectsWithCookies();
+
+        if (projects === null) {
+            setPopWarnMessage(true);
+        }
         setFetchedProjects(projects);
         setSaveBook(true);
         setPopWarnMessage(false);
@@ -425,39 +438,84 @@ export default function BookEditorPage() {
     }
 
     const [useAiTools, setUseAiTools] = useState(false);
+    const [showAiModal, setShowAiModal] = useState(false);
+    const [aiResult, setAiResult] = useState("");
+    const [aiSelectedText, setAiSelectedText] = useState("");
+    const [aiTool, setAiTool] = useState("");
+    const [isAiLoading, setIsAiLoading] = useState(false);
 
     async function handleAiTextTool(event) {
         let selectedText = "";
         const tool = event.target.innerHTML;
-        const selection = window.getSelection();
-        if (selection) selectedText = selection.toString();
-        if (!selectedText || !tool) return "";
+
+        // Get the current selection through Tiptap if available
+        if (activeEditorRef.current) {
+            selectedText = activeEditorRef.current.state.doc.textBetween(
+                activeEditorRef.current.state.selection.from,
+                activeEditorRef.current.state.selection.to,
+                " "
+            );
+        } else {
+            const selection = window.getSelection();
+            if (selection) selectedText = selection.toString();
+        }
+
+        if (!selectedText || !tool)
+            return alert("Please select some text before using AI tools.");
 
         try {
-            const result = await aiTextTool({ text: selectedText, tool });
-            // Prefer inserting via the active Tiptap editor
-            if (activeEditorRef.current) {
-                activeEditorRef.current
-                    .chain()
-                    .focus()
-                    .insertContent(result)
-                    .run();
-            } else {
-                // Fallback: append to current page's raw HTML
-                setPages((prev) =>
-                    prev.map((p, idx) => {
-                        if (idx + 1 !== currentPage) return p;
-                        const appended = (p.content || "") + `<p>${result}</p>`;
-                        return { ...p, content: appended };
-                    })
-                );
-            }
-            if (selection) selection.removeAllRanges();
+            // Set loading state and show modal immediately
+            setIsAiLoading(true);
+            setAiSelectedText(selectedText);
+            setAiTool(tool);
+            setShowAiModal(true);
             setUseAiTools(false);
+
+            // Fetch the AI result
+            const result = await aiTextTool({ text: selectedText, tool });
+            console.log("AI result:", result);
+
+            // Update with the result
+            setAiResult(result);
+            setIsAiLoading(false);
+
             return result;
         } catch (err) {
+            console.error("AI request failed:", err);
+            setIsAiLoading(false);
+            setAiResult("AI request failed. Please try again.");
             return "AI request failed.";
         }
+    }
+
+    function handleKeepOriginal() {
+        setShowAiModal(false);
+    }
+
+    function handleUseAiResult() {
+        if (activeEditorRef.current) {
+            const { from, to } = activeEditorRef.current.state.selection;
+            activeEditorRef.current
+                .chain()
+                .focus()
+                .deleteRange({ from, to })
+                .insertContent(aiResult) // Insert text without color styling
+                .run();
+        } else {
+            setPages((prev) =>
+                prev.map((p, idx) => {
+                    if (idx + 1 !== currentPage) return p;
+                    return {
+                        ...p,
+                        content: (p.content || "").replace(
+                            aiSelectedText,
+                            aiResult
+                        ),
+                    };
+                })
+            );
+        }
+        setShowAiModal(false);
     }
 
     return (
@@ -786,6 +844,14 @@ export default function BookEditorPage() {
                                         <button
                                             className="toolbar-btn"
                                             onClick={() =>
+                                                formatText("justifyRight")
+                                            }
+                                        >
+                                            <AlignRight size={16} />
+                                        </button>
+                                        <button
+                                            className="toolbar-btn"
+                                            onClick={() =>
                                                 formatText(
                                                     "insertUnorderedList"
                                                 )
@@ -1074,6 +1140,87 @@ export default function BookEditorPage() {
                                     disabled={!bookmarkName.trim()}
                                 >
                                     Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* AI Comparison Modal */}
+                {showAiModal && (
+                    <div className="modal-overlay">
+                        <div
+                            className="modal"
+                            style={{ width: "80%", maxWidth: "800px" }}
+                        >
+                            <h3>AI {aiTool} Result</h3>
+                            <div style={{ marginBottom: "20px" }}>
+                                <div style={{ marginBottom: "10px" }}>
+                                    <h4 style={{ marginBottom: "5px" }}>
+                                        Original Text:
+                                    </h4>
+                                    <div
+                                        style={{
+                                            padding: "10px",
+                                            backgroundColor: "#ffebee",
+                                            borderRadius: "4px",
+                                            color: "#d32f2f",
+                                        }}
+                                    >
+                                        {aiSelectedText}
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 style={{ marginBottom: "5px" }}>
+                                        AI Result:
+                                    </h4>
+                                    <div
+                                        style={{
+                                            padding: "10px",
+                                            backgroundColor: "#e3f2fd",
+                                            borderRadius: "4px",
+                                            color: "#1976d2",
+                                            minHeight: "100px",
+                                            overflow: "auto"
+                                        }}
+                                    >
+                                        {isAiLoading ? (
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    height: "100px",
+                                                }}
+                                            >
+                                                <div className="loading-spinner"></div>
+                                                <span
+                                                    style={{
+                                                        marginLeft: "10px",
+                                                    }}
+                                                >
+                                                    Generating AI Suggestions...
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            aiResult !== "" ? aiResult : "No Suggestions Avaliable"
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-actions">
+                                <button
+                                    onClick={handleKeepOriginal}
+                                    className="btn-secondary"
+                                >
+                                    Keep Original
+                                </button>
+                                <button
+                                    onClick={handleUseAiResult}
+                                    className="btn-primary"
+                                    disabled={isAiLoading}
+                                >
+                                    Use Generated Suggestion
                                 </button>
                             </div>
                         </div>

@@ -14,9 +14,6 @@ import LibraryHeader from "./LibraryHeader";
 
 import {
     createProject,
-    deleteBook,
-    deleteProject,
-    getTokenFromCookies,
     updateBook,
 } from "../api/routes.js";
 import LibraryLoader from "./book_components/LibraryLoader";

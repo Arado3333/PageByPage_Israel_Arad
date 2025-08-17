@@ -227,16 +227,16 @@ export async function aiTextTool({ text, tool }) {
     let prompt;
     switch (tool) {
         case "Improve":
-            prompt = `Improve the following text for grammar, clarity, and style, while keeping the original meaning and voice. Return only the improved text.\n\nText:\n${text}`;
+            prompt = `Improve the following text for grammar, clarity, and style, while keeping the original meaning and voice. Return only the improved text. you're multilingual and you're excellent in many languages, including hebrew.\n\nText:\n${text}`;
             break;
         case "Summarize":
-            prompt = `Summarize the following text in 2-3 sentences, focusing on the main ideas. Return only the summary.\n\nText:\n${text}`;
+            prompt = `Summarize the following text in 2-3 sentences, focusing on the main ideas. Return only the summary. you're multilingual and you're excellent in many languages, including hebrew.\n\nText:\n${text}`;
             break;
         case "Expand":
-            prompt = `Expand the following text by adding more detail, description, or depth, while keeping the original intent and style. Return only the expanded text.\n\nText:\n${text}`;
+            prompt = `Expand the following text by adding more detail, description, or depth, while keeping the original intent and style. Return only the expanded text. you're multilingual and you're excellent in many languages, including hebrew.\n\nText:\n${text}`;
             break;
         case "Rewrite":
-            prompt = `Rewrite the following text in a different way, using new phrasing and structure, but keeping the same meaning. Return only the rewritten text.\n\nText:\n${text}`;
+            prompt = `Rewrite the following text in a different way, using new phrasing and structure, but keeping the same meaning. Return only the rewritten text. you're multilingual and you're excellent in many languages, including hebrew.\n\nText:\n${text}`;
             break;
         default:
             throw new Error("Invalid tool selected");
