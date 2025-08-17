@@ -29,7 +29,6 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
     const router = useRouter();
     const drafts = use(draftsPromise);
     const books = use(booksPromise);
-    
 
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
@@ -58,7 +57,7 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
 
             const matchesStatus =
                 statusFilter === "all" || draft.status === statusFilter;
-            
+
             return matchesSearch && matchesStatus;
         });
 
@@ -102,7 +101,7 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
     const handleEdit = (e, draft) => {
         e.preventDefault();
         const toEdit = { ...draft };
-        router.push("/book-editor");
+        router.push("/book-editor-v2");
 
         const numPages = toEdit.pages.length;
 

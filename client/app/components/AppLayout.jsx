@@ -34,7 +34,7 @@ const sidebarNavGroups = [
                 aria: "Go to Overview",
             },
             {
-                href: "/book-editor",
+                href: "/book-editor-v2",
                 label: "Writing Studio",
                 icon: Edit,
                 aria: "Go to Writing Studio",

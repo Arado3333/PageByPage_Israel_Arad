@@ -4,7 +4,8 @@
   --muted: #ebe6df;
   --muted-foreground: #726e6a;
 
-  --accent: #3b82f6; /* כחול יוקרתי ונקי */
+  --accent: #3b82f6;
+  /* כחול יוקרתי ונקי */
   --accent-secondary: #60a5fa;
   --accent-hover: #4a7ddb;
   --accent-foreground: #ffffff;
@@ -23,7 +24,8 @@
   --muted: #1f1f1f;
   --muted-foreground: #999999;
 
-  --accent: #5a9bd8; /* כחול רגוע */
+  --accent: #5a9bd8;
+  /* כחול רגוע */
   --accent-secondary: #7fb7ff;
   --accent-foreground: #0a0a0a;
 
@@ -37,7 +39,7 @@
 
 
 
-  
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -76,6 +78,7 @@ select {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -85,6 +88,18 @@ select {
   animation: fadeIn 0.3s ease-in-out;
 }
 
+.ProseMirror-a4 p {
+  margin: 0.25rem 0;
+}
 
+.ProseMirror-a4 blockquote {
+  border-left: 3px solid #e5e7eb;
+  margin: 0.5rem 0;
+  padding-left: 0.75rem;
+  color: #6b7280;
+}
 
-
+.ProseMirror-a4 ul,
+.ProseMirror-a4 ol {
+  padding-left: 1.25rem;
+}
