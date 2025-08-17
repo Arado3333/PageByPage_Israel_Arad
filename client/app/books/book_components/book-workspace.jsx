@@ -37,6 +37,14 @@ export default function BookWorkspace({
     const [searchTerm, setSearchTerm] = useState("");
     const [tagFilter, setTagFilter] = useState("All");
     const [activeTab, setActiveTab] = useState("drafts");
+    const [hasChapters, setHasChapters] = useState(true); //default is disabled
+
+    useEffect(() => {
+        if (book.chapters.length > 0) 
+        {
+            setHasChapters(false);
+        }
+    }, [book.chapters])
 
     const allTags = [
         ...new Set([
@@ -534,6 +542,7 @@ export default function BookWorkspace({
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-4">
                         <h3 className="text-lg font-semibold">Chapters</h3>
                         <Button
+                            disabled={hasChapters}
                             onClick={handleFinalizeBook}
                             size="sm"
                             className="btn-primary transition-all hover:scale-105 mobile-full"

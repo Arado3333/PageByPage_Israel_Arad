@@ -79,7 +79,7 @@ export default function WorkspaceMain({ booksPromise }) {
 
     const handleCreateProject = async (projectData) => {
         const draftPages =
-            JSON.parse(sessionStorage.getItem("bookDraft"))?.pages || [];
+            JSON.parse(sessionStorage.getItem("bookDraft"))?.pages || [{id: 1, title: projectData.title, content: ""}];
         const drafts = new Draft(projectData.title, draftPages);
         const newBook = {
             title: projectData.title,

@@ -2,10 +2,10 @@ import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 
 const styles = StyleSheet.create({
     page: { padding: 32 },
-    title: { fontSize: 20, fontWeight: "bold", marginBottom: 16 },
+    title: { fontSize: 20, fontWeight: 800, marginBottom: 16 },
     chapterTitle: {
         fontSize: 14,
-        fontWeight: "semi-bold",
+        fontWeight: 600,
         marginBottom: 8,
         marginTop: 16,
     },

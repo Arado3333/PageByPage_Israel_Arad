@@ -219,6 +219,51 @@ export async function askAI() {
     return allSuggestions;
 }
 
+export async function aiTextTool({ text, tool }) {
+    const ai = new GoogleGenAI({
+        apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+    });
+
+    let prompt;
+    switch (tool) {
+        case "Improve":
+            prompt = `Improve the following text for grammar, clarity, and style, while keeping the original meaning and voice. Return only the improved text.\n\nText:\n${text}`;
+            break;
+        case "Summarize":
+            prompt = `Summarize the following text in 2-3 sentences, focusing on the main ideas. Return only the summary.\n\nText:\n${text}`;
+            break;
+        case "Expand":
+            prompt = `Expand the following text by adding more detail, description, or depth, while keeping the original intent and style. Return only the expanded text.\n\nText:\n${text}`;
+            break;
+        case "Rewrite":
+            prompt = `Rewrite the following text in a different way, using new phrasing and structure, but keeping the same meaning. Return only the rewritten text.\n\nText:\n${text}`;
+            break;
+        default:
+            throw new Error("Invalid tool selected");
+    }
+
+    const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        config: {
+            systemInstruction: prompt,
+            maxOutputTokens: 2000,
+            temperature: 0.3,
+        },
+        contents: {
+            parts: [{ text }],
+        },
+    });
+
+    // Try to extract the AI's response as plain text
+    let resultText = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    // Remove markdown code block notation if present
+    resultText = resultText
+        .replace(/```(?:[a-z]+)?\s*([\s\S]*?)\s*```/gi, "$1")
+        .trim();
+    
+    return resultText;
+}
+
 //CRUD with Express
 
 export async function getProjectsWithCookies() {
@@ -334,7 +379,7 @@ export async function createProject(newProject) {
 export async function deleteBook(bookToDelete, token) {
     const idToDelete = bookToDelete[0]._id; //ProjectId
     console.log(idToDelete);
-    
+
     const getBookResponse = await fetch(
         `${process.env.NEXT_PUBLIC_SERVICE}/api/books/${idToDelete}`,
         {

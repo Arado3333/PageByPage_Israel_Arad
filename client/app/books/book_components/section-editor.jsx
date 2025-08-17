@@ -90,6 +90,10 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
                 break;
             case "draft":
                 updatedSection.title = title;
+                if (updatedSection.pages.length == 0)
+                {
+                    updatedSection.pages = [{id: 1, title: updatedSection.title, content: content}]
+                }
                 updatedSection.pages[page - 1].content = content;
                 break;
             case "note":

@@ -24,7 +24,9 @@ import Draft from "../lib/models/draft.model.js";
 import {
     getProjectsWithCookies,
     updateDataToServer,
+    aiTextTool,
 } from "../api/routes.js";
+import { Button } from "../books/ui/button";
 
 export default function BookEditorPage() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -132,7 +134,6 @@ export default function BookEditorPage() {
             }
             draftTitle += titleArr[i] + " ";
         }
-
         setPages(
             pages.map((page) =>
                 page.id === pageId
@@ -303,12 +304,47 @@ export default function BookEditorPage() {
         const result = await updateDataToServer(
             selectedProject,
             updatedDrafts,
-            status,
-        ); 
+            status
+        );
 
         setSaveBook(false);
 
         return result;
+    }
+
+    const [useAiTools, setUseAiTools] = useState(false);
+
+    async function handleAiTextTool(event) {
+        let selectedText = "";
+        let tool = event.target.innerHTML;
+
+        const selection = window.getSelection();
+        if (selection) {
+            selectedText = selection.toString();
+        }
+        if (!selectedText || !tool) return "";
+
+        try {
+            const result = await aiTextTool({ text: selectedText, tool });
+            console.log(result);
+
+            // Append the generated text to the end of the current page's content
+            setPages((prevPages) => {
+                return prevPages.map((page, idx) => {
+                    if (idx + 1 !== currentPage) return page;
+                    const newContent = (page.content || "") + result;
+                    return { ...page, content: newContent };
+                });
+            });
+
+            // Optionally, clear the selection
+            if (selection) selection.removeAllRanges();
+            setUseAiTools(false);
+
+            return result;
+        } catch (err) {
+            return "AI request failed.";
+        }
     }
 
     return (
@@ -658,10 +694,61 @@ export default function BookEditorPage() {
                             )}
 
                             <div className="toolbar-group">
-                                <button className="ai-btn">
+                                <button
+                                    onClick={() => setUseAiTools(!useAiTools)}
+                                    className="ai-btn"
+                                >
                                     <Sparkles size={14} />
                                     AI Tools
                                 </button>
+
+                                {useAiTools && (
+                                    <div
+                                        className="absolute z-10 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                        role="menu"
+                                        aria-orientation="vertical"
+                                        aria-labelledby="options-menu"
+                                    >
+                                        <div className="py-1" role="none">
+                                            <button
+                                                onClick={handleAiTextTool}
+                                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-900 focus:outline-none focus:bg-blue-100 focus:text-blue-900"
+                                                role="menuitem"
+                                            >
+                                                Improve
+                                            </button>
+                                            <button
+                                                onClick={handleAiTextTool}
+                                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-900 focus:outline-none focus:bg-blue-100 focus:text-blue-900"
+                                                role="menuitem"
+                                            >
+                                                Summarize
+                                            </button>
+                                            <button
+                                                onClick={handleAiTextTool}
+                                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-900 focus:outline-none focus:bg-blue-100 focus:text-blue-900"
+                                                role="menuitem"
+                                            >
+                                                Expand
+                                            </button>
+                                            <button
+                                                onClick={handleAiTextTool}
+                                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-900 focus:outline-none focus:bg-blue-100 focus:text-blue-900"
+                                                role="menuitem"
+                                            >
+                                                Rewrite
+                                            </button>
+                                            <Button
+                                                style={{ fontWeight: 600 }}
+                                                onClick={() =>
+                                                    setUseAiTools(!useAiTools)
+                                                }
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="toolbar-group ml-auto">
