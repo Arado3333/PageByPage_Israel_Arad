@@ -69,11 +69,8 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
             }),
         ],
         onUpdate: ({ editor }) => {
-            const html = editor.getHTML();
-            const title = htmlToText(editor.getText())
-                .split(" ")
-                .slice(0, 3)
-                .join(" ");
+            const html = editor.getText();
+            const title = html.split(" ").slice(0, 3).join(" ");
             onUpdate(page.id, html, title);
         },
         editorProps: {

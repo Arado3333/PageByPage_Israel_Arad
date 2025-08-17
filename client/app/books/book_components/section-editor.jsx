@@ -54,11 +54,20 @@ export default function SectionEditor({ book, section, onBack, onSave }) {
         const chapters = drafts.filter((draft) => draft.tag === "chapter");
 
         chapters.forEach((chapter) => {
+            const wordCount = (removeEmptyPages(chapter.pages) || chapter.pages)
+                .reduce((count, page) => {
+                    if (page.content) {
+                        return count + page.content.split(/\s+/).filter(Boolean).length;
+                    }
+                    return count;
+                }, 0);
+
             const chapObj = {
                 id: `chapter_${Date.now() * Math.floor(Math.random() * 20) + 1}`,
                 draftId: chapter.id,
                 title: chapter.title,
                 pages: removeEmptyPages(chapter.pages) || chapter.pages,
+                wordCount: wordCount
             };
 
             chapterObjs.push(chapObj);

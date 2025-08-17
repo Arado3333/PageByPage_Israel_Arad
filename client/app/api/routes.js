@@ -110,7 +110,7 @@ export async function getWritingGoals() {
     const projects = await getProjectsWithCookies();
     const drafts = projects.flatMap((project) => project.drafts || []);
 
-    if (drafts.length > 0) {
+    if (drafts.length <= 0) {
         return {
             current: 0,
             target: 0,
@@ -127,7 +127,7 @@ export async function getWritingGoals() {
             new Date().toISOString().split("T")[0]
     );
     todayDrafts.forEach((draft) => (todayWords += draft.wordCount));
-
+    
     // Calculate yesterday's date in YYYY-MM-DD format
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
@@ -260,7 +260,7 @@ export async function aiTextTool({ text, tool }) {
     resultText = resultText
         .replace(/```(?:[a-z]+)?\s*([\s\S]*?)\s*```/gi, "$1")
         .trim();
-    
+
     return resultText;
 }
 
