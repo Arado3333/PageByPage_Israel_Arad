@@ -28,6 +28,6 @@
         "app/book-editor/page.jsx",
         "app/context/BookContext.jsx",
         "app/lib/actions.js"
-    ],
+, "app/lib/global.js"    ],
     "exclude": ["node_modules"]
 }

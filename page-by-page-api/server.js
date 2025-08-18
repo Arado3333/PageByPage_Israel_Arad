@@ -7,6 +7,7 @@ import aiRouter from "./services/ai_assistant/routes/ai.routes.js";
 import projectsRouter from "./services/book_projects/project.routes.js";
 import tasksRouter from "./services/tasks/tasks.routes.js";
 import versionsRouter from "./services/versions/versions.routes.js";
+import goalsRouter from "./services/goals/goals.routes.js";
 
 const PORT = process.env.PORT || 5500;
 
@@ -21,6 +22,7 @@ server.use("/api/projects", projectsRouter);
 server.use("/api/users", userRouter);
 server.use("/api/chat", aiRouter);
 server.use("/api/tasks", tasksRouter);
+server.use("/api/goals", goalsRouter);
 server.use("/api/versions", versionsRouter);
 
 

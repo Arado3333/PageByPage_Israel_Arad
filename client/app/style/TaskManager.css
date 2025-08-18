@@ -5,6 +5,25 @@
   padding: 0;
 }
 
+:root {
+  --priority-high: #E63946;
+  --priority-medium: #F77F00;
+  --priority-low: #06D6A0;
+  --priority-neutral: #457B9D;
+
+  --task-writing: #6376E8;
+  --task-editing: #FF4B5C;
+  --task-worldbuilding: #3FD07F;
+  --task-planning: #FFB347;
+  --task-research: #2AB7CA;
+
+  /* Contrasting text colors for each category */
+  --text-writing: #ffffff;
+  --text-editing: #ffffff;
+  --text-worldbuilding: #1A2B22;
+  --text-planning: #3A2800;
+  --text-research: #002C35;
+}
 
 
 html,
@@ -245,33 +264,33 @@ body {
 }
 
 .task-tag.writing {
-  background-color: var(--accent);
-  color: var(--accent-foreground);
-  opacity: 0.85;
+  background-color: var(--task-writing);
+  color: var(--text-writing);
+  opacity: 0.95;
 }
 
 .task-tag.editing {
-  background-color: var(--success);
-  color: var(--accent-foreground);
-  opacity: 0.85;
+  background-color: var(--task-editing);
+  color: var(--text-editing);
+  opacity: 0.95;
 }
 
 .task-tag.worldbuilding {
-  background-color: var(--muted);
-  color: var(--accent);
-  opacity: 0.85;
+  background-color: var(--task-worldbuilding);
+  color: var(--text-worldbuilding);
+  opacity: 0.95;
 }
 
 .task-tag.planning {
-  background-color: var(--muted);
-  color: var(--accent);
-  opacity: 0.85;
+  background-color: var(--task-planning);
+  color: var(--text-planning);
+  opacity: 0.95;
 }
 
 .task-tag.research {
-  background-color: var(--muted);
-  color: var(--accent);
-  opacity: 0.85;
+  background-color: var(--task-research);
+  color: var(--text-research);
+  opacity: 0.95;
 }
 
 .more-tasks {
@@ -432,33 +451,33 @@ body {
 }
 
 .goal-category.writing {
-  background-color: var(--accent);
-  color: var(--accent-foreground);
-  opacity: 0.85;
+  background-color: var(--task-writing);
+  color: var(--text-writing);
+  opacity: 0.95;
 }
 
 .goal-category.editing {
-  background-color: var(--success);
-  color: var(--accent-foreground);
-  opacity: 0.85;
+  background-color: var(--task-editing);
+  color: var(--text-editing);
+  opacity: 0.95;
 }
 
 .goal-category.worldbuilding {
-  background-color: var(--muted);
-  color: var(--accent);
-  opacity: 0.85;
+  background-color: var(--task-worldbuilding);
+  color: var(--text-worldbuilding);
+  opacity: 0.95;
 }
 
 .goal-category.planning {
-  background-color: var(--muted);
-  color: var(--accent);
-  opacity: 0.85;
+  background-color: var(--task-planning);
+  color: var(--text-planning);
+  opacity: 0.95;
 }
 
 .goal-category.research {
-  background-color: var(--muted);
-  color: var(--accent);
-  opacity: 0.85;
+  background-color: var(--task-research);
+  color: var(--text-research);
+  opacity: 0.95;
 }
 
 /* Goal Delete Button */
@@ -720,6 +739,7 @@ button {
     opacity: 0;
     transform: translateY(-20px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -790,29 +810,35 @@ button {
 }
 
 .task-item.writing {
-  border-left: 4px solid var(--accent);
+  border-left: 4px solid var(--task-writing);
+  background-color: color-mix(in srgb, var(--task-writing) 10%, var(--background));
 }
 
 .task-item.editing {
-  border-left: 4px solid var(--success);
+  border-left: 4px solid var(--task-editing);
+  background-color: color-mix(in srgb, var(--task-editing) 10%, var(--background));
 }
 
 .task-item.worldbuilding {
-  border-left: 4px solid var(--accent);
+  border-left: 4px solid var(--task-worldbuilding);
+  background-color: color-mix(in srgb, var(--task-worldbuilding) 10%, var(--background));
 }
 
 .task-item.planning {
-  border-left: 4px solid var(--accent);
+  border-left: 4px solid var(--task-planning);
+  background-color: color-mix(in srgb, var(--task-planning) 10%, var(--background));
 }
 
 .task-item.research {
-  border-left: 4px solid var(--accent);
+  border-left: 4px solid var(--task-research);
+  background-color: color-mix(in srgb, var(--task-research) 10%, var(--background));
 }
 
 .task-content {
   flex: 1;
 }
 
+/* Base task title styling */
 .task-title {
   font-weight: 500;
   font-size: 0.875rem;
@@ -820,11 +846,38 @@ button {
   margin-bottom: 0.25rem;
 }
 
+/* Base task category styling */
 .task-category {
   font-size: 0.75rem;
   color: var(--muted-foreground);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* Category-specific task colors */
+.task-item.writing .task-category {
+  color: var(--task-writing);
+  font-weight: 500;
+}
+
+.task-item.editing .task-category {
+  color: var(--task-editing);
+  font-weight: 500;
+}
+
+.task-item.worldbuilding .task-category {
+  color: var(--task-worldbuilding);
+  font-weight: 500;
+}
+
+.task-item.planning .task-category {
+  color: var(--task-planning);
+  font-weight: 500;
+}
+
+.task-item.research .task-category {
+  color: var(--task-research);
+  font-weight: 500;
 }
 
 .task-delete {

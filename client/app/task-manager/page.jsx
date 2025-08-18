@@ -1,9 +1,17 @@
 "use client";
 import "../../app/style/TaskManager.css";
-import { Calendar, CheckCircle, FileText, Plus, Tag, X } from "lucide-react";
+import "../../app/style/state-button.css";
+import { Calendar, CheckCircle, Plus, RefreshCw, Tag, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import Task from "../lib/models/task.model.js";
 import { deleteTask, getTasks, updateTask } from "../api/routes.js";
+import {
+    saveTasks,
+    getTasks as getTasksFromStorage,
+    isTaskCacheValid,
+    clearTaskCache,
+} from "../lib/taskStorage.js";
+import StateButton from "../../components/StateButton";
 
 export default function GoalsProgress() {
     // State for interactive functionality
@@ -108,28 +116,40 @@ export default function GoalsProgress() {
 
     const [calendarTasks, setCalendarTasks] = useState([]);
     const [allTasks, setAllTasks] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Update tasks when month changes
     useEffect(() => {
         fetchAndFilterTasks();
     }, [currentMonth, currentYear]);
 
-    function fetchAndFilterTasks() {
-        getTasksFromServer().then((tasks) => {
-            // Group tasks by day for the current month and year
-            const grouped = {};
-            setAllTasks(tasks);
-            tasks
-                .filter(
-                    (task) =>
-                        task.month === currentMonth && task.year === currentYear
-                )
-                .forEach((task) => {
-                    if (!grouped[task.day]) grouped[task.day] = [];
-                    grouped[task.day].push(task);
-                });
-            setCalendarTasks(grouped);
-        });
+    function fetchAndFilterTasks(forceRefresh = false) {
+        // If forceRefresh is true, clear the cache first
+        if (forceRefresh) {
+            clearTaskCache();
+        }
+
+        setIsLoading(true);
+        getTasksFromServer()
+            .then((tasks) => {
+                // Group tasks by day for the current month and year
+                const grouped = {};
+                setAllTasks(tasks);
+                tasks
+                    .filter(
+                        (task) =>
+                            task.month === currentMonth &&
+                            task.year === currentYear
+                    )
+                    .forEach((task) => {
+                        if (!grouped[task.day]) grouped[task.day] = [];
+                        grouped[task.day].push(task);
+                    });
+                setCalendarTasks(grouped);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     }
 
     // Form states
@@ -207,7 +227,23 @@ export default function GoalsProgress() {
     };
 
     async function getTasksFromServer() {
-        return await getTasks();
+        // First check if we have valid cached tasks
+        if (isTaskCacheValid()) {
+            const cachedTasks = getTasksFromStorage();
+            if (cachedTasks && cachedTasks.length > 0) {
+                return cachedTasks;
+            }
+        }
+
+        // If no valid cache, fetch from server
+        const tasks = await getTasks();
+
+        // Save to localStorage for future use
+        if (tasks && tasks.length > 0) {
+            saveTasks(tasks);
+        }
+
+        return tasks;
     }
 
     const handleTaskSubmit = async (e) => {
@@ -229,10 +265,19 @@ export default function GoalsProgress() {
             const result = await updateTask(taskToUpdate);
             console.log(result); // --> will be indicating success or fail message
 
-            setCalendarTasks((prev) => ({
-                ...prev,
-                [targetDay]: [...(prev[targetDay] || []), newTask],
-            }));
+            // Update local state
+            setCalendarTasks((prev) => {
+                const updated = {
+                    ...prev,
+                    [targetDay]: [...(prev[targetDay] || []), newTask],
+                };
+                return updated;
+            });
+
+            // Update tasks in localStorage
+            const updatedAllTasks = [...allTasks, newTask];
+            setAllTasks(updatedAllTasks);
+            saveTasks(updatedAllTasks);
 
             setShowNewTaskModal(false);
             setNewTaskForm({ title: "", category: "", date: "", day: null });
@@ -244,7 +289,8 @@ export default function GoalsProgress() {
     const handleDeleteTask = async (day, taskId) => {
         const result = await deleteTask(taskId);
         console.log(result);
-        
+
+        // Update calendar tasks state
         setCalendarTasks((prev) => {
             const updated = { ...prev };
             if (updated[day]) {
@@ -257,6 +303,8 @@ export default function GoalsProgress() {
             }
             return updated;
         });
+
+        // Update selected day data state
         setSelectedDayData((prev) => {
             if (!prev) return prev;
             return {
@@ -265,8 +313,12 @@ export default function GoalsProgress() {
             };
         });
 
+        // Update allTasks state and localStorage
+        const updatedAllTasks = allTasks.filter((task) => task._id !== taskId);
+        setAllTasks(updatedAllTasks);
+        saveTasks(updatedAllTasks);
+
         setShowDayModal(false);
-        fetchAndFilterTasks();
     };
 
     // Handle goal deletion - WORKING NOW
@@ -432,6 +484,15 @@ export default function GoalsProgress() {
                                 <option value={2024}>2024</option>
                                 <option value={2025}>2025</option>
                             </select>
+
+                            <StateButton
+                                icon={<RefreshCw />}
+                                state={isLoading}
+                                loadingText={" "}
+                                handlerFunction={() =>
+                                    fetchAndFilterTasks(true)
+                                }
+                            />
                             <button
                                 className="new-task-button mobile-only"
                                 onClick={handleNewTask}
