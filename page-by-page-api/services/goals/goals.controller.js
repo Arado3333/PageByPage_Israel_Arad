@@ -7,7 +7,7 @@ export async function getUserGoals(req, res) {
         const result = await Goal.getAllGoals(userId);
         res.status(200).json({
             success: true,
-            message: result,
+            goals: result,
         });
     } catch (error) {
         res.status(404).json({

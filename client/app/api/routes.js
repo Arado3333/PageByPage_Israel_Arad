@@ -127,7 +127,7 @@ export async function getWritingGoals() {
             new Date().toISOString().split("T")[0]
     );
     todayDrafts.forEach((draft) => (todayWords += draft.wordCount));
-    
+
     // Calculate yesterday's date in YYYY-MM-DD format
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
@@ -525,4 +525,22 @@ export async function getVersions(project, token) {
     );
 
     return await res.json();
+}
+
+export async function getGoals() {
+    const sessionObj = await getSessionObject();
+    const token = await getSessionToken();
+
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVICE}/api/goals/${sessionObj.userId}`,
+        {
+            headers: {
+                Authentication: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        }
+    );
+
+    const result = await response.json();
+    return result.goals; // --> Array of task objects
 }
