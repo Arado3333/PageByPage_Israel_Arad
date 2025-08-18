@@ -103,9 +103,9 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
         if (!editor) return;
 
         // Force update the editor content whenever page.content changes
-        if (page.content) {
-            editor.commands.setContent(page.content, false);
-        }
+        // if (page.content) {
+        //     editor.commands.setContent(page.content, false, {preserveWhitespace: 'full'});
+        // }
     }, [page.content, editor]);
 
     // report focus so toolbar knows which editor to act on

@@ -46,8 +46,8 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
         const filtered = drafts.filter((draft) => {
             const matchesSearch =
                 draft.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (draft.snippet &&
-                    draft.snippet
+                (draft.pages[0] &&
+                    draft.pages[0].content
                         .toLowerCase()
                         .includes(searchTerm.toLowerCase())) ||
                 (draft.bookName &&
