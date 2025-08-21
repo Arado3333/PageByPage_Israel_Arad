@@ -3,7 +3,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 export async function textChat(req, res) {
-  const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
 
   try {
     let chat = ai.chats.create({
@@ -19,11 +19,14 @@ export async function textChat(req, res) {
     let response = await chat.sendMessage({
       message: req.body.message,
     });
+
     res.status(200).json({
       role: "model",
       parts: [{ text: response.text }],
     });
   } catch (error) {
+    console.log(error);
+    
     res.status(500).json({ error: "Error sending message to gemini" });
   }
 }
