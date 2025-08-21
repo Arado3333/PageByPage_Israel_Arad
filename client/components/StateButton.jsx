@@ -2,6 +2,7 @@
 
 import { RefreshCw, Send } from "lucide-react";
 import { cloneElement } from "react";
+import { useFormStatus } from "react-dom";
 
 export default function StateButton({
     handlerFunction,
@@ -27,7 +28,7 @@ export default function StateButton({
         <button
             className="ai-button primary"
             onClick={handleClick}
-            disabled={disabled || state}
+            disabled={disabled || state || useFormStatus().pending}
         >
             {state ? (
                 <>

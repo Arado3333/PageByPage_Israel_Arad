@@ -15,6 +15,19 @@ export async function getTasksByUserId(req, res) {
     }
 }
 
+export async function getTasks(req, res) {
+    try {
+        const tasks = await Task.getAllTasks();
+        res.status(200).json({ success: true, tasks: tasks });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error retrieving tasks",
+            error,
+        });
+    }
+}
+
 export async function createTask(req, res) {
     console.log(req.body);
     

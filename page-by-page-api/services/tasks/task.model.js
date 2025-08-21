@@ -1,4 +1,4 @@
-import { getTasksByUserId, createTaskInDB, deleteTaskFromDB } from "./task.db.js";
+import { getTasksByUserId, createTaskInDB, deleteTaskFromDB, getTasksFromDB } from "./task.db.js";
 
 export default class Task {
 
@@ -23,6 +23,14 @@ export default class Task {
             return await getTasksByUserId(userId);
         } catch (error) {
             throw new Error("Error while retrieving tasks by userId from DB");
+        }
+    }
+
+    static async getAllTasks() {
+        try {
+            return await getTasksFromDB();
+        } catch (error) {
+            throw new Error("Error while retrieving tasks from DB");
         }
     }
 

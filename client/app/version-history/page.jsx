@@ -1,497 +1,538 @@
 "use client";
 import {
-    getProjectsWithCookies,
-    getTokenFromCookies,
-    getVersions,
+  getProjectsWithCookies,
+  getTokenFromCookies,
+  getVersions,
 } from "../api/routes";
 import "../style/VersionHistory.css";
 
 import { useState, useMemo, useEffect } from "react";
 
 const VersionHistory = () => {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedVersionId, setSelectedVersionId] = useState(null);
-    const [fetchedProjects, setFetchedProjects] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedVersionId, setSelectedVersionId] = useState(null);
+  const [fetchedProjects, setFetchedProjects] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-    // Mock version data
-    const [versions, setVersions] = useState([
-        {
-            id: 1,
-            title: "Initial Draft",
-            date: new Date("2024-01-10T09:30:00"),
-            wordCount: 2847,
-            status: "draft",
-            content: `The old lighthouse stood against the stormy sky, its weathered walls telling stories of countless nights. Sarah approached the heavy wooden door, her heart racing with anticipation.
+  // Version data - will be populated from API
+  const [versions, setVersions] = useState([]);
 
-She had been searching for this place for months, following clues left by her grandmother in an old journal. The key felt cold in her palm as she inserted it into the ancient lock.
+  useEffect(() => {
+    getProjectsFromServer();
+  }, []);
 
-The door creaked open, revealing a spiral staircase that disappeared into darkness above. Dust motes danced in the pale light filtering through cracked windows.`,
-        },
-        {
-            id: 2,
-            title: "Character Development",
-            date: new Date("2024-01-12T14:15:00"),
-            wordCount: 3156,
-            status: "draft",
-            content: `The old lighthouse stood against the stormy sky, its weathered walls telling stories of countless nights. Sarah approached the heavy wooden door, her heart racing with both anticipation and fear.
+  async function getProjectsFromServer() {
+    const projects = await getProjectsWithCookies();
+    setFetchedProjects(projects);
+  }
 
-She had been searching for this place for months, following cryptic clues left by her grandmother in an old leather-bound journal. The brass key felt cold in her trembling palm as she inserted it into the ancient lock.
+  // Filter versions based on search
+  const filteredVersions = useMemo(() => {
+    return versions.filter((version) =>
+      version.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [versions, searchTerm]);
 
-The door creaked open with a haunting groan, revealing a spiral staircase that disappeared into darkness above. Dust motes danced in the pale light filtering through cracked windows, creating an almost ethereal atmosphere.`,
-        },
-        {
-            id: 3,
-            title: "Plot Revision",
-            date: new Date("2024-01-14T16:45:00"),
-            wordCount: 3421,
-            status: "draft",
-            content: `The old lighthouse stood defiantly against the stormy sky, its weathered stone walls telling stories of countless nights. Sarah approached the heavy wooden door, her heart racing with both anticipation and fear.
+  const selectedVersion = versions.find((v) => v.id === selectedVersionId);
+  const selectedIndex = versions.findIndex((v) => v.id === selectedVersionId);
 
-She had been searching for this place for months, following cryptic clues left by her grandmother in an old leather-bound journal. The brass key felt cold in her trembling palm as she inserted it into the ancient lock.
+  const formatDate = (date) => {
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
-The door creaked open with a haunting groan, revealing a spiral staircase that disappeared into darkness above. Dust motes danced in the pale light filtering through cracked windows, creating an almost ethereal atmosphere.
-
-As she stepped inside, the floorboards groaned beneath her feet, and she noticed strange symbols carved into the wooden banister.`,
-        },
-        {
-            id: 4,
-            title: "Final Review",
-            date: new Date("2024-01-16T11:20:00"),
-            wordCount: 3398,
-            status: "final",
-            content: `The old lighthouse stood defiantly against the stormy sky, its weathered stone walls telling stories of countless nights. Sarah approached the heavy wooden door, her heart racing with anticipation and nervous energy.
-
-She had been searching for this place for months, following cryptic clues left by her grandmother in an old leather-bound journal. The brass key felt cold in her trembling palm as she inserted it into the ancient lock.
-
-The door creaked open with a haunting groan, revealing a spiral staircase that disappeared into darkness above. Dust motes danced in the pale light filtering through cracked windows, creating an almost ethereal atmosphere.
-
-As she stepped inside, the floorboards groaned beneath her feet, and she noticed intricate symbols carved into the wooden banister.`,
-        },
-        {
-            id: 5,
-            title: "Published Version",
-            date: new Date("2024-01-18T10:00:00"),
-            wordCount: 3445,
-            status: "final",
-            content: `The old lighthouse stood defiantly against the stormy sky, its weathered stone walls telling stories of countless nights and forgotten secrets. Sarah approached the heavy wooden door, her heart racing with anticipation and nervous energy.
-
-She had been searching for this place for months, following cryptic clues left by her grandmother in an old leather-bound journal. The brass key felt cold in her trembling palm as she inserted it into the ancient lock.
-
-The door creaked open with a haunting groan, revealing a spiral staircase that disappeared into darkness above. Dust motes danced in the pale light filtering through cracked windows, creating an almost ethereal atmosphere.
-
-As she stepped inside, the floorboards groaned beneath her feet, and she noticed intricate symbols carved into the wooden banister. Each symbol seemed to pulse with an otherworldly energy.`,
-        },
-    ]);
-
-    useEffect(() => {
-        getProjectsFromServer();
-    }, []);
-
-    async function getProjectsFromServer() {
-        const projects = await getProjectsWithCookies();
-        setFetchedProjects(projects); //TODO: Handle versions render + changing the version objects with appropriate fields.
+  const getStatusConfig = (status) => {
+    switch (status) {
+      case "draft":
+        return { label: "Draft", className: "status-draft" };
+      case "final":
+        return { label: "Final", className: "status-final" };
+      default:
+        return { label: "Draft", className: "status-draft" };
     }
+  };
 
-    /*
-            id: 1, --> version id
-            title: "Initial Draft", --> per draft
-            date: new Date("2024-01-10T09:30:00"), --> version date
-            wordCount: 2847, --> per draft
-            status: "draft",
-            content: `The ol --> per draft
+  // Enhanced diff generation that handles draft additions and modifications
+  const generateDiff = (current, previous) => {
+    if (!current || !previous) return null;
 
-*/
+    const currentLines = current.content.split("\n");
+    const previousLines = previous.content.split("\n");
+    const maxLines = Math.max(currentLines.length, previousLines.length);
+    const diff = [];
 
-    // Filter versions based on search
-    const filteredVersions = useMemo(() => {
-        return versions.filter((version) =>
-            version.title.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [versions, searchTerm]);
+    for (let i = 0; i < maxLines; i++) {
+      const currentLine = currentLines[i] || "";
+      const previousLine = previousLines[i] || "";
 
-    const selectedVersion = versions.find((v) => v.id === selectedVersionId);
-    const selectedIndex = versions.findIndex((v) => v.id === selectedVersionId);
+      if (currentLine === previousLine) {
+        diff.push({ type: "unchanged", content: currentLine });
+      } else if (!previousLine) {
+        diff.push({ type: "added", content: currentLine });
+      } else if (!currentLine) {
+        diff.push({ type: "removed", content: previousLine });
+      } else {
+        // Line changed - show both
+        diff.push({ type: "removed", content: previousLine });
+        diff.push({ type: "added", content: currentLine });
+      }
+    }
+    return diff;
+  };
 
-    const formatDate = (date) => {
-        return date.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
+  // Generate diff for draft changes (when drafts are added/removed/modified)
+  const generateDraftDiff = (currentVersion, previousVersion) => {
+    if (!currentVersion || !previousVersion) return null;
+
+    const currentDrafts = currentVersion.drafts || [];
+    const previousDrafts = previousVersion.drafts || [];
+
+    const diff = [];
+
+    // Check for added drafts
+    currentDrafts.forEach((draft, index) => {
+      const prevDraft = previousDrafts[index];
+      if (!prevDraft) {
+        // New draft added
+        diff.push({
+          type: "draft-added",
+          content: `+ New draft: ${draft.title || "Untitled Draft"}`,
+          draft: draft,
         });
-    };
+      } else if (
+        draft.id !== prevDraft.id ||
+        draft.content !== prevDraft.content
+      ) {
+        // Draft modified
+        diff.push({
+          type: "draft-modified",
+          content: `~ Modified draft: ${draft.title || "Untitled Draft"}`,
+          draft: draft,
+          previousDraft: prevDraft,
+        });
+      }
+    });
 
-    const getStatusConfig = (status) => {
-        switch (status) {
-            case "draft":
-                return { label: "Draft", className: "status-draft" };
-            case "final":
-                return { label: "Final", className: "status-final" };
-            default:
-                return { label: "Draft", className: "status-draft" };
-        }
-    };
+    // Check for removed drafts
+    previousDrafts.forEach((draft, index) => {
+      const currentDraft = currentDrafts[index];
+      if (!currentDraft) {
+        diff.push({
+          type: "draft-removed",
+          content: `- Removed draft: ${draft.title || "Untitled Draft"}`,
+          draft: draft,
+        });
+      }
+    });
 
-    // Generate diff between two versions
-    const generateDiff = (current, previous) => {
-        if (!current || !previous) return null;
+    return diff;
+  };
 
-        const currentLines = current.content.split("\n");
-        const previousLines = previous.content.split("\n");
-        const maxLines = Math.max(currentLines.length, previousLines.length);
-        const diff = [];
+  const currentDiff =
+    selectedVersion && selectedIndex > 0
+      ? generateDiff(selectedVersion, versions[selectedIndex - 1])
+      : null;
 
-        for (let i = 0; i < maxLines; i++) {
-            const currentLine = currentLines[i] || "";
-            const previousLine = previousLines[i] || "";
+  const currentDraftDiff =
+    selectedVersion && selectedIndex > 0
+      ? generateDraftDiff(selectedVersion, versions[selectedIndex - 1])
+      : null;
 
-            if (currentLine === previousLine) {
-                diff.push({ type: "unchanged", content: currentLine });
-            } else if (!previousLine) {
-                diff.push({ type: "added", content: currentLine });
-            } else if (!currentLine) {
-                diff.push({ type: "removed", content: previousLine });
-            } else {
-                // Line changed - show both
-                diff.push({ type: "removed", content: previousLine });
-                diff.push({ type: "added", content: currentLine });
-            }
-        }
+  // Event handlers
 
-        return diff;
-    };
+  async function handleShowVersions(e) {
+    setIsLoading(true);
+    const token = getTokenFromCookies();
 
-    const currentDiff =
-        selectedVersion && selectedIndex > 0
-            ? generateDiff(selectedVersion, versions[selectedIndex - 1])
-            : null;
+    const name = e.target.value.split(", ")[0];
+    const project = fetchedProjects.filter((project) => project.title === name);
 
-    // Event handlers
+    setSelectedProject(project[0]);
 
-    async function handleShowVersions(e) {
-        const token = getTokenFromCookies();
+    try {
+      const result = await getVersions(project, token);
 
-        const name = e.target.value.split(", ")[0];
-        const project = fetchedProjects.filter(
-            (project) => project.title === name
-        );
-
-        const result = await getVersions(project, token);
-
+      if (result.success && result.versions) {
         // Map DB version objects to UI version objects
-        const mappedVersions = (result.versions || []).map((ver) => {
-            // Use the first draft in the drafts array for display
-            const draft =
-                Array.isArray(ver.drafts) && ver.drafts.length > 0
-                    ? ver.drafts[0]
-                    : {};
-            // Flatten pages if present
-            let fullContent = "";
-            if (Array.isArray(draft.pages) && draft.pages.length > 0) {
-                // Join all page contents with double newlines
-                fullContent = draft.pages
-                    .map((p) => p.content || "")
-                    .join("\n\n");
-            } else {
-                fullContent = draft.content || draft.draftContent || "";
-            }
-            return {
-                id: ver.versionId || ver._id, // Use versionId as unique id
-                title: draft.title || "Untitled Version",
-                date: draft.lastModified
-                    ? new Date(draft.lastModified)
-                    : new Date(),
-                wordCount: draft.wordCount || 0,
-                status: draft.status || "draft",
-                content: fullContent,
-                // Optionally keep reference to version object fields
-                versionId: ver.versionId,
-                projectId: ver.projectId,
-                _id: ver._id,
-            };
+        const mappedVersions = result.versions.map((ver, index) => {
+          // Use the first draft in the drafts array for display
+          const draft =
+            Array.isArray(ver.drafts) && ver.drafts.length > 0
+              ? ver.drafts[0]
+              : {};
+
+          // Flatten pages if present
+          let fullContent = "";
+          if (Array.isArray(draft.pages) && draft.pages.length > 0) {
+            // Join all page contents with double newlines
+            fullContent = draft.pages.map((p) => p.content || "").join("\n\n");
+          } else {
+            fullContent = draft.content || draft.draftContent || "";
+          }
+
+          // Calculate total word count from all drafts
+          const totalWordCount = (ver.drafts || []).reduce((sum, d) => {
+            return sum + (d.wordCount || 0);
+          }, 0);
+
+          return {
+            id: ver.versionId || ver._id, // Use versionId as unique id
+            title: draft.title || `Version ${index + 1}`,
+            date: ver.date ? new Date(ver.date) : new Date(),
+            wordCount: totalWordCount,
+            status: draft.status || "draft",
+            content: fullContent,
+            // Keep reference to version object fields
+            versionId: ver.versionId,
+            projectId: ver.projectId,
+            _id: ver._id,
+            // Store all drafts for diff comparison
+            drafts: ver.drafts || [],
+            // Add metadata about changes
+            changeType: index === 0 ? "initial" : "modified",
+            draftCount: (ver.drafts || []).length,
+          };
         });
 
         setVersions(mappedVersions);
+
+        // Auto-select the latest version
+        if (mappedVersions.length > 0) {
+          setSelectedVersionId(mappedVersions[mappedVersions.length - 1].id);
+        }
+      } else {
+        console.error("Failed to fetch versions:", result);
+        setVersions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching versions:", error);
+      setVersions([]);
+    } finally {
+      setIsLoading(false);
     }
+  }
 
-    const handleSearch = (e) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-        console.log("🔍 Version search:", value);
-    };
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    console.log("🔍 Version search:", value);
+  };
 
-    const handleVersionSelect = (version) => {
-        setSelectedVersionId(version.id);
-        console.log("📄 Version selected:", version.title);
-    };
+  const handleVersionSelect = (version) => {
+    setSelectedVersionId(version.id);
+    console.log("📄 Version selected:", version.title);
+  };
 
-    const handlePrevious = () => {
-        if (selectedIndex > 0) {
-            const prevVersion = versions[selectedIndex - 1];
-            setSelectedVersionId(prevVersion.id);
-            console.log("⬅️ Previous version:", prevVersion.title);
-        }
-    };
+  const handlePrevious = () => {
+    if (selectedIndex > 0) {
+      const prevVersion = versions[selectedIndex - 1];
+      setSelectedVersionId(prevVersion.id);
+      console.log("⬅️ Previous version:", prevVersion.title);
+    }
+  };
 
-    const handleNext = () => {
-        if (selectedIndex < versions.length - 1) {
-            const nextVersion = versions[selectedIndex + 1];
-            setSelectedVersionId(nextVersion.id);
-            console.log("➡️ Next version:", nextVersion.title);
-        }
-    };
+  const handleNext = () => {
+    if (selectedIndex < versions.length - 1) {
+      const nextVersion = versions[selectedIndex + 1];
+      setSelectedVersionId(nextVersion.id);
+      console.log("➡️ Next version:", nextVersion.title);
+    }
+  };
 
-    return (
-        <div className="version-history">
-            {/* Header */}
-            <div className="vh-header">
-                <h1 className="vh-title">Version History</h1>
-                <p className="vh-subtitle">
-                    Compare and track changes across different versions of your
-                    work
-                </p>
+  return (
+    <div className="version-history">
+      {/* Header */}
+      <div className="vh-header">
+        <h1 className="vh-title">Version History</h1>
+        <p className="vh-subtitle">
+          Compare and track changes across different versions of your work
+        </p>
 
-                {!fetchedProjects ? (
-                    <span className="text-gray mt-2 text-[1rem] bg-amber-100">
-                        Loading Projects...
-                    </span>
-                ) : (
-                    <select
-                        id="project"
-                        className="mt-2 bg-amber-100 p-1 rounded-sm "
-                        onClick={handleShowVersions}
+        {!fetchedProjects ? (
+          <span className="text-gray mt-2 text-[1rem] bg-amber-100">
+            Loading Projects...
+          </span>
+        ) : (
+          <select
+            id="project"
+            className="mt-2 bg-amber-100 p-1 rounded-sm"
+            onChange={handleShowVersions}
+            defaultValue=""
+          >
+            <option value="" disabled>
+              Select a project...
+            </option>
+            {fetchedProjects.map((project, index) => (
+              <option className="border-gray-500" key={index}>
+                {project.title + ", " + project.author}
+              </option>
+            ))}
+          </select>
+        )}
+
+        {selectedProject && (
+          <div className="mt-2 text-sm text-gray-600">
+            <strong>Current Project:</strong> {selectedProject.title}
+            {versions.length > 0 && (
+              <span className="ml-4">
+                <strong>Versions:</strong> {versions.length}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="vh-content">
+        {/* Left Panel - Versions List */}
+        <div className="vh-sidebar">
+          <div className="vh-search-container">
+            <div className="vh-search-wrapper">
+              <svg
+                className="vh-search-icon"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input
+                type="text"
+                placeholder="Search versions..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="vh-search-input"
+              />
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="vh-loading">
+              <div className="loading-spinner"></div>
+              <span>Loading versions...</span>
+            </div>
+          ) : (
+            <div className="vh-versions-list">
+              {filteredVersions.length === 0 ? (
+                <div className="vh-empty-versions">
+                  <p>No versions found</p>
+                  {selectedProject && (
+                    <p className="text-sm text-gray-500">
+                      Select a project to view its version history
+                    </p>
+                  )}
+                </div>
+              ) : (
+                filteredVersions.map((version, index) => {
+                  const statusConfig = getStatusConfig(version.status);
+                  const isSelected = selectedVersionId === version.id;
+
+                  return (
+                    <div
+                      key={index}
+                      className={`vh-version-item ${
+                        isSelected ? "selected" : ""
+                      }`}
+                      onClick={() => handleVersionSelect(version)}
                     >
-                        {fetchedProjects.map((project, index) => (
-                            <option className="border-gray-500" key={index}>
-                                {" "}
-                                {/* can add custom component with the options */}
-                                {project.title + ", " + project.author}
-                            </option>
-                        ))}
-                    </select>
-                )}
-            </div>
-
-            <div className="vh-content">
-                {/* Left Panel - Versions List */}
-                <div className="vh-sidebar">
-                    <div className="vh-search-container">
-                        <div className="vh-search-wrapper">
-                            <svg
-                                className="vh-search-icon"
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                            >
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <path d="m21 21-4.35-4.35"></path>
-                            </svg>
-                            <input
-                                type="text"
-                                placeholder="Search versions..."
-                                value={searchTerm}
-                                onChange={handleSearch}
-                                className="vh-search-input"
-                            />
+                      <div className="vh-version-header">
+                        <h4 className="vh-version-title">{version.title}</h4>
+                        <span
+                          className={`vh-status-badge ${statusConfig.className}`}
+                        >
+                          {statusConfig.label}
+                        </span>
+                      </div>
+                      <div className="vh-version-meta">
+                        <span className="vh-version-date">
+                          {formatDate(version.date)}
+                        </span>
+                        <span className="vh-version-words">
+                          {version.wordCount.toLocaleString()} words
+                        </span>
+                      </div>
+                      {version.draftCount > 1 && (
+                        <div className="vh-version-drafts">
+                          <span className="vh-draft-count">
+                            {version.draftCount} drafts
+                          </span>
                         </div>
+                      )}
                     </div>
-
-                    <div className="vh-versions-list">
-                        {filteredVersions.map((version, index) => {
-                            const statusConfig = getStatusConfig(
-                                version.status
-                            );
-                            const isSelected = selectedVersionId === version.id;
-
-                            return (
-                                <div
-                                    key={index}
-                                    className={`vh-version-item ${
-                                        isSelected ? "selected" : ""
-                                    }`}
-                                    onClick={() => handleVersionSelect(version)}
-                                >
-                                    <div className="vh-version-header">
-                                        <h4 className="vh-version-title">
-                                            {version.title}
-                                        </h4>
-                                        <span
-                                            className={`vh-status-badge ${statusConfig.className}`}
-                                        >
-                                            {statusConfig.label}
-                                        </span>
-                                    </div>
-                                    <div className="vh-version-meta">
-                                        <span className="vh-version-date">
-                                            {formatDate(version.date)}
-                                        </span>
-                                        <span className="vh-version-words">
-                                            {version.wordCount.toLocaleString()}{" "}
-                                            words
-                                        </span>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                {/* Right Panel - Comparison View */}
-                <div className="vh-main">
-                    {!selectedVersion ? (
-                        <div className="vh-empty-state">
-                            <div className="vh-empty-icon">
-                                <svg
-                                    width="64"
-                                    height="64"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="1.5"
-                                >
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                    <polyline points="14,2 14,8 20,8"></polyline>
-                                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                                </svg>
-                            </div>
-                            <h3 className="vh-empty-title">
-                                Select a version to compare
-                            </h3>
-                            <p className="vh-empty-description">
-                                Choose a version from the list to view its
-                                content and see changes from the previous
-                                version.
-                            </p>
-                        </div>
-                    ) : (
-                        <>
-                            {/* Version Navigation */}
-                            <div className="vh-navigation">
-                                <div className="vh-nav-info">
-                                    <h3 className="vh-current-title">
-                                        {selectedVersion.title}
-                                    </h3>
-                                    <span className="vh-current-date">
-                                        {formatDate(selectedVersion.date)}
-                                    </span>
-                                </div>
-                                <div className="vh-nav-buttons">
-                                    <button
-                                        className="vh-nav-btn"
-                                        onClick={handlePrevious}
-                                        disabled={selectedIndex === 0}
-                                        type="button"
-                                        aria-label="Previous version"
-                                    >
-                                        <svg
-                                            width="16"
-                                            height="16"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                        >
-                                            <polyline points="15,18 9,12 15,6"></polyline>
-                                        </svg>
-                                        Previous
-                                    </button>
-                                    <button
-                                        className="vh-nav-btn"
-                                        onClick={handleNext}
-                                        disabled={
-                                            selectedIndex ===
-                                            versions.length - 1
-                                        }
-                                        type="button"
-                                        aria-label="Next version"
-                                    >
-                                        Next
-                                        <svg
-                                            width="16"
-                                            height="16"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                        >
-                                            <polyline points="9,18 15,12 9,6"></polyline>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Content Comparison */}
-                            <div className="vh-comparison">
-                                <div className="vh-comparison-header">
-                                    <h4 className="vh-comparison-title">
-                                        {selectedIndex === 0
-                                            ? "Original Version"
-                                            : `Changes from "${
-                                                  versions[selectedIndex - 1]
-                                                      .title
-                                              }"`}
-                                    </h4>
-                                    <div className="vh-word-count">
-                                        {selectedVersion.wordCount.toLocaleString()}{" "}
-                                        words
-                                    </div>
-                                </div>
-
-                                <div className="vh-content-area">
-                                    {selectedIndex === 0 || !currentDiff ? (
-                                        // Show original content without diff
-                                        <div className="vh-original-content">
-                                            {selectedVersion.content
-                                                .split("\n")
-                                                .map((line, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="vh-content-line unchanged"
-                                                    >
-                                                        {line || "\u00A0"}
-                                                    </div>
-                                                ))}
-                                        </div>
-                                    ) : (
-                                        // Show diff
-                                        <div className="vh-diff-content">
-                                            {currentDiff.map((line, index) => (
-                                                <div
-                                                    key={index}
-                                                    className={`vh-content-line ${line.type}`}
-                                                >
-                                                    {line.type === "added" && (
-                                                        <span className="vh-diff-marker">
-                                                            +
-                                                        </span>
-                                                    )}
-                                                    {line.type ===
-                                                        "removed" && (
-                                                        <span className="vh-diff-marker">
-                                                            -
-                                                        </span>
-                                                    )}
-                                                    <span className="vh-line-content">
-                                                        {line.content ||
-                                                            "\u00A0"}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </>
-                    )}
-                </div>
+                  );
+                })
+              )}
             </div>
+          )}
         </div>
-    );
+
+        {/* Right Panel - Comparison View */}
+        <div className="vh-main">
+          {!selectedVersion ? (
+            <div className="vh-empty-state">
+              <div className="vh-empty-icon">
+                <svg
+                  width="64"
+                  height="64"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14,2 14,8 20,8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+              </div>
+              <h3 className="vh-empty-title">Select a version to compare</h3>
+              <p className="vh-empty-description">
+                Choose a version from the list to view its content and see
+                changes from the previous version.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Version Navigation */}
+              <div className="vh-navigation">
+                <div className="vh-nav-info">
+                  <h3 className="vh-current-title">{selectedVersion.title}</h3>
+                  <span className="vh-current-date">
+                    {formatDate(selectedVersion.date)}
+                  </span>
+                </div>
+                <div className="vh-nav-buttons">
+                  <button
+                    className="vh-nav-btn"
+                    onClick={handlePrevious}
+                    disabled={selectedIndex === 0}
+                    type="button"
+                    aria-label="Previous version"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="15,18 9,12 15,6"></polyline>
+                    </svg>
+                    Previous
+                  </button>
+                  <button
+                    className="vh-nav-btn"
+                    onClick={handleNext}
+                    disabled={selectedIndex === versions.length - 1}
+                    type="button"
+                    aria-label="Next version"
+                  >
+                    Next
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="9,18 15,12 9,6"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Content Comparison */}
+              <div className="vh-comparison">
+                <div className="vh-comparison-header">
+                  <h4 className="vh-comparison-title">
+                    {selectedIndex === 0
+                      ? "Original Version"
+                      : `Changes from "${versions[selectedIndex - 1].title}"`}
+                  </h4>
+                  <div className="vh-word-count">
+                    {selectedVersion.wordCount.toLocaleString()} words
+                  </div>
+                </div>
+
+                {/* Show draft changes if any */}
+                {currentDraftDiff && currentDraftDiff.length > 0 && (
+                  <div className="vh-draft-changes">
+                    <h5 className="vh-draft-changes-title">Draft Changes:</h5>
+                    <div className="vh-draft-changes-list">
+                      {currentDraftDiff.map((change, index) => (
+                        <div
+                          key={index}
+                          className={`vh-draft-change ${change.type}`}
+                        >
+                          <span className="vh-draft-change-marker">
+                            {change.type === "draft-added" && "+"}
+                            {change.type === "draft-removed" && "-"}
+                            {change.type === "draft-modified" && "~"}
+                          </span>
+                          <span className="vh-draft-change-content">
+                            {change.content}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="vh-content-area">
+                  {selectedIndex === 0 || !currentDiff ? (
+                    // Show original content without diff
+                    <div className="vh-original-content">
+                      {selectedVersion.content
+                        .split("\n")
+                        .map((line, index) => (
+                          <div
+                            key={index}
+                            className="vh-content-line unchanged"
+                          >
+                            {line || "\u00A0"}
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    // Show diff
+                    <div className="vh-diff-content">
+                      {currentDiff.map((line, index) => (
+                        <div
+                          key={index}
+                          className={`vh-content-line ${line.type}`}
+                        >
+                          {line.type === "added" && (
+                            <span className="vh-diff-marker">+</span>
+                          )}
+                          {line.type === "removed" && (
+                            <span className="vh-diff-marker">-</span>
+                          )}
+                          <span className="vh-line-content">
+                            {line.content || "\u00A0"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default VersionHistory;
