@@ -55,6 +55,8 @@ export async function login(req, res) {
 }
 
 export async function loginNative(req, res) {
+    console.log(req.body);
+    
   try {
     const { email, password } = req.body;
 
@@ -69,7 +71,7 @@ export async function loginNative(req, res) {
           role: user.role,
         },
         JWT_SECRET,
-        { expiresIn: JWT_EXPIRES_IN }
+        { expiresIn: JWT_EXPIRES_IN, algorithm: "HS256" }
       );
 
       res.status(200).json({
