@@ -8,28 +8,30 @@ import projectsRouter from "./services/book_projects/project.routes.js";
 import tasksRouter from "./services/tasks/tasks.routes.js";
 import versionsRouter from "./services/versions/versions.routes.js";
 import goalsRouter from "./services/goals/goals.routes.js";
+import { authenticateToken } from "./middlewares/auth.js";
 
 const PORT = process.env.PORT || 5500;
 
 const server = express();
-server.use(cors({
-    origin: "http://localhost:8081",
+server.use(
+  cors({
+    origin:
+      "https://page-by-page-israel-arad-60hplno9z-arads-projects-98ffb176.vercel.app", //TODO: Change to production URL
     credentials: true,
-}));
-server.use(express.json()); 
+  })
+);
+server.use(express.json());
 server.use(express.urlencoded({ extended: true })); //תמיכה בכתובת בתווים שאינם לטיניים
 
 //route --> controller --> model --> database
 server.use("/api/books", bookRouter);
 server.use("/api/projects", projectsRouter);
 server.use("/api/users", userRouter);
-server.use("/api/chat", aiRouter);
+server.use("/api/chat", authenticateToken, aiRouter);
 server.use("/api/tasks", tasksRouter);
 server.use("/api/goals", goalsRouter);
 server.use("/api/versions", versionsRouter);
 
-
-
 server.listen(PORT, () => {
-    console.log(`Server running on port http://localhost:${PORT}`);
+  console.log(`Server running on port http://localhost:${PORT}`);
 });

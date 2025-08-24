@@ -13,7 +13,7 @@ rectangle "פלטפורמת PageByPage" {
   usecase UC_FormatText as "עיצוב טקסט"
   usecase UC_SaveVersions as "שמירת טיוטות / ניהול גרסאות"
   usecase UC_ManageTasks as "ניהול משימות / תזמון אירועים"
-  usecase UC_Export as "ייצוא ספר \n(Word/PDF)"
+  usecase UC_Export as "ייצוא ספר \n(PDF)"
   usecase UC_ManageUsers as "ניהול משתמשים \n(מנהל/רגיל)"
 
   ' Relationships within the system

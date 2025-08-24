@@ -1,3 +1,4 @@
+import { authenticateToken } from "../../middlewares/auth.js";
 import { getBookProjects, createProject, getProjectsById, updateProject, deleteProject, deleteDraftById } from "./project.controller.js";
 import { Router } from "express";
 

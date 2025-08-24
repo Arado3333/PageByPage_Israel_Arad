@@ -1,7 +1,7 @@
 @startuml
 !pragma useVerticalIf on
 
-title WR-UC-01: אימות משתמש (מבוסס אלגוריתם)
+title WR-UC-01: אימות משתמש
 
 start
 :המערכת מציגה מסך התחברות;
