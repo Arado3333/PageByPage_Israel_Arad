@@ -14,8 +14,6 @@ import { redirectTo } from "../../lib/actions.js";
 export default function BookLibrary({
     booksPromise,
     onOpenBook,
-    onUpdateBook,
-    onNewProject,
 }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [tagFilter, setTagFilter] = useState("All");

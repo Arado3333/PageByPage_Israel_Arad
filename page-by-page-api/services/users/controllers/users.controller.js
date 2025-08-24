@@ -68,6 +68,7 @@ export async function loginNative(req, res) {
         {
           userId: user._id,
           email: user.email,
+          name: user.name,
           role: user.role,
         },
         JWT_SECRET,

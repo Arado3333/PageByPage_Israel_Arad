@@ -18,6 +18,7 @@ export default function RegisterForm() { //Add server action for registeration
                     Email
                 </label>
                 <input
+                    data-testid="cypress-register-email"
                     id="email"
                     type="email"
                     className="form-input"
@@ -37,6 +38,7 @@ export default function RegisterForm() { //Add server action for registeration
                     Name
                 </label>
                 <input
+                    data-testid="cypress-register-name"
                     id="name"
                     type="text"
                     className="form-input"
@@ -57,6 +59,7 @@ export default function RegisterForm() { //Add server action for registeration
                 </label>
                 <div className="password-input-container">
                     <input
+                        data-testid="cypress-register-password"
                         id="password"
                         type={showPassword ? "text" : "password"}
                         className="form-input"
@@ -90,6 +93,7 @@ export default function RegisterForm() { //Add server action for registeration
                 </label>
                 <div className="password-input-container">
                     <input
+                        data-testid="cypress-register-confirmPassword"
                         id="confirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
                         className="form-input"
