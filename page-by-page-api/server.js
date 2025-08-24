@@ -13,13 +13,7 @@ import { authenticateToken } from "./middlewares/auth.js";
 const PORT = process.env.PORT || 5500;
 
 const server = express();
-server.use(
-  cors({
-    origin:
-      "https://page-by-page-israel-arad-60hplno9z-arads-projects-98ffb176.vercel.app", //TODO: Change to production URL
-    credentials: true,
-  })
-);
+server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true })); //תמיכה בכתובת בתווים שאינם לטיניים
 
