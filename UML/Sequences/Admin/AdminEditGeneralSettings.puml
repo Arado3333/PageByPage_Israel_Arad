@@ -1,3 +1,4 @@
+
 @startuml
 !theme vibrant
 
@@ -16,7 +17,7 @@ Browser ->> Gateway : GET /api/admin/settings\n(Authorization: Bearer JWT)
 activate Gateway
 Gateway ->> SettingsService : getSettings()
 activate SettingsService
-SettingsService ->> SettingsDB : findOne({})
+SettingsService ->> SettingsDB : find().toArray()
 activate SettingsDB
 SettingsDB -->> SettingsService : Settings Document
 deactivate SettingsDB

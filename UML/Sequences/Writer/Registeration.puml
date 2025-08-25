@@ -15,10 +15,10 @@ User -> Browser : Navigates to PageByPage website and chooses to Register
     
 Browser -> User : Displays Registration Form
 User -> Browser : Enters name, email, and password
-Browser ->> Gateway : POST /api/register\n(name, email, password)
+Browser ->> Gateway : POST /api/users\n(name, email, password)
 activate Gateway
 
-Gateway ->> AuthService : register(userData)
+Gateway ->> AuthService : register(name, email, password)
 activate AuthService
 
 AuthService ->> UserDB : findUserByEmail(email)

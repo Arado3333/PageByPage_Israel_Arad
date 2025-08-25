@@ -11,12 +11,12 @@ database "UserDB"
 participant "Logging Service" as LoggingService
 
 activate Browser
-Admin -> Browser : Fills out 'Create User' form\n(email, password, role)
-Browser ->> Gateway : POST /api/admin/users\n(Authorization: Bearer JWT, userData)
+Admin -> Browser : Fills out 'Create User' form\n(email, password, role, bio)
+Browser ->> Gateway : POST /api/users\n(Authorization: Bearer JWT, userData)
 activate Gateway
 
 Gateway -> Gateway : Verify JWT (ensure admin privileges)
-Gateway ->> UserService : createUser(userData)
+Gateway ->> UserService : addUser(userData)
 activate UserService
 
 UserService ->> UserDB : findUserByEmail(email)
@@ -31,7 +31,7 @@ alt Email is unique
     UserDB -->> UserService : New User Document
     deactivate UserDB
 
-    UserService -->> Gateway : 201 Created { newUser }
+    UserService -->> Gateway : 201 Created { "User created successfully", newUser }
     
     ' Asynchronous Logging
     

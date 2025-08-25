@@ -5,36 +5,55 @@ title Sequence Diagram: Admin Views and Filters System Logs
 
 actor Admin
 participant Browser
+participant "localStorage" as LocalStorage
 participant "API Gateway" as Gateway
 participant "Logging Service" as LoggingService
 database "LogsDB"
 
 activate Browser
-Admin -> Browser : Navigates to /admin/logs\nand applies filters (e.g., eventType, dateRange)
+Admin -> Browser : Navigates to /admin/logs\nand applies filters
 
-Browser ->> Gateway : GET /api/admin/logs?eventType=...&dateStart=...\n(Authorization: Bearer JWT)
-activate Gateway
+alt Logs are cached in localStorage
 
-Gateway -> Gateway : Verify JWT (ensure admin privileges)
-Gateway ->> LoggingService : getLogs(filterParams)
-activate LoggingService
+    Browser ->> LocalStorage : Get cached logs
+    activate LocalStorage
+    LocalStorage -->> Browser : [Cached Log Documents]
+    deactivate LocalStorage
 
-LoggingService ->> LogsDB : find(query)
-activate LogsDB
-LogsDB -->> LoggingService : [Log Documents]
-deactivate LogsDB
+    Browser -> Admin : Display filtered logs from cache
 
-alt Logs found
-    LoggingService -->> Gateway : 200 OK { logs: [...] }
-else No logs match
-    LoggingService -->> Gateway : 200 OK { logs: [] }
+else Fetch logs from server
+
+    Browser ->> Gateway : GET /api/admin/logs\n(headers: {Authorization: Bearer JWT}, body: {filterParams})
+    activate Gateway
+
+    Gateway -> Gateway : Verify JWT (ensure admin privileges)
+    Gateway ->> LoggingService : getLogs(filterParams)
+    activate LoggingService
+
+    LoggingService ->> LogsDB : find(query)
+    activate LogsDB
+    LogsDB -->> LoggingService : [Log Documents]
+    deactivate LogsDB
+
+    alt Logs found on server
+        LoggingService -->> Gateway : 200 OK { logs: [...] }
+        Gateway -->> Browser : Response (200 OK with log data)
+        Browser ->> LocalStorage : Cache new logs
+        activate LocalStorage
+        deactivate LocalStorage
+    else No logs match on server
+        LoggingService -->> Gateway : 200 OK { logs: [] }
+        Gateway -->> Browser : Response (200 OK with empty array)
+    end
+
+    deactivate LoggingService
+    deactivate Gateway
+
+    Browser -> Admin : Display fetched logs in a table or list
+
 end
 
-deactivate LoggingService
-Gateway -->> Browser : Response (200 OK with log data)
-deactivate Gateway
-
-Browser -> Admin : Display filtered logs in a table or list
 deactivate Browser
 
 @enduml

@@ -11,22 +11,21 @@ database "UserDB"
 
 activate Browser
 Admin -> Browser : Enters details in /admin/login
-Browser ->> Gateway : POST /api/admin/login\n(email, password)
+Browser ->> Gateway : POST /api/users/login\n(email, password)
 activate Gateway
 
-Gateway ->> AuthService : login(credentials)
+Gateway ->> AuthService : login(email, password)
 activate AuthService
 
-AuthService ->> UserDB : findUserByEmail(email)
+AuthService -> AuthService : Verify role === 'Admin'
+AuthService ->> UserDB : login(email, password)
 activate UserDB
-UserDB -->> AuthService : User Document (incl. hashedPass, role)
+UserDB -->> AuthService : User Document (incl. email, name, role)
 deactivate UserDB
 
 alt Credentials & Role Valid
-    AuthService -> AuthService : Verify role === 'Admin'
-    AuthService -> AuthService : hash(password) matches hashedPass
 
-    AuthService -> AuthService : Generate & sign JWT\n(payload: {userId, role})
+    AuthService -> AuthService : Generate & sign JWT\n(payload: {userId, email, name, role})
     AuthService -->> Gateway : 200 OK { jwt: "..." }
 else Credentials or Role Invalid
     AuthService -->> Gateway : 401 Unauthorized
@@ -38,7 +37,7 @@ Gateway -->> Browser : Response (200 OK or 401)
 deactivate Gateway
 
 alt Login Successful
-    Browser -> Browser : Store JWT (e.g., sessionStorage)
+    Browser -> Browser : Store JWT (cookieStorage)
     Browser -> Admin : Redirect to /admin/dashboard
 else Login Failed
     Browser -> Admin : Display "Invalid credentials" error

@@ -1,3 +1,4 @@
+
 @startuml
 !theme vibrant
 
@@ -15,10 +16,10 @@ User -> Browser : Navigates to PageByPage website and chooses to Login
 
 Browser -> User : Displays Login Form
 User -> Browser : Enters email and password
-Browser ->> Gateway : POST /api/login\n(email, password)
+Browser ->> Gateway : POST /api/users/login\n(email, password)
 activate Gateway
 
-Gateway ->> AuthService : login(credentials)
+Gateway ->> AuthService : login(email, password)
 activate AuthService
 
 AuthService ->> UserDB : findUserByEmail(email)

@@ -15,14 +15,15 @@ Admin -> Browser : Selects user and clicks 'Delete User'
 Browser -> Browser : Shows confirmation dialog: "Are you sure?"
 Admin -> Browser : Confirms deletion
 
-Browser ->> Gateway : DELETE /api/admin/users/{userId}\n(Authorization: Bearer JWT)
+Browser ->> Gateway : DELETE /api/users/{userId}\n(Authorization: Bearer JWT)
 activate Gateway
 
 Gateway -> Gateway : Verify JWT (ensure admin privileges)
+Gateway -> Gateway : Check Deleted user's admin 
 Gateway ->> UserService : deleteUser(userId)
 activate UserService
 
-UserService ->> UserDB : findByIdAndDelete(userId)
+UserService ->> UserDB : deleteUser(userId)
 activate UserDB
 UserDB -->> UserService : Deleted User Document
 deactivate UserDB

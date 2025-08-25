@@ -13,14 +13,15 @@ participant "Logging Service" as LoggingService
 activate Browser
 Admin -> Browser : Selects user and submits 'Edit User' form\n(e.g., updated name, new role: "Manager")
 
-Browser ->> Gateway : PUT /api/admin/users/{userId}\n(Authorization: Bearer JWT, updatedData)
+Browser ->> Gateway : PUT /api/users/{userId}\n(headers: {Authorization: Bearer JWT}, body: {updatedData})
 activate Gateway
 
 Gateway -> Gateway : Verify JWT (ensure admin privileges)
-Gateway ->> UserService : updateUser(userId, updatedData)
+Gateway -> Gateway : Check Modified User's admin 
+Gateway ->> UserService : updateUserDetails(userId, updatedData)
 activate UserService
 
-UserService ->> UserDB : findByIdAndUpdate(userId, updatedData)
+UserService ->> UserDB : updateUserDetails(userId, updatedData)
 activate UserDB
 UserDB -->> UserService : Updated User Document
 deactivate UserDB

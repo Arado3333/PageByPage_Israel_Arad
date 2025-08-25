@@ -25,8 +25,6 @@ export async function addUser(req, res) {
       user: result,
     });
   } catch (error) {
-    console.log(error);
-
     res.status(500).json({
       message: "An error occurred while creating the user.",
     });
@@ -36,8 +34,6 @@ export async function addUser(req, res) {
 export async function login(req, res) {
   try {
     const { email, password } = req.body;
-
-    console.log(req.body);
 
     const user = await User.login(email, password);
 
@@ -54,9 +50,7 @@ export async function login(req, res) {
   }
 }
 
-export async function loginNative(req, res) {
-    console.log(req.body);
-    
+export async function loginNative(req, res) {    
   try {
     const { email, password } = req.body;
 
@@ -90,8 +84,6 @@ export async function loginNative(req, res) {
 }
 
 export async function updateUserDetails(req, res) {
-  console.log(req.body);
-  console.log(req.params);
 
   const { name, email, newPassword, role, bio } = req.body;
   const { id } = req.params;

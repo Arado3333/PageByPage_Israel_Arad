@@ -27,7 +27,6 @@ export async function getProjectsById(req, res) {
 }
 
 export async function createProject(req, res) {
-    console.log(req.body);
 
     const {
         userId,

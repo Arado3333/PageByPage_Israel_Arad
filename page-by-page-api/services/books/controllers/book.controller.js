@@ -32,7 +32,6 @@ export async function getBookByProjectId(req, res) {
 }
 
 export async function addBook(req, res) {
-    console.log("Req: \n" + req.body);
 
     let { title, author, genres, coverImg } = req.body;
     if (!title || !author) {
@@ -42,9 +41,7 @@ export async function addBook(req, res) {
     }
 
     const newBook = new Book(title, author, genres, coverImg);
-    console.log(newBook);
 
-    //בקשה לשמירת ספר חדש
     try {
         const saved = await newBook.createBook();
         res.status(201).json({ success: true, message: saved });

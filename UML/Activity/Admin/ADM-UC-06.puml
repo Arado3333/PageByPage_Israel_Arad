@@ -1,7 +1,7 @@
 @startuml
 !theme vibrant
 
-title פעילויות ניהול תצורות AI משלימות
+title  ניהול תצורות משלימות AI
 
 start
 :גישה למקטע "הגדרות AI";
