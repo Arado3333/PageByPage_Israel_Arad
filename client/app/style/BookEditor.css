@@ -487,6 +487,13 @@ body {
   min-height: 100%;
   width: 100%;
   cursor: text;
+  /* Ensure clean text rendering */
+  font-family: Georgia, serif;
+  line-height: 1.6;
+  color: var(--foreground);
+  /* Hide any potential HTML artifacts */
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .page-content:empty:before {
@@ -531,6 +538,194 @@ body {
 .page-content li {
   margin: 4px 0;
 }
+
+/* Additional clean text rendering styles */
+.page-content p {
+  margin: 0 0 16px 0;
+  text-align: inherit;
+}
+
+.page-content strong,
+.page-content b {
+  font-weight: bold;
+}
+
+.page-content em,
+.page-content i {
+  font-style: italic;
+}
+
+.page-content u {
+  text-decoration: underline;
+}
+
+/* Ensure clean rendering of TipTap content */
+.page-content .ProseMirror {
+  outline: none;
+}
+
+.page-content .ProseMirror p {
+  margin: 0 0 16px 0;
+}
+
+.page-content .ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+/* Hide HTML tags visually while preserving formatting */
+.page-content .ProseMirror {
+  font-family: Georgia, serif;
+  line-height: 1.6;
+  color: var(--foreground);
+}
+
+/* Ensure clean text display without visible HTML artifacts */
+.page-content .ProseMirror * {
+  font-family: inherit;
+  line-height: inherit;
+}
+
+/* Clean up any potential HTML artifacts */
+.page-content .ProseMirror {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Custom styles to ensure clean text display */
+.page-content .ProseMirror {
+  /* Remove any default browser styling that might show HTML artifacts */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Ensure all text elements inherit clean styling */
+.page-content .ProseMirror h1,
+.page-content .ProseMirror h2,
+.page-content .ProseMirror h3,
+.page-content .ProseMirror h4,
+.page-content .ProseMirror h5,
+.page-content .ProseMirror h6,
+.page-content .ProseMirror p,
+.page-content .ProseMirror div,
+.page-content .ProseMirror span {
+  font-family: Georgia, serif;
+  line-height: 1.6;
+  color: var(--foreground);
+  margin: 0;
+  padding: 0;
+}
+
+/* Plain Text Preview Styles */
+.plain-text-preview {
+  font-family: Georgia, serif;
+  line-height: 1.6;
+  color: var(--foreground);
+  padding: 0;
+}
+
+.plain-text-preview pre {
+  font-family: Georgia, serif;
+  line-height: 1.6;
+  color: var(--foreground);
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: inherit;
+}
+
+/* Formatted Preview Styles */
+.formatted-preview {
+  font-family: Georgia, serif;
+  line-height: 1.6;
+  color: var(--foreground);
+  padding: 0;
+}
+
+.formatted-preview h1 {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 24px 0 16px 0;
+  color: var(--foreground);
+}
+
+.formatted-preview h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 20px 0 12px 0;
+  color: var(--foreground);
+}
+
+.formatted-preview h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 16px 0 8px 0;
+  color: var(--foreground);
+}
+
+.formatted-preview h4 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 14px 0 6px 0;
+  color: var(--foreground);
+}
+
+.formatted-preview h5 {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 12px 0 4px 0;
+  color: var(--foreground);
+}
+
+.formatted-preview h6 {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 10px 0 2px 0;
+  color: var(--foreground);
+}
+
+.formatted-preview p {
+  margin: 0 0 16px 0;
+  text-align: inherit;
+}
+
+.formatted-preview strong,
+.formatted-preview b {
+  font-weight: bold;
+}
+
+.formatted-preview em,
+.formatted-preview i {
+  font-style: italic;
+}
+
+.formatted-preview u {
+  text-decoration: underline;
+}
+
+.formatted-preview blockquote {
+  border-left: 4px solid var(--accent);
+  padding-left: 16px;
+  margin: 16px 0;
+  font-style: italic;
+  opacity: 0.8;
+  color: var(--foreground);
+}
+
+.formatted-preview ul,
+.formatted-preview ol {
+  margin: 12px 0;
+  padding-left: 24px;
+}
+
+.formatted-preview li {
+  margin: 4px 0;
+}
+
+
 
 .page-number {
   position: absolute;

@@ -62,6 +62,9 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
     immediatelyRender: false,
     editable: !isPreviewMode,
     content: page.content || placeholder,
+    parseOptions: {
+      preserveWhitespace: "full",
+    },
     extensions: [
       TextStyle,
       Color,
@@ -79,7 +82,8 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
       const html = editor.getHTML();
       const plain = editor.getText();
       const title = plain.split(" ").slice(0, 3).join(" ");
-      onUpdate(page.id, html, title);
+      // Save plain text to preserve structure without HTML tags
+      onUpdate(page.id, plain, title);
     },
     editorProps: {
       attributes: {
@@ -110,6 +114,15 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
     editor.on("focus", handleFocus);
     return () => editor.off("focus", handleFocus);
   }, [editor, onFocus]);
+
+  // For preview mode, show clean plain text version
+  if (isPreviewMode) {
+    return (
+      <div className="page-content plain-text-preview">
+        <pre>{page.content || ""}</pre>
+      </div>
+    );
+  }
 
   return <EditorContent editor={editor} />;
 }
@@ -204,9 +217,9 @@ export default function BookEditorPage() {
     return () => container.removeEventListener("scroll", handleScroll);
   }, [pages.length]);
 
-  // Word count (from HTML contents)
+  // Word count (from plain text contents)
   useEffect(() => {
-    const all = pages.map((p) => htmlToText(p.content)).join(" ");
+    const all = pages.map((p) => p.content || "").join(" ");
     const words = all
       .trim()
       .split(/\s+/)
@@ -299,7 +312,8 @@ export default function BookEditorPage() {
   };
 
   function handleCreateNewProject() {
-    const draftContent = pages.map((p) => htmlToText(p.content)).join("\n\n");
+    // Use plain text content directly for draftContent
+    const draftContent = pages.map((p) => p.content || "").join("\n\n");
     sessionStorage.setItem(
       "bookDraft",
       JSON.stringify({ pages, draftContent, wordCount })
@@ -325,6 +339,7 @@ export default function BookEditorPage() {
   const [projectDrafts, setProjectDrafts] = useState([]);
   const [selectedDraftIndex, setSelectedDraftIndex] = useState(null);
   const [createNewDraft, setCreateNewDraft] = useState(false);
+  const shouldLoadDraftRef = useRef(false);
 
   useEffect(() => {
     if (fetchedProjects && fetchedProjects.length > 0) {
@@ -337,18 +352,20 @@ export default function BookEditorPage() {
 
   // When user selects a draft to edit, load its pages into the editor
   useEffect(() => {
+    // Only load draft content when user explicitly selects a draft
+    // Don't load if we're in the middle of saving
     if (
       projectDrafts.length > 0 &&
       selectedDraftIndex !== null &&
-      projectDrafts[selectedDraftIndex]
+      projectDrafts[selectedDraftIndex] &&
+      !saveExistingBook && // Don't load during save operation
+      shouldLoadDraftRef.current // Only load when explicitly requested
     ) {
-      setPages(
-        projectDrafts[selectedDraftIndex].pages || [
-          { id: 1, title: "", content: "" },
-        ]
-      );
+      const selectedDraft = projectDrafts[selectedDraftIndex];
+      setPages(selectedDraft.pages || [{ id: 1, title: "", content: "" }]);
+      shouldLoadDraftRef.current = false; // Reset the flag
     }
-  }, [selectedDraftIndex, projectDrafts]);
+  }, [selectedDraftIndex, projectDrafts, saveExistingBook]);
 
   async function handleSaveProject(e) {
     e.preventDefault();
@@ -362,7 +379,8 @@ export default function BookEditorPage() {
     );
     const existingDrafts = selectedProject[0].drafts || [];
 
-    const draftContent = pages.map((p) => htmlToText(p.content)).join("\n\n");
+    // Use plain text content directly for draftContent
+    const draftContent = pages.map((p) => p.content || "").join("\n\n");
 
     draftRef.current.title = pages[0].title;
     draftRef.current.pages = pages;
@@ -554,7 +572,7 @@ export default function BookEditorPage() {
                         </h3>
                         <form
                           onSubmit={handleSaveProject}
-                          className="mt-2 px-7 py-3"
+                          className="mt-2 px-5 py-3"
                           name="save-draft"
                         >
                           <label
@@ -606,6 +624,10 @@ export default function BookEditorPage() {
                                     : null
                                 );
                                 setCreateNewDraft(false);
+                                // Set flag to load draft content when user explicitly selects a draft
+                                if (e.target.value !== "") {
+                                  shouldLoadDraftRef.current = true;
+                                }
                               }
                             }}
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -648,8 +670,10 @@ export default function BookEditorPage() {
                             <option>Completed</option>
                           </select>
                           <div className="items-center px-4 py-3">
-                            <button className="btn-primary">Confirm</button>
-                            <button
+                            <Button className="btn-primary font-bold hover:bg-blue-300">
+                              Confirm
+                            </Button>
+                            <Button
                               type="button"
                               onClick={() => {
                                 setSaveBook(false);
@@ -659,7 +683,7 @@ export default function BookEditorPage() {
                               className="px-4 py-2 ml-4 bg-red-500 text-white font-bold rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300"
                             >
                               Cancel
-                            </button>
+                            </Button>
                           </div>
                         </form>
                       </div>
