@@ -14,6 +14,12 @@ export async function getAllUsers(req, res) {
   }
 }
 
+export async function getUserProfile(req, res) {
+  const { userId } = req.params;
+  const user = await User.getUserProfile(userId);
+  res.status(200).json({ success: true, user: user });
+}
+
 export async function addUser(req, res) {
   try {
     const { email, name, password } = req.body;
@@ -50,7 +56,7 @@ export async function login(req, res) {
   }
 }
 
-export async function loginNative(req, res) {    
+export async function loginNative(req, res) {
   try {
     const { email, password } = req.body;
 
@@ -84,7 +90,6 @@ export async function loginNative(req, res) {
 }
 
 export async function updateUserDetails(req, res) {
-
   const { name, email, newPassword, role, bio } = req.body;
   const { id } = req.params;
 

@@ -34,6 +34,25 @@ export async function getUserByEmail(email) {
     }
 }
 
+export async function getUserProfile(userId) {
+    let client = null;
+    
+    try {
+        client = await MongoClient.connect(process.env.CONNECTION_STRING);
+        let db = client.db(process.env.DB_NAME);
+        return await db.collection("Users").findOne({ _id: ObjectId.createFromHexString(userId) });
+    }
+    catch (error) {
+        console.error("Error fetching user profile from database", error);
+        throw error;
+    }
+    finally {
+        if (client) {
+            client.close();
+        }
+    }
+}
+
 export async function createUser(user) {
     let client = null;
 

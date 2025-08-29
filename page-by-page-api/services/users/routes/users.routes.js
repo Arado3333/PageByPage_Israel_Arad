@@ -1,6 +1,7 @@
 import { isAdmin, authenticateToken } from "../../../middlewares/auth.js";
 import {
   getAllUsers,
+  getUserProfile,
   addUser,
   login,
   loginNative,

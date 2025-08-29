@@ -30,9 +30,10 @@ export async function getUserStats() {
 
 export async function getUser() {
     const token = await getSessionToken();
+    const session = await getSessionObject();
 
     const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVICE}/api/users/profile`,
+        `${process.env.NEXT_PUBLIC_SERVICE}/api/users/profile/${session.userId}`,
         {
             headers: {
                 Authorization: `Bearer ${token}`,

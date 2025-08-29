@@ -24,6 +24,10 @@ export default class User {
         }
     }
 
+    static async getUserProfile(userId) {
+        return await getUserProfile(userId);
+    }
+
     static async login(email, password) {
         try {
             let user = await getUserByEmail(email);
