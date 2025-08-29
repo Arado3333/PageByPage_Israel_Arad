@@ -28,6 +28,20 @@ export async function getUserStats() {
     return stats;
 }
 
+export async function getUser() {
+    const token = await getSessionToken();
+
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVICE}/api/users/profile`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return await response.json();
+}
+
 export async function getRecentDrafts() {
     const projects = await getProjectsWithCookies();
     const drafts = projects.flatMap((project) => project.drafts || []); //All the drafts
@@ -264,8 +278,8 @@ export async function aiTextTool({ text, tool }) {
     return resultText;
 }
 
-//CRUD with Express
 
+//CRUD with Express
 export async function getProjectsWithCookies() {
     //with cookie data - server side
 

@@ -1,9 +1,11 @@
 import { Target, ChevronRight } from "lucide-react";
+import { Button } from "../../app/books/ui/button";
 import Link from "next/link";
 import GoalContent from "./GoalContent";
 import GoalSkeleton from "./skeletons/GoalSkeleton";
 import { getWritingGoals } from "../../app/api/routes.js";
 import { Suspense } from "react";
+import RedirectButton from "../RedirectButton";
 // Import daily goal from Book Manager or shared utility/hook
 // import useDailyGoal from "../../app/books/useDailyGoal"
 
@@ -22,9 +24,10 @@ export default function DailyGoalCard() {
                 <GoalContent goalsPromise={goalsPromise} />
             </Suspense>
             <div className="card-footer">
-                <Link href="/book-editor" className="card-link">
-                    Continue writing <ChevronRight className="link-icon" />
-                </Link>
+                <RedirectButton
+                    buttonText="Continue writing"
+                    pathname="/book-editor-v2"
+                />
             </div>
         </div>
     );

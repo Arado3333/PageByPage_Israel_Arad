@@ -6,8 +6,14 @@ import WritingStreakCard from "../../components/overview/WritingStreakCard";
 import UpcomingTasksCard from "../../components/overview/UpcomingTasksCard";
 import RecentDraftsCard from "../../components/overview/RecentDraftsCard";
 import AISuggestionsCard from "../../components/overview/AISuggestionsCard";
+import { getUser } from "../api/routes.js";
 
 export default function DashboardPage() {
+    
+    const user = getUser().then((user) => {
+        console.log(user);
+    });
+
     return (
         <div className="dashboard-container">
             <h1 className="dashboard-title">Welcome back, Writer</h1>

@@ -12,6 +12,7 @@ const userRouter = Router();
 
 userRouter
   .get("/", isAdmin, getAllUsers)
+  .get("/profile/:userId", authenticateToken, getUserProfile)
   .post("/", addUser)
   .post("/login", login)
   .post("/loginNative", loginNative)

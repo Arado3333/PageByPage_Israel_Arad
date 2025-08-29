@@ -11,6 +11,7 @@ import {
   AlignLeft,
   AlignRight,
   List,
+  ListOrdered,
   Quote,
   Sparkles,
   BookOpen,
@@ -32,13 +33,16 @@ import {
 } from "../api/routes.js";
 import { Button } from "../books/ui/button";
 
-// --- Tiptap imports ---
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { TextStyle } from "@tiptap/extension-text-style";
+import {
+  TextStyle,
+  BackgroundColor,
+  FontFamily,
+} from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import FontSize from "@tiptap/extension-font-size";
-import Placeholder from "@tiptap/extension-placeholder";
+import { Placeholder } from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
 
 // Helper: strip HTML for word-count/title generation
@@ -51,39 +55,97 @@ const htmlToText = (html = "") => {
     .trim();
 };
 
+// Helper: check if font is available
+const isFontAvailable = (fontFamily) => {
+  const testString = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  // Get the width with the font
+  context.font = `16px ${fontFamily}`;
+  const widthWithFont = context.measureText(testString).width;
+
+  // Get the width with a fallback font
+  context.font = "16px monospace";
+  const widthWithFallback = context.measureText(testString).width;
+
+  return widthWithFont !== widthWithFallback;
+};
+
 // Child page editor: one Tiptap instance per page
-function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
+function PageEditor({ page, isPreviewMode, onUpdate, onFocus }) {
   // Helper to detect RTL (Hebrew, Arabic, etc.)
   function isRTL(text) {
     return /[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/.test(text);
   }
 
+  // Track if content has been initially loaded
+  const hasInitialContentLoaded = useRef(false);
+
+  // Debounce update calls to prevent excessive updates
+  const updateTimeoutRef = useRef(null);
+
   const editor = useEditor({
     immediatelyRender: false,
     editable: !isPreviewMode,
-    content: page.content || placeholder,
     parseOptions: {
       preserveWhitespace: "full",
     },
     extensions: [
+      StarterKit.configure({
+        orderedList: {
+          keepMarks: true,
+          HTMLAttributes: {
+            class: "ordered-list",
+          },
+        },
+        bulletList: {
+          keepMarks: true,
+          HTMLAttributes: {
+            class: "bullet-list",
+          },
+        },
+        listItem: {
+          HTMLAttributes: {
+            class: "list-item",
+          },
+        },
+        heading: { levels: [1, 2, 3, 4, 5, 6] },
+        marks: {
+          bold: true,
+          italic: true,
+          underline: true,
+          strike: true,
+        },
+        paragraph: true,
+        text: true,
+      }),
+      Placeholder.configure({ placeholder: "Start writing your story..." }),
       TextStyle,
       Color,
-      FontSize.configure({ types: ["textStyle"] }),
+      FontSize.configure({ types: ["textStyle", "paragraph", "heading"] }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
-      Placeholder.configure({ placeholder }),
-      StarterKit.configure({
-        orderedList: { keepMarks: true },
-        bulletList: { keepMarks: true },
-        heading: { levels: [1, 2, 3, 4, 5, 6] },
-        text: true,
+      BackgroundColor,
+      FontFamily.configure({
+        types: ["textStyle", "paragraph", "heading"],
       }),
     ],
     onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      const plain = editor.getText();
-      const title = plain.split(" ").slice(0, 3).join(" ");
-      // Save plain text to preserve structure without HTML tags
-      onUpdate(page.id, plain, title);
+      // Clear existing timeout
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+
+      // Debounce the update to prevent excessive calls
+      updateTimeoutRef.current = setTimeout(() => {
+        const plain = editor.getText();
+        const json = editor.getJSON();
+        const title = plain.split(" ").slice(0, 3).join(" ");
+
+        // Save both plain text and JSON content to preserve all formatting including fonts
+        // The JSON content contains all the formatting information (fonts, colors, etc.)
+        onUpdate(page.id, plain, title, json);
+      }, 100); // 100ms debounce
     },
     editorProps: {
       attributes: {
@@ -102,6 +164,54 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
     editor?.setEditable(!isPreviewMode);
   }, [isPreviewMode, editor]);
 
+  // Reset initial content flag when page changes
+  useEffect(() => {
+    hasInitialContentLoaded.current = false;
+  }, [page.id]);
+
+  // Load content when page.editorContent changes - only on initial load
+  useEffect(() => {
+    if (editor && !hasInitialContentLoaded.current && !editor.isDestroyed) {
+      try {
+        // Only load content on initial load
+        if (page.editorContent) {
+          // Ensure we're setting the full JSON content to preserve all formatting including fonts
+          if (typeof page.editorContent === "object") {
+            editor.commands.setContent(page.editorContent);
+          } else if (typeof page.editorContent === "string") {
+            // If it's a string, try to parse it as JSON first
+            try {
+              const parsedContent = JSON.parse(page.editorContent);
+              editor.commands.setContent(parsedContent);
+            } catch {
+              // If parsing fails, treat it as plain text
+              editor.commands.setContent(page.editorContent);
+            }
+          }
+        } else if (page.content) {
+          // If there's no editorContent but there's plain content, load it
+          editor.commands.setContent(page.content);
+        }
+
+        hasInitialContentLoaded.current = true;
+      } catch (error) {
+        console.error("Error loading editor content:", error);
+        // Fallback to plain text content
+        editor.commands.setContent(page.content || "");
+        hasInitialContentLoaded.current = true;
+      }
+    }
+  }, [editor, page.editorContent, page.content]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // reflect external content changes (e.g., AI insertion fallback)
   useEffect(() => {
     if (!editor) return;
@@ -114,6 +224,52 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
     editor.on("focus", handleFocus);
     return () => editor.off("focus", handleFocus);
   }, [editor, onFocus]);
+
+  // Preserve focus during content updates
+  useEffect(() => {
+    if (!editor) return;
+
+    // Store current selection before any content changes
+    const handleBeforeUpdate = () => {
+      if (editor.isFocused) {
+        const { from, to } = editor.state.selection;
+        editor.view.dom.setAttribute("data-selection-from", from);
+        editor.view.dom.setAttribute("data-selection-to", to);
+      }
+    };
+
+    // Restore selection after content changes
+    const handleUpdate = () => {
+      if (editor.isFocused) {
+        const from = editor.view.dom.getAttribute("data-selection-from");
+        const to = editor.view.dom.getAttribute("data-selection-to");
+        if (from && to) {
+          try {
+            const fromPos = parseInt(from);
+            const toPos = parseInt(to);
+            if (
+              fromPos >= 0 &&
+              toPos >= 0 &&
+              fromPos <= editor.state.doc.content.size &&
+              toPos <= editor.state.doc.content.size
+            ) {
+              editor.commands.setTextSelection({ from: fromPos, to: toPos });
+            }
+          } catch (error) {
+            // If restoration fails, just keep the current selection
+          }
+        }
+      }
+    };
+
+    editor.on("beforeUpdate", handleBeforeUpdate);
+    editor.on("update", handleUpdate);
+
+    return () => {
+      editor.off("beforeUpdate", handleBeforeUpdate);
+      editor.off("update", handleUpdate);
+    };
+  }, [editor]);
 
   // For preview mode, show clean plain text version
   if (isPreviewMode) {
@@ -129,7 +285,9 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus, placeholder }) {
 
 export default function BookEditorPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pages, setPages] = useState([{ id: 1, title: "", content: "" }]);
+  const [pages, setPages] = useState([
+    { id: 1, title: "", content: "", editorContent: null },
+  ]);
   const [currentDrafts, setCurrentDrafts] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [showBookmarks, setShowBookmarks] = useState(false);
@@ -158,10 +316,67 @@ export default function BookEditorPage() {
   // Draft ref stores the structured draft object
   const draftRef = useRef(null);
 
-  // Initialize Draft on mount
+  // Initialize Draft on mount and load draft context if available
   useEffect(() => {
-    // Only initialize a blank draft on mount. Do not auto-load draftContext.
+    // Check if there's draft context to load
+    const draftContext = sessionStorage.getItem("draftContext");
+    if (draftContext) {
+      try {
+        const parsedDraft = JSON.parse(draftContext);
+        if (parsedDraft.pages && parsedDraft.pages.length > 0) {
+          // Load the draft pages with their editorContent
+          setPages(
+            parsedDraft.pages.map((page) => ({
+              id: page.id || Date.now(),
+              title: page.title || "",
+              content: page.content || "",
+              editorContent: page.editorContent || page.content,
+            }))
+          );
+          // Clear the draft context after loading
+          sessionStorage.removeItem("draftContext");
+        }
+      } catch (error) {
+        console.error("Error loading draft context:", error);
+        sessionStorage.removeItem("draftContext");
+      }
+    }
+
+    // Initialize draft ref
     draftRef.current = new Draft({ pages: [...pages], wordCount });
+
+    // Check font availability after fonts load
+    const checkFonts = () => {
+      const fonts = [
+        "Open Sans",
+        "Roboto",
+        "Heebo",
+        "Noto Sans Hebrew",
+        "Noto Serif Hebrew",
+        "Playpen Sans Hebrew",
+        "Rubik",
+        "Caveat",
+        "Pacifico",
+      ];
+
+      fonts.forEach((font) => {
+        const available = isFontAvailable(font);
+        console.log(
+          `Font ${font} is ${available ? "available" : "NOT available"}`
+        );
+      });
+    };
+
+    // Check fonts after a delay
+    setTimeout(checkFonts, 2000);
+
+    // Also check when fonts are loaded
+    if ("fonts" in document) {
+      document.fonts.ready.then(() => {
+        console.log("All fonts loaded");
+        checkFonts();
+      });
+    }
   }, []);
 
   // Sync Draft whenever pages/wordCount change
@@ -260,6 +475,12 @@ export default function BookEditorPage() {
       case "insertUnorderedList":
         chain.toggleBulletList().run();
         break;
+      case "insertOrderedList":
+        chain.toggleOrderedList().run();
+        break;
+      case "setFontFamily":
+        chain.setFontFamily(value).run();
+        break;
       default:
         break;
     }
@@ -267,13 +488,23 @@ export default function BookEditorPage() {
 
   const addNewPage = () => {
     const newPageId = draftRef.current.addPage();
-    setPages([...pages, { id: newPageId, title: "", content: "" }]);
+    setPages([
+      ...pages,
+      { id: newPageId, title: "", content: "", editorContent: null },
+    ]);
   };
 
-  const updatePageContent = (pageId, html, titleFromPage) => {
+  const updatePageContent = (pageId, html, titleFromPage, editorContent) => {
     setPages((prev) =>
       prev.map((p) =>
-        p.id === pageId ? { ...p, content: html, title: titleFromPage } : p
+        p.id === pageId
+          ? {
+              ...p,
+              content: html,
+              title: titleFromPage,
+              editorContent: editorContent,
+            }
+          : p
       )
     );
   };
@@ -362,7 +593,11 @@ export default function BookEditorPage() {
       shouldLoadDraftRef.current // Only load when explicitly requested
     ) {
       const selectedDraft = projectDrafts[selectedDraftIndex];
-      setPages(selectedDraft.pages || [{ id: 1, title: "", content: "" }]);
+      setPages(
+        selectedDraft.pages || [
+          { id: 1, title: "", content: "", editorContent: null },
+        ]
+      );
       shouldLoadDraftRef.current = false; // Reset the flag
     }
   }, [selectedDraftIndex, projectDrafts, saveExistingBook]);
@@ -428,6 +663,8 @@ export default function BookEditorPage() {
       status
     );
     setSaveBook(false);
+
+    console.log(updatedDrafts);
     return result;
   }
 
@@ -493,7 +730,7 @@ export default function BookEditorPage() {
         .chain()
         .focus()
         .deleteRange({ from, to })
-        .insertContent(aiResult) // Insert text without color styling
+        .insertContent(aiResult)
         .run();
     } else {
       setPages((prev) =>
@@ -739,6 +976,80 @@ export default function BookEditorPage() {
                   </div>
 
                   <div className="toolbar-group">
+                    <select
+                      onChange={(e) =>
+                        formatText("setFontFamily", e.target.value)
+                      }
+                      className="toolbar-select"
+                      style={{ minWidth: "120px" }}
+                    >
+                      <option value="">Font</option>
+                      <option
+                        value="Georgia, serif"
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        Georgia
+                      </option>
+                      <option
+                        value="Open Sans, sans-serif"
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                      >
+                        Open Sans
+                      </option>
+                      <option
+                        value="Roboto, sans-serif"
+                        style={{ fontFamily: "Roboto, sans-serif" }}
+                      >
+                        Roboto
+                      </option>
+                      <option
+                        value="Heebo, sans-serif"
+                        style={{ fontFamily: "Heebo, sans-serif" }}
+                      >
+                        Heebo
+                      </option>
+                      <option
+                        value="Noto Sans Hebrew, sans-serif"
+                        style={{ fontFamily: "Noto Sans Hebrew, sans-serif" }}
+                      >
+                        Noto Sans Hebrew
+                      </option>
+                      <option
+                        value="Noto Serif Hebrew, serif"
+                        style={{ fontFamily: "Noto Serif Hebrew, serif" }}
+                      >
+                        Noto Serif Hebrew
+                      </option>
+                      <option
+                        value="Playpen Sans Hebrew, sans-serif"
+                        style={{
+                          fontFamily: "Playpen Sans Hebrew, sans-serif",
+                        }}
+                      >
+                        Playpen Sans Hebrew
+                      </option>
+                      <option
+                        value="Rubik, sans-serif"
+                        style={{ fontFamily: "Rubik, sans-serif" }}
+                      >
+                        Rubik
+                      </option>
+                      <option
+                        value="Caveat, cursive"
+                        style={{ fontFamily: "Caveat, cursive" }}
+                      >
+                        Caveat
+                      </option>
+                      <option
+                        value="Pacifico, cursive"
+                        style={{ fontFamily: "Pacifico, cursive" }}
+                      >
+                        Pacifico
+                      </option>
+                    </select>
+                  </div>
+
+                  <div className="toolbar-group">
                     <button
                       className="toolbar-btn"
                       onClick={() => formatText("justifyLeft")}
@@ -756,6 +1067,12 @@ export default function BookEditorPage() {
                       onClick={() => formatText("insertUnorderedList")}
                     >
                       <List size={16} />
+                    </button>
+                    <button
+                      className="toolbar-btn"
+                      onClick={() => formatText("insertOrderedList")}
+                    >
+                      <ListOrdered size={16} />
                     </button>
                     <button
                       className="toolbar-btn"
@@ -940,7 +1257,6 @@ export default function BookEditorPage() {
                   <PageEditor
                     page={page}
                     isPreviewMode={isPreviewMode}
-                    placeholder={"Start writing your story..."}
                     onUpdate={updatePageContent}
                     onFocus={setActiveEditor}
                   />

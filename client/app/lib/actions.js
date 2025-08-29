@@ -65,8 +65,6 @@ export async function updateProjectData(prevState, formData) {
 import cloudinary from "./cloudinary";
 
 export async function uploadAction(prevState, formData) {
-    console.log(formData);
-
     //preparing DB update
     const book = JSON.parse(formData.get("book"));
     const name = formData.get("title");
@@ -103,7 +101,6 @@ export async function uploadAction(prevState, formData) {
 
     const dbResult = await updateBook(updatedBook);
     console.log(dbResult);
-
 
     redirect("/books");
 }

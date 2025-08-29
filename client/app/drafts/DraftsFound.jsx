@@ -6,7 +6,7 @@ export default function DraftsFound({ booksPromise }) {
 
     const draftsFound = useMemo(() => {
         return books.flatMap((book) => book.drafts || []);
-    }, []);
+    }, [books]);
 
     return (
         <div className="dm-results-info">

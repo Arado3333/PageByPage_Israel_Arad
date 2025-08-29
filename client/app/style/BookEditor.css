@@ -2,6 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Heebo:wght@100..900&family=Noto+Sans+Hebrew:wght@100..900&family=Noto+Serif+Hebrew:wght@100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Pacifico&family=Playpen+Sans+Hebrew:wght@100..800&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+/* Font loading fallbacks */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/opensans/v40/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4gaVI.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Heebo';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/heebo/v21/NGSpv5_NC0k9P_v6ZUCbLRAHxK1EiSysdUmj.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/caveat/v17/WnznHAc5bAfYB2QRah7pcpNvOx-pjfJ9eIipYSxP.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Pacifico';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/pacifico/v22/FwZY7-Qmy14u9lezJ-6H6MmBp0u-.woff2') format('woff2');
+}
+
+/* Ensure fonts are loaded before displaying */
+.toolbar-select option {
+  font-display: swap;
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
   transition: var(--transition);
@@ -535,6 +583,14 @@ body {
   padding-left: 24px;
 }
 
+ol {
+  list-style: decimal;
+}
+
+ul {
+  list-style: disc;
+}
+
 .page-content li {
   margin: 4px 0;
 }
@@ -560,6 +616,14 @@ body {
 }
 
 /* Ensure clean rendering of TipTap content */
+.tiptap p.is-editor-empty:first-child::before {
+  color: #898e8e;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
 .page-content .ProseMirror {
   outline: none;
 }
@@ -614,6 +678,93 @@ body {
   color: var(--foreground);
   margin: 0;
   padding: 0;
+}
+
+
+/* Font family styles for TipTap content */
+.page-content .ProseMirror [data-font-family="Georgia, serif"] {
+  font-family: Georgia, serif !important;
+}
+
+.page-content .ProseMirror [data-font-family="Open Sans, sans-serif"] {
+  font-family: 'Open Sans', sans-serif !important;
+}
+
+.page-content .ProseMirror [data-font-family="Roboto, sans-serif"] {
+  font-family: 'Roboto', sans-serif !important;
+}
+
+.page-content .ProseMirror [data-font-family="Heebo, sans-serif"] {
+  font-family: 'Heebo', sans-serif !important;
+}
+
+.page-content .ProseMirror [data-font-family="Noto Sans Hebrew, sans-serif"] {
+  font-family: 'Noto Sans Hebrew', sans-serif !important;
+}
+
+.page-content .ProseMirror [data-font-family="Noto Serif Hebrew, serif"] {
+  font-family: 'Noto Serif Hebrew', serif !important;
+}
+
+.page-content .ProseMirror [data-font-family="Playpen Sans Hebrew, sans-serif"] {
+  font-family: 'Playpen Sans Hebrew', sans-serif !important;
+}
+
+.page-content .ProseMirror [data-font-family="Rubik, sans-serif"] {
+  font-family: 'Rubik', sans-serif !important;
+}
+
+.page-content .ProseMirror [data-font-family="Caveat, cursive"] {
+  font-family: 'Caveat', cursive !important;
+}
+
+.page-content .ProseMirror [data-font-family="Pacifico, cursive"] {
+  font-family: 'Pacifico', cursive !important;
+}
+
+/* Font dropdown styling */
+.toolbar-select option {
+  font-family: inherit;
+}
+
+.toolbar-select option[value="Georgia, serif"] {
+  font-family: Georgia, serif;
+}
+
+.toolbar-select option[value="Open Sans, sans-serif"] {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.toolbar-select option[value="Roboto, sans-serif"] {
+  font-family: 'Roboto', sans-serif;
+}
+
+.toolbar-select option[value="Heebo, sans-serif"] {
+  font-family: 'Heebo', sans-serif;
+}
+
+.toolbar-select option[value="Noto Sans Hebrew, sans-serif"] {
+  font-family: 'Noto Sans Hebrew', sans-serif;
+}
+
+.toolbar-select option[value="Noto Serif Hebrew, serif"] {
+  font-family: 'Noto Serif Hebrew', serif;
+}
+
+.toolbar-select option[value="Playpen Sans Hebrew, sans-serif"] {
+  font-family: 'Playpen Sans Hebrew', sans-serif;
+}
+
+.toolbar-select option[value="Rubik, sans-serif"] {
+  font-family: 'Rubik', sans-serif;
+}
+
+.toolbar-select option[value="Caveat"] {
+  font-family: 'Caveat', cursive;
+}
+
+.toolbar-select option[value="Pacifico"] {
+  font-family: 'Pacifico', cursive;
 }
 
 /* Plain Text Preview Styles */

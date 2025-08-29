@@ -118,23 +118,13 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
   };
 
   const handleEdit = (e, draft) => {
+    //Injects the draft content into the editor
     e.preventDefault();
     const toEdit = { ...draft };
-    router.push("/book-editor-v2");
-
-    const numPages = toEdit.pages.length;
-
-    for (let i = 0; i < numPages; i++) {
-      setTimeout(() => {
-        document.querySelector("#add-page-btn").click();
-
-        let pagesElements = document.querySelector(`#page-${i + 1}`);
-        pagesElements.querySelector(".page-content").textContent =
-          toEdit.pages[i].content;
-      }, 500);
-    }
-
+    // Store the draft context for the editor to load
     sessionStorage.setItem("draftContext", JSON.stringify(toEdit));
+    console.log(toEdit);
+    router.push("/book-editor-v2");
   };
 
   const handleDelete = (e, draft) => {
