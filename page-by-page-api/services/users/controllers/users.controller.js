@@ -17,6 +17,7 @@ export async function getAllUsers(req, res) {
 export async function getUserProfile(req, res) {
   const { userId } = req.params;
   const user = await User.getUserProfile(userId);
+  
   res.status(200).json({ success: true, user: user });
 }
 

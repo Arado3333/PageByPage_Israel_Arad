@@ -6,15 +6,15 @@ import { getProjectsWithCookies } from "../api/routes";
 import { Suspense } from "react";
 
 export default function DraftsPage() {
-    const booksPromise = getProjectsWithCookies();
+  const booksPromise = getProjectsWithCookies();
 
-    return (
-        <>
-            <Header />
-            <Suspense fallback={<DraftsFoundLoader/>}>
-                <DraftsFound booksPromise={booksPromise} />
-            </Suspense>
-            <DraftsDataProvider />
-        </>
-    );
+  return (
+    <>
+      <Header />
+      <Suspense fallback={<DraftsFoundLoader />}>
+        <DraftsFound booksPromise={booksPromise} />
+      </Suspense>
+      <DraftsDataProvider />
+    </>
+  );
 }

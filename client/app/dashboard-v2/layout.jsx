@@ -1,5 +1,7 @@
+"use client";
+
 import AppLayoutV2 from "../components/AppLayoutV2";
 
-export default function BooksLayout({ children }) {
+export default function DashboardV2Layout({ children }) {
   return <AppLayoutV2>{children}</AppLayoutV2>;
 }

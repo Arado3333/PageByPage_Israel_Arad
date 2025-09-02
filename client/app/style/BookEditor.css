@@ -74,6 +74,8 @@ body {
   display: flex;
   flex-direction: column;
   transition: var(--transition);
+  position: relative;
+  z-index: 1;
 }
 
 /* AI Comparison Styles */
@@ -163,22 +165,40 @@ body {
   }
 }
 
-.editor-container {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  transition: var(--transition);
+/* Enhanced page styling */
+.page {
+  width: 100%;
+  min-height: 1123px;
+  padding: 3rem;
+  position: relative;
+  font-family: Georgia, serif;
+  font-size: 16px;
+  line-height: 1.6;
+  border-radius: 12px;
+  background: var(--card-background);
+  color: var(--foreground);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  touch-action: pan-y pinch-zoom;
 }
 
-/* Toolbar */
+.page:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: var(--accent);
+}
+
+/* Enhanced toolbar styling */
 .toolbar {
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 50;
   background: var(--muted);
   color: var(--foreground);
   border-bottom: 1px solid var(--border);
   transition: var(--transition);
+  backdrop-filter: blur(10px);
 }
 
 .toolbar-content {
@@ -202,117 +222,140 @@ body {
   margin-left: auto;
 }
 
-/* Buttons */
+/* Enhanced button styling */
 .btn-primary {
   padding: 8px 16px;
-  background-color: var(--accent);
-  color: var(--accent-foreground, #fff);
+  background: linear-gradient(to-r, #4f46e5, #7c3aed);
+  color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+  min-height: 40px;
+  min-width: 80px;
+  text-align: center;
 }
 
 .btn-primary:hover,
 .btn-primary:focus {
-  background-color: var(--accent-secondary, #b08a2e);
-  color: var(--accent-foreground, #fff);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(to-r, #4338ca, #6d28d9);
+  color: white;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+  transform: translateY(-1px);
 }
 
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background: linear-gradient(to-r, #6b7280, #9ca3af);
 }
 
 .btn-secondary {
-  padding: 6px 12px;
-  background-color: var(--background);
-  color: var(--accent);
-  border: 1px solid var(--accent);
-  border-radius: 4px;
+  padding: 8px 16px;
+  background: linear-gradient(to-r, #4f46e5, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: flex;
   align-items: center;
   gap: 4px;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+  min-height: 40px;
+  min-width: 80px;
 }
 
 .btn-secondary:hover,
 .btn-secondary:focus {
-  background-color: var(--accent-secondary, #b08a2e);
-  color: var(--accent-foreground, #fff);
-  border-color: var(--accent-secondary, #b08a2e);
+  background: linear-gradient(to-r, #4338ca, #6d28d9);
+  color: white;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+  transform: translateY(-1px);
 }
 
 .preview-btn {
-  background-color: var(--accent);
-  color: var(--accent-foreground, #fff);
+  background: linear-gradient(to-r, #4f46e5, #7c3aed);
+  color: white;
   border: none;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+  min-height: 40px;
+  min-width: 80px;
 }
 
 .preview-btn:hover,
 .preview-btn:focus {
-  background-color: var(--accent-secondary, #b08a2e);
-  color: var(--accent-foreground, #fff);
+  background: linear-gradient(to-r, #4338ca, #6d28d9);
+  color: white;
 }
 
 .toolbar-btn {
   padding: 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   background: transparent;
   color: var(--accent);
   border: 1px solid var(--border);
+  min-height: 36px;
+  min-width: 36px;
 }
 
 .toolbar-btn:hover,
 .toolbar-btn:focus {
   background: var(--muted);
   color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .ai-btn {
-  padding: 8px 12px;
+  padding: 8px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: flex;
   align-items: center;
   gap: 4px;
-  background: var(--accent-secondary, #b08a2e);
-  color: var(--accent-foreground, #fff);
+  background: linear-gradient(to-r, #4f46e5, #7c3aed);
+  color: white;
   font-weight: 600;
+  min-height: 40px;
+  min-width: 80px;
 }
 
 .ai-btn:hover,
 .ai-btn:focus {
-  background: var(--accent);
-  color: var(--accent-foreground, #fff);
+  background: linear-gradient(to-r, #4338ca, #6d28d9);
+  color: white;
+  transform: translateY(-1px);
 }
 
 .toolbar-select {
   padding: 6px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
   background: var(--muted);
   color: var(--foreground);
   border: 1px solid var(--border);
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.toolbar-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* Dropdown */
@@ -336,19 +379,44 @@ body {
   transform: rotate(180deg);
 }
 
+/* Enhanced dropdown styling */
 .dropdown-menu {
   position: absolute;
   top: 100%;
   right: 0;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   min-width: 300px;
-  z-index: 9999;
+  z-index: 50;
   margin-top: 4px;
   background: var(--card-background);
   color: var(--foreground);
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(10px);
+}
+
+/* AI Tools Modal specific styling */
+.toolbar-group {
+  position: relative;
+}
+
+.toolbar-group .absolute {
+  position: absolute;
+  z-index: 9999;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* Ensure AI tools modal is fully visible */
+.toolbar-group .absolute[role="menu"] {
+  position: absolute;
+  top: calc(100% + 8px) !important;
+  left: 0;
+  z-index: 9999;
+  max-height: none !important;
+  overflow: visible !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .dropdown-header {
@@ -378,10 +446,10 @@ body {
 .page-btn {
   padding: 4px 12px;
   font-size: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   background: var(--muted);
   color: var(--foreground);
 }
@@ -389,6 +457,7 @@ body {
 .page-btn:hover {
   background-color: var(--accent);
   color: var(--accent-foreground);
+  transform: translateY(-1px);
 }
 
 .bookmarks-list {
@@ -401,14 +470,17 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 12px;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   background: var(--muted);
   color: var(--foreground);
+  border-radius: 8px;
+  margin: 4px;
 }
 
 .bookmark-item:hover {
   background-color: var(--accent);
   color: var(--accent-foreground);
+  transform: translateY(-1px);
 }
 
 .bookmark-btn {
@@ -438,9 +510,9 @@ body {
   padding: 4px;
   background: none;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   color: var(--muted-foreground);
 }
 
@@ -451,14 +523,16 @@ body {
 .remove-btn:hover {
   background-color: var(--accent-secondary);
   color: var(--accent-foreground);
+  transform: translateY(-1px);
 }
 
-/* Status Bar */
+/* Enhanced status bar styling */
 .status-bar {
   flex-shrink: 0;
   background: var(--muted);
   color: var(--foreground);
   transition: var(--transition);
+  backdrop-filter: blur(10px);
 }
 
 .status-content {
@@ -482,7 +556,7 @@ body {
 .mode-indicator {
   font-size: 12px;
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   color: var(--muted-foreground);
 }
 
@@ -513,23 +587,119 @@ body {
   width: 100%;
 }
 
-.page {
-  width: 100%;
-  min-height: 1123px;
-  padding: 3rem;
-  position: relative;
-  font-family: Georgia, serif;
-  font-size: 16px;
-  line-height: 1.6;
-  border-radius: 2px;
-  background: var(--card-background);
-  color: var(--foreground);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--border);
-  transition: var(--transition);
-  touch-action: pan-y pinch-zoom;
+/* Enhanced modal styling */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
 }
 
+.modal {
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+  max-width: 28rem;
+  width: 100%;
+  margin: 0 16px;
+  background: var(--card-background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: auto;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 10000;
+}
+
+/* AI Modal specific styling for better centering */
+.modal-overlay .modal[style*="position: fixed"] {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  z-index: 10001;
+}
+
+/* AI Modal Override - Completely independent positioning */
+.ai-modal-override {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  z-index: 10001 !important;
+  background: white !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15) !important;
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+/* Ensure AI modal is above everything */
+.modal-overlay .ai-modal-override {
+  z-index: 10002 !important;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.modal-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Enhanced focus mode styling */
+.focus-exit {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+  background: linear-gradient(to-r, #4f46e5, #7c3aed);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  min-height: 40px;
+  min-width: 80px;
+}
+
+.focus-exit:hover {
+  background: linear-gradient(to-r, #4338ca, #6d28d9);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+}
+
+/* Page content styles */
 .page-content {
   outline: none;
   min-height: 100%;
@@ -679,7 +849,6 @@ ul {
   margin: 0;
   padding: 0;
 }
-
 
 /* Font family styles for TipTap content */
 .page-content .ProseMirror [data-font-family="Georgia, serif"] {
@@ -876,8 +1045,6 @@ ul {
   margin: 4px 0;
 }
 
-
-
 .page-number {
   position: absolute;
   bottom: 48px;
@@ -897,73 +1064,36 @@ ul {
   margin: 0 auto;
 }
 
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+/* Editor container */
+.editor-container {
+  height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-
-.modal {
-  padding: 24px;
-  border-radius: 8px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
-  max-width: 28rem;
-  width: 100%;
-  margin: 0 16px;
-  background: var(--card-background);
-  color: var(--foreground);
-  border: 1px solid var(--border);
-  transition: var(--transition);
-  overflow: auto;
-}
-
-.modal-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-}
-
-.modal-input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  background: var(--background);
-  color: var(--foreground);
-  border: 1px solid var(--border);
-}
-
-.modal-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-/* Focus Mode */
-.focus-exit {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 50;
-  background-color: var(--accent);
-  color: var(--accent-foreground);
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
+  flex-direction: column;
   transition: var(--transition);
 }
 
 /* Responsive */
+@media (min-width: 1024px) {
+  .ai-modal-override {
+    left: 60% !important;
+    max-width: 70% !important;
+  }
+}
+
+
 @media (max-width: 768px) {
   .toolbar-content {
     padding: 12px 8px;
     gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-group {
+    gap: 6px;
+  }
+
+  .toolbar-group.hidden.md\:flex {
+    display: none !important;
   }
 
   .page {
@@ -980,6 +1110,7 @@ ul {
     padding: 8px 12px;
     font-size: 12px;
     white-space: nowrap;
+    min-width: 70px;
   }
 
   .dropdown-menu {
@@ -993,14 +1124,25 @@ ul {
 }
 
 @media (max-width: 480px) {
+  .toolbar-content {
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .toolbar-group {
+    gap: 4px;
+  }
+
   .page {
     padding: 1.5rem 1rem !important;
     font-size: 13px !important;
   }
 
-  .toolbar-content {
-    padding: 8px;
-    gap: 4px;
+  .btn-primary,
+  .btn-secondary {
+    padding: 6px 10px;
+    font-size: 11px;
+    min-width: 60px;
   }
 
   .dropdown-menu {

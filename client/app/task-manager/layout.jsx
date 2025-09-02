@@ -1,5 +1,5 @@
-import AppLayout from "../components/AppLayout"
+import AppLayoutV2 from "../components/AppLayoutV2";
 
 export default function TaskManagerLayout({ children }) {
-  return <AppLayout>{children}</AppLayout>
+  return <AppLayoutV2>{children}</AppLayoutV2>;
 }

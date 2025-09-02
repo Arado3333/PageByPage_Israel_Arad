@@ -40,7 +40,10 @@ export async function getUser() {
             },
         }
     );
-    return await response.json();
+    const result = await response.json();
+    delete result.user.password;
+    
+    return result.user;
 }
 
 export async function getRecentDrafts() {

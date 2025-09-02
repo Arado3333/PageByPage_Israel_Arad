@@ -271,11 +271,16 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus }) {
     };
   }, [editor]);
 
-  // For preview mode, show clean plain text version
+  // For preview mode, show formatted content
   if (isPreviewMode) {
     return (
-      <div className="page-content plain-text-preview">
-        <pre>{page.content || ""}</pre>
+      <div className="page-content formatted-preview">
+        <div
+          className="prose max-w-none"
+          dangerouslySetInnerHTML={{
+            __html: editor?.getHTML() || page.content || "",
+          }}
+        />
       </div>
     );
   }
@@ -691,8 +696,14 @@ export default function BookEditorPage() {
       if (selection) selectedText = selection.toString();
     }
 
-    if (!selectedText || !tool)
-      return alert("Please select some text before using AI tools.");
+    if (!selectedText || !tool) {
+      setAiResult("Please select some text before using AI tools.");
+      setAiSelectedText(selectedText || "");
+      setAiTool(tool || "");
+      setShowAiModal(true);
+      setUseAiTools(false);
+      return;
+    }
 
     try {
       // Set loading state and show modal immediately
@@ -706,16 +717,58 @@ export default function BookEditorPage() {
       const result = await aiTextTool({ text: selectedText, tool });
       console.log("AI result:", result);
 
-      // Update with the result
-      setAiResult(result);
+      // Check if result is valid
+      if (result && typeof result === "string" && result.trim() !== "") {
+        setAiResult(result);
+      } else {
+        setAiResult(
+          "AI tool completed but returned no content. Please try again."
+        );
+      }
+
       setIsAiLoading(false);
 
       return result;
     } catch (err) {
       console.error("AI request failed:", err);
       setIsAiLoading(false);
-      setAiResult("AI request failed. Please try again.");
-      return "AI request failed.";
+
+      // Graceful error handling with user-friendly messages
+      let errorMessage = "AI request failed. Please try again later.";
+
+      if (err.message) {
+        if (err.message.includes("network") || err.message.includes("fetch")) {
+          errorMessage =
+            "Network error. Please check your internet connection and try again.";
+        } else if (err.message.includes("timeout")) {
+          errorMessage = "Request timed out. Please try again.";
+        } else if (
+          err.message.includes("rate limit") ||
+          err.message.includes("quota")
+        ) {
+          errorMessage =
+            "Rate limit exceeded. Please wait a moment and try again.";
+        } else if (
+          err.message.includes("unauthorized") ||
+          err.message.includes("401")
+        ) {
+          errorMessage =
+            "Authentication error. Please refresh the page and try again.";
+        } else if (
+          err.message.includes("server") ||
+          err.message.includes("500")
+        ) {
+          errorMessage = "Server error. Please try again in a few minutes.";
+        }
+      }
+
+      setAiResult(errorMessage);
+      setAiSelectedText(selectedText);
+      setAiTool(tool);
+      setShowAiModal(true);
+      setUseAiTools(false);
+
+      return errorMessage;
     }
   }
 
@@ -748,6 +801,13 @@ export default function BookEditorPage() {
 
   return (
     <div className="book-editor">
+      {/* Decorative blobs */}
+      <div className="pointer-events-none fixed -z-10 inset-0 overflow-hidden">
+        <div className="absolute -top-16 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-indigo-300 to-purple-300 blur-3xl opacity-40" />
+        <div className="absolute -bottom-24 -right-10 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-200 to-cyan-200 blur-3xl opacity-40" />
+        <div className="absolute top-1/2 left-1/2 h-64 w-64 rounded-full bg-gradient-to-tr from-pink-200 to-rose-300 blur-3xl opacity-30" />
+      </div>
+
       {savedBookStatus.message && (
         <StatusMessage
           message={savedBookStatus.message}
@@ -774,7 +834,7 @@ export default function BookEditorPage() {
                   onClick={() =>
                     document.getElementById("my_modal_1").showModal()
                   }
-                  className="btn-primary"
+                  className="btn-primary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2 text-center"
                 >
                   Save
                 </button>
@@ -784,13 +844,13 @@ export default function BookEditorPage() {
                       <form method="dialog">
                         <button
                           onClick={handleSaveExistingProject}
-                          className="btn-primary mb-2"
+                          className="btn-primary mb-2 bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                         >
                           Save Existing Book
                         </button>
                         <button
                           onClick={handleCreateNewProject}
-                          className="btn-primary"
+                          className="btn-primary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                         >
                           Create New Book
                         </button>
@@ -799,137 +859,8 @@ export default function BookEditorPage() {
                   </div>
                 </dialog>
 
-                {/* Save to existing project */}
-                {saveExistingBook && (
-                  <section className="flex justify-center items-center fixed inset-0 bg-gray-500 bg-opacity-50 overflow-y-auto h-full w-full">
-                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                      <div className="mt-3 text-center">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">
-                          Save To Existing Book Project
-                        </h3>
-                        <form
-                          onSubmit={handleSaveProject}
-                          className="mt-2 px-5 py-3"
-                          name="save-draft"
-                        >
-                          <label
-                            htmlFor="project"
-                            className="block text-gray-700 text-sm font-bold mb-2"
-                          >
-                            Project:
-                          </label>
-                          <select
-                            id="project"
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            value={selectedProjectIndex}
-                            onChange={(e) => {
-                              setSelectedProjectIndex(Number(e.target.value));
-                              setSelectedDraftIndex(null);
-                              setCreateNewDraft(false);
-                            }}
-                          >
-                            {fetchedProjects?.map((project, index) => (
-                              <option key={index} value={index}>
-                                {project.title + ", " + project.author}
-                              </option>
-                            ))}
-                          </select>
-
-                          <label
-                            htmlFor="draft"
-                            className="block text-gray-700 text-sm font-bold mt-4 mb-2"
-                          >
-                            Draft:
-                          </label>
-                          <select
-                            id="draft"
-                            value={
-                              createNewDraft
-                                ? "new"
-                                : selectedDraftIndex !== null
-                                ? selectedDraftIndex
-                                : ""
-                            }
-                            onChange={(e) => {
-                              if (e.target.value === "new") {
-                                setCreateNewDraft(true);
-                                setSelectedDraftIndex(null);
-                              } else {
-                                setSelectedDraftIndex(
-                                  e.target.value !== ""
-                                    ? Number(e.target.value)
-                                    : null
-                                );
-                                setCreateNewDraft(false);
-                                // Set flag to load draft content when user explicitly selects a draft
-                                if (e.target.value !== "") {
-                                  shouldLoadDraftRef.current = true;
-                                }
-                              }
-                            }}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                          >
-                            <option value="">
-                              -- Select Existing Draft --
-                            </option>
-                            {projectDrafts.map((draft, idx) => (
-                              <option key={idx} value={idx}>
-                                {draft.title || `Draft ${idx + 1}`}
-                              </option>
-                            ))}
-                            <option key="new" value="new">
-                              New Draft
-                            </option>
-                          </select>
-                          <button
-                            type="button"
-                            className="mt-2 mb-4 px-3 py-1 bg-green-500 text-white rounded hover:bg-green-700"
-                            onClick={() => {
-                              setCreateNewDraft(true);
-                              setSelectedDraftIndex(null);
-                            }}
-                          >
-                            + Create New Draft
-                          </button>
-
-                          <label
-                            htmlFor="status"
-                            className="block text-gray-700 text-sm font-bold mt-4 mb-2"
-                          >
-                            Status:
-                          </label>
-                          <select
-                            id="status"
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                          >
-                            <option>Draft</option>
-                            <option>In Progress</option>
-                            <option>Completed</option>
-                          </select>
-                          <div className="items-center px-4 py-3">
-                            <Button className="btn-primary font-bold hover:bg-blue-300">
-                              Confirm
-                            </Button>
-                            <Button
-                              type="button"
-                              onClick={() => {
-                                setSaveBook(false);
-                                setSelectedDraftIndex(null);
-                                setCreateNewDraft(false);
-                              }}
-                              className="px-4 py-2 ml-4 bg-red-500 text-white font-bold rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300"
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  </section>
-                )}
-
                 <button
-                  className="btn-secondary preview-btn"
+                  className="btn-secondary preview-btn bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                   onClick={() => setIsPreviewMode(!isPreviewMode)}
                 >
                   <Eye size={16} />
@@ -939,33 +870,33 @@ export default function BookEditorPage() {
 
               {!isPreviewMode && (
                 <>
-                  <div className="toolbar-group">
+                  <div className="toolbar-group hidden md:flex">
                     <button
-                      className="toolbar-btn"
+                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
                       onClick={() => formatText("bold")}
                     >
                       <Bold size={16} />
                     </button>
                     <button
-                      className="toolbar-btn"
+                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
                       onClick={() => formatText("italic")}
                     >
                       <Italic size={16} />
                     </button>
                     <button
-                      className="toolbar-btn"
+                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
                       onClick={() => formatText("underline")}
                     >
                       <UnderlineIcon size={16} />
                     </button>
                   </div>
 
-                  <div className="toolbar-group">
+                  <div className="toolbar-group hidden md:flex">
                     <select
                       onChange={(e) =>
                         formatText("formatBlock", e.target.value)
                       }
-                      className="toolbar-select"
+                      className="toolbar-select rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                     >
                       <option value="div">Normal</option>
                       <option value="h1">Heading 1</option>
@@ -975,12 +906,12 @@ export default function BookEditorPage() {
                     </select>
                   </div>
 
-                  <div className="toolbar-group">
+                  <div className="toolbar-group hidden md:flex">
                     <select
                       onChange={(e) =>
                         formatText("setFontFamily", e.target.value)
                       }
-                      className="toolbar-select"
+                      className="toolbar-select rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                       style={{ minWidth: "120px" }}
                     >
                       <option value="">Font</option>
@@ -1049,33 +980,33 @@ export default function BookEditorPage() {
                     </select>
                   </div>
 
-                  <div className="toolbar-group">
+                  <div className="toolbar-group hidden md:flex">
                     <button
-                      className="toolbar-btn"
+                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
                       onClick={() => formatText("justifyLeft")}
                     >
                       <AlignLeft size={16} />
                     </button>
                     <button
-                      className="toolbar-btn"
+                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
                       onClick={() => formatText("justifyRight")}
                     >
                       <AlignRight size={16} />
                     </button>
                     <button
-                      className="toolbar-btn"
+                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
                       onClick={() => formatText("insertUnorderedList")}
                     >
                       <List size={16} />
                     </button>
                     <button
-                      className="toolbar-btn"
+                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
                       onClick={() => formatText("insertOrderedList")}
                     >
                       <ListOrdered size={16} />
                     </button>
                     <button
-                      className="toolbar-btn"
+                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
                       onClick={() => formatText("formatBlock", "blockquote")}
                     >
                       <Quote size={16} />
@@ -1087,72 +1018,26 @@ export default function BookEditorPage() {
               <div className="toolbar-group">
                 <button
                   onClick={() => setUseAiTools(!useAiTools)}
-                  className="btn-primary"
+                  className="btn-primary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                 >
                   <Sparkles size={14} />
                   AI Tools
                 </button>
-
-                {useAiTools && (
-                  <div
-                    className="absolute z-10 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                    role="menu"
-                    aria-orientation="vertical"
-                    aria-labelledby="options-menu"
-                  >
-                    <div className="py-1" role="none">
-                      <button
-                        onClick={handleAiTextTool}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-900 focus:outline-none focus:bg-blue-100 focus:text-blue-900"
-                        role="menuitem"
-                      >
-                        Improve
-                      </button>
-                      <button
-                        onClick={handleAiTextTool}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-900 focus:outline-none focus:bg-blue-100 focus:text-blue-900"
-                        role="menuitem"
-                      >
-                        Summarize
-                      </button>
-                      <button
-                        onClick={handleAiTextTool}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-900 focus:outline-none focus:bg-blue-100 focus:text-blue-900"
-                        role="menuitem"
-                      >
-                        Expand
-                      </button>
-                      <button
-                        onClick={handleAiTextTool}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-900 focus:outline-none focus:bg-blue-100 focus:text-blue-900"
-                        role="menuitem"
-                      >
-                        Rewrite
-                      </button>
-                      <Button
-                        style={{ fontWeight: 600 }}
-                        onClick={() => setUseAiTools(!useAiTools)}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                )}
               </div>
 
               <div className="toolbar-group ml-auto">
                 <button
                   onClick={() => setShowBookmarkModal(true)}
-                  className="btn-secondary"
+                  className="btn-secondary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2 hidden md:flex"
                 >
                   <Bookmark size={14} />
                   Bookmark
                 </button>
 
-                <div className="dropdown">
+                <div className="dropdown hidden md:block">
                   <button
                     onClick={() => setShowBookmarks(!showBookmarks)}
-                    className="btn-secondary"
+                    className="btn-secondary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                   >
                     <BookOpen size={14} />
                     Page {currentPage}
@@ -1160,7 +1045,7 @@ export default function BookEditorPage() {
                   </button>
 
                   {showBookmarks && (
-                    <div className="dropdown-menu">
+                    <div className="dropdown-menu rounded-xl border border-slate-200">
                       <div className="dropdown-header">Navigation</div>
                       <div className="dropdown-section">
                         <div className="page-buttons">
@@ -1172,7 +1057,7 @@ export default function BookEditorPage() {
                               <button
                                 key={i}
                                 onClick={() => scrollToPage(i + 1)}
-                                className="page-btn"
+                                className="page-btn rounded-lg hover:bg-indigo-100 hover:text-indigo-900 transition-all duration-200"
                                 style={{
                                   backgroundColor:
                                     currentPage === i + 1
@@ -1190,7 +1075,10 @@ export default function BookEditorPage() {
                       </div>
                       <div className="bookmarks-list">
                         {bookmarks.map((bookmark) => (
-                          <div key={bookmark.id} className="bookmark-item">
+                          <div
+                            key={bookmark.id}
+                            className="bookmark-item hover:bg-indigo-100 hover:text-indigo-900 transition-all duration-200"
+                          >
                             <button
                               onClick={() => scrollToBookmark(bookmark)}
                               className="bookmark-btn"
@@ -1212,7 +1100,7 @@ export default function BookEditorPage() {
                             </button>
                             <button
                               onClick={() => removeBookmark(bookmark.id)}
-                              className="remove-btn"
+                              className="remove-btn hover:bg-red-100 hover:text-red-900 transition-all duration-200"
                             >
                               <X size={12} />
                             </button>
@@ -1225,7 +1113,7 @@ export default function BookEditorPage() {
 
                 <button
                   onClick={() => setIsFocusMode(!isFocusMode)}
-                  className="btn-secondary"
+                  className="btn-secondary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2 hidden md:flex"
                 >
                   <Focus size={16} />
                 </button>
@@ -1239,9 +1127,24 @@ export default function BookEditorPage() {
           <div className="status-bar">
             <div className="status-content">
               <div className="status-left">
-                <span id="word-count">Words: {wordCount.toLocaleString()}</span>
-                <span id="page-count">Pages: {pages.length}</span>
-                <span id="current-page">Current: Page {currentPage}</span>
+                <span
+                  id="word-count"
+                  className="bg-slate-100 px-3 py-1 rounded-lg text-slate-700 font-medium"
+                >
+                  Words: {wordCount.toLocaleString()}
+                </span>
+                <span
+                  id="page-count"
+                  className="bg-slate-100 px-3 py-1 rounded-lg text-slate-700 font-medium"
+                >
+                  Pages: {pages.length}
+                </span>
+                <span
+                  id="current-page"
+                  className="bg-indigo-100 px-3 py-1 rounded-lg text-indigo-700 font-medium"
+                >
+                  Current: Page {currentPage}
+                </span>
               </div>
             </div>
           </div>
@@ -1252,7 +1155,10 @@ export default function BookEditorPage() {
           <div className="pages-container">
             {pages.map((page, index) => (
               <div key={index} className="page-wrapper">
-                <div id={`page-${index + 1}`} className="page">
+                <div
+                  id={`page-${index + 1}`}
+                  className="page hover:shadow-lg transition-all duration-300"
+                >
                   {/* Tiptap replaces contentEditable here */}
                   <PageEditor
                     page={page}
@@ -1269,7 +1175,7 @@ export default function BookEditorPage() {
               <button
                 id="add-page-btn"
                 onClick={addNewPage}
-                className="btn-secondary"
+                className="btn-secondary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
               >
                 <Plus size={16} />
                 Add New Page
@@ -1281,27 +1187,29 @@ export default function BookEditorPage() {
         {/* Bookmark Modal */}
         {showBookmarkModal && (
           <div className="modal-overlay">
-            <div className="modal">
-              <h3>Add Bookmark</h3>
+            <div className="modal rounded-2xl border border-slate-200 z-50">
+              <h3 className="text-xl font-semibold text-slate-800 mb-4">
+                Add Bookmark
+              </h3>
               <input
                 type="text"
                 value={bookmarkName}
                 onChange={(e) => setBookmarkName(e.target.value)}
                 placeholder="Enter bookmark name..."
-                className="modal-input"
+                className="modal-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                 autoFocus
                 onKeyDown={(e) => e.key === "Enter" && addBookmark()}
               />
               <div className="modal-actions">
                 <button
                   onClick={() => setShowBookmarkModal(false)}
-                  className="btn-secondary"
+                  className="btn-secondary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={addBookmark}
-                  className="btn-primary"
+                  className="btn-primary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                   disabled={!bookmarkName.trim()}
                 >
                   Add
@@ -1314,32 +1222,86 @@ export default function BookEditorPage() {
         {/* AI Comparison Modal */}
         {showAiModal && (
           <div className="modal-overlay">
-            <div className="modal" style={{ width: "80%", maxWidth: "800px" }}>
-              <h3>AI {aiTool} Result</h3>
+            <div
+              className="ai-modal-override rounded-2xl border border-slate-200 z-50"
+              style={{
+                width: "90%",
+                maxWidth: "900px",
+                position: "fixed",
+                top: "50%",
+                left: "60%",
+                transform: "translate(-50%, -50%)",
+                margin: "0",
+                padding: "24px",
+                background: "white",
+                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.15)",
+                zIndex: "10001",
+              }}
+            >
+              <h3 className="text-xl font-semibold text-slate-800 mb-4">
+                AI {aiTool} Result
+              </h3>
               <div style={{ marginBottom: "20px" }}>
                 <div style={{ marginBottom: "10px" }}>
-                  <h4 style={{ marginBottom: "5px" }}>Original Text:</h4>
+                  <h4
+                    style={{
+                      marginBottom: "5px",
+                      fontWeight: "600",
+                      color: "#374151",
+                    }}
+                  >
+                    Original Text:
+                  </h4>
                   <div
                     style={{
-                      padding: "10px",
+                      padding: "15px",
                       backgroundColor: "#ffebee",
-                      borderRadius: "4px",
+                      borderRadius: "12px",
                       color: "#d32f2f",
+                      border: "1px solid #ffcdd2",
+                      fontSize: "14px",
+                      lineHeight: "1.6",
                     }}
                   >
                     {aiSelectedText}
                   </div>
                 </div>
                 <div>
-                  <h4 style={{ marginBottom: "5px" }}>AI Result:</h4>
+                  <h4
+                    style={{
+                      marginBottom: "5px",
+                      fontWeight: "600",
+                      color: "#374151",
+                    }}
+                  >
+                    AI Result:
+                  </h4>
                   <div
                     style={{
-                      padding: "10px",
-                      backgroundColor: "#e3f2fd",
-                      borderRadius: "4px",
-                      color: "#1976d2",
-                      minHeight: "100px",
+                      padding: "15px",
+                      backgroundColor:
+                        (aiResult && aiResult.includes("error")) ||
+                        aiResult.includes("failed") ||
+                        aiResult.includes("Please")
+                          ? "#fef2f2"
+                          : "#e3f2fd",
+                      borderRadius: "12px",
+                      color:
+                        (aiResult && aiResult.includes("error")) ||
+                        aiResult.includes("failed") ||
+                        aiResult.includes("Please")
+                          ? "#dc2626"
+                          : "#1976d2",
+                      minHeight: "120px",
                       overflow: "auto",
+                      border:
+                        (aiResult && aiResult.includes("error")) ||
+                        aiResult.includes("failed") ||
+                        aiResult.includes("Please")
+                          ? "1px solid #fecaca"
+                          : "1px solid #bbdefb",
+                      fontSize: "14px",
+                      lineHeight: "1.6",
                     }}
                   >
                     {isAiLoading ? (
@@ -1361,23 +1323,44 @@ export default function BookEditorPage() {
                         </span>
                       </div>
                     ) : aiResult !== "" ? (
-                      aiResult
+                      <div>
+                        {aiResult}
+                        {(aiResult.includes("error") ||
+                          aiResult.includes("failed") ||
+                          aiResult.includes("Please")) && (
+                          <div className="mt-3 p-2 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-sm text-red-700">
+                              💡 <strong>Tip:</strong> Try selecting a different
+                              text passage or wait a moment before trying again.
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     ) : (
-                      "No Suggestions Avaliable"
+                      "No Suggestions Available"
                     )}
                   </div>
                 </div>
               </div>
               <div className="modal-actions">
-                <button onClick={handleKeepOriginal} className="btn-secondary">
+                <button
+                  onClick={handleKeepOriginal}
+                  className="btn-secondary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
+                >
                   Keep Original
                 </button>
                 <button
                   onClick={handleUseAiResult}
-                  className="btn-primary"
-                  disabled={isAiLoading}
+                  className="btn-primary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
+                  disabled={
+                    isAiLoading ||
+                    (aiResult &&
+                      (aiResult.includes("error") ||
+                        aiResult.includes("failed") ||
+                        aiResult.includes("Please")))
+                  }
                 >
-                  Use Generated Suggestion
+                  {isAiLoading ? "Processing..." : "Use Generated Suggestion"}
                 </button>
               </div>
             </div>
@@ -1386,11 +1369,139 @@ export default function BookEditorPage() {
 
         {/* Focus Mode Exit */}
         {isFocusMode && (
-          <button onClick={() => setIsFocusMode(false)} className="focus-exit">
+          <button
+            onClick={() => setIsFocusMode(false)}
+            className="focus-exit bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
+          >
             Exit Focus Mode
           </button>
         )}
       </div>
+
+      {/* Save to existing project */}
+      {saveExistingBook && (
+        <section className="flex justify-center items-center fixed inset-0 bg-gray-500 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-2xl bg-white ring-1 ring-slate-200">
+            <div className="mt-3 text-center">
+              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                Save To Existing Book Project
+              </h3>
+              <form
+                onSubmit={handleSaveProject}
+                className="mt-2 px-5 py-3"
+                name="save-draft"
+              >
+                <label
+                  htmlFor="project"
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                >
+                  Project:
+                </label>
+                <select
+                  id="project"
+                  className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  value={selectedProjectIndex}
+                  onChange={(e) => {
+                    setSelectedProjectIndex(Number(e.target.value));
+                    setSelectedDraftIndex(null);
+                    setCreateNewDraft(false);
+                  }}
+                >
+                  {fetchedProjects?.map((project, index) => (
+                    <option key={index} value={index}>
+                      {project.title + ", " + project.author}
+                    </option>
+                  ))}
+                </select>
+
+                <label
+                  htmlFor="draft"
+                  className="block text-gray-700 text-sm font-bold mt-4 mb-2"
+                >
+                  Draft:
+                </label>
+                <select
+                  id="draft"
+                  value={
+                    createNewDraft
+                      ? "new"
+                      : selectedDraftIndex !== null
+                      ? selectedDraftIndex
+                      : ""
+                  }
+                  onChange={(e) => {
+                    if (e.target.value === "new") {
+                      setCreateNewDraft(true);
+                      setSelectedDraftIndex(null);
+                    } else {
+                      setSelectedDraftIndex(
+                        e.target.value !== "" ? Number(e.target.value) : null
+                      );
+                      setCreateNewDraft(false);
+                      // Set flag to load draft content when user explicitly selects a draft
+                      if (e.target.value !== "") {
+                        shouldLoadDraftRef.current = true;
+                      }
+                    }
+                  }}
+                  className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="">-- Select Existing Draft --</option>
+                  {projectDrafts.map((draft, idx) => (
+                    <option key={idx} value={idx}>
+                      {draft.title || `Draft ${idx + 1}`}
+                    </option>
+                  ))}
+                  <option key="new" value="new">
+                    New Draft
+                  </option>
+                </select>
+                <button
+                  type="button"
+                  className="mt-2 mb-4 px-3 py-1 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-200"
+                  onClick={() => {
+                    setCreateNewDraft(true);
+                    setSelectedDraftIndex(null);
+                  }}
+                >
+                  + Create New Draft
+                </button>
+
+                <label
+                  htmlFor="status"
+                  className="block text-gray-700 text-sm font-bold mt-4 mb-2"
+                >
+                  Status:
+                </label>
+                <select
+                  id="status"
+                  className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option>Draft</option>
+                  <option>In Progress</option>
+                  <option>Completed</option>
+                </select>
+                <div className="flex justify-center px-4 pt-6 pb-1">
+                  <Button className="btn-primary font-bold hover:bg-blue-300 bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
+                    Confirm
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setSaveBook(false);
+                      setSelectedDraftIndex(null);
+                      setCreateNewDraft(false);
+                    }}
+                    className="btn-primary ml-4 bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-red-700 hover:to-red-800 text-white font-bold rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

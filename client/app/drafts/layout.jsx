@@ -1,8 +1,7 @@
 "use client";
 
-import AppLayout from "../components/AppLayout";
-
+import AppLayoutV2 from "../components/AppLayoutV2";
 
 export default function DraftsLayout({ children }) {
-    return <AppLayout>{children}</AppLayout>;
+  return <AppLayoutV2>{children}</AppLayoutV2>;
 }

@@ -85,13 +85,20 @@
 }
 
 .prompt-type-button:hover {
-  background-color: var(--border);
+  background: linear-gradient(to-r, #4f46e5, #7c3aed);
+  border-color: #4f46e5;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
 }
 
 .prompt-type-button.active {
-  background-color: var(--accent);
-  border-color: var(--accent);
+  background: linear-gradient(to-r, #4f46e5, #7c3aed);
+  border-color: #4f46e5;
   color: white;
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+  transform: translateY(-1px);
+  font-weight: 600;
 }
 
 .prompt-icon {
@@ -177,6 +184,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -198,14 +206,33 @@
 }
 
 .answer-bubble {
-  margin-bottom: 3%;
-  border: solid blue 1px;
-  border-radius: 5px;
-  width: fit-content;
-  padding: 1%;
-  background-color: lightskyblue;
-  color: black;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+  position: relative;
+}
 
+.answer-bubble::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to-r, #8b5cf6, #a855f7);
+  border-radius: 12px 12px 0 0;
+}
+
+.answer-bubble:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #cbd5e1;
 }
 
 .ai-output-footer {

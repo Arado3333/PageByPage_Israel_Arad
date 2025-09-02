@@ -1,6 +1,5 @@
-import AppLayout from "../components/AppLayout";
+import AppLayoutV2 from "../components/AppLayoutV2";
 
-
-export default function Layout({children}) {
-    return <AppLayout>{children}</AppLayout>;
+export default function BookEditorV2Layout({ children }) {
+  return <AppLayoutV2>{children}</AppLayoutV2>;
 }

@@ -12,6 +12,7 @@ import AssetEditor from "./book_components/AssetEditor";
 import Draft from "../lib/models/draft.model.js";
 import LibraryHeader from "./LibraryHeader";
 
+
 import { createProject, updateBook } from "../api/routes.js";
 import LibraryLoader from "./book_components/LibraryLoader";
 import AssetViewer from "./book_components/AssetViewer";
@@ -130,9 +131,9 @@ export default function WorkspaceMain({ booksPromise }) {
       case "library":
         return (
           <>
-            <LibraryHeader onNewProject={handleNewProject} />
             <Suspense fallback={<LibraryLoader />}>
               <BookLibrary
+                onNewProject={handleNewProject}
                 booksPromise={booksPromise}
                 onOpenBook={handleOpenBook}
                 onUpdateBook={handleUpdateBook}

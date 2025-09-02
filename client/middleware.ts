@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "./app/lib/session";
 
-const protectedRoutes = ["/dashboard", "/task-manager", "/ai-consultant", "/version-history", "/drafts", "/books", "/book-editor-v2"];
+const protectedRoutes = ["/dashboard", "/dashboard-v2", "/task-manager", "/ai-consultant", "/version-history", "/drafts", "/books", "/book-editor-v2"];
 const publicRoutes = ["/signin", "/register", "/forgot-password"];
 
 export default async function middleware(req: NextRequest)
@@ -23,7 +23,7 @@ export default async function middleware(req: NextRequest)
 
     if (isPublicRoute && session)
     {
-        return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+        return NextResponse.redirect(new URL("/dashboard-v2", req.nextUrl));
     }
 
     return NextResponse.next();

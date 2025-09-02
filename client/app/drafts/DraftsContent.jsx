@@ -3,19 +3,36 @@ import { useState, useMemo, useRef, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Draft from "../lib/models/draft.model.js";
 import { deleteDraft, getRecentDrafts_noSlice } from "../api/routes.js";
+import { Eye, Edit, Trash2, BookOpen, Calendar, FileText } from "lucide-react";
 
 const FADE_DURATION = 350; // ms
 
 function getStatusConfig(status) {
   switch (status) {
     case "draft":
-      return { label: "Draft", className: "status-draft" };
+      return {
+        label: "Draft",
+        className: "status-draft",
+        color: "bg-slate-100 text-slate-700 border-slate-200",
+      };
     case "in-review":
-      return { label: "In Review", className: "status-review" };
+      return {
+        label: "In Review",
+        className: "status-review",
+        color: "bg-amber-100 text-amber-700 border-amber-200",
+      };
     case "published":
-      return { label: "Published", className: "status-published" };
+      return {
+        label: "Published",
+        className: "status-published",
+        color: "bg-emerald-100 text-emerald-700 border-emerald-200",
+      };
     default:
-      return { label: "Draft", className: "status-draft" };
+      return {
+        label: "Draft",
+        className: "status-draft",
+        color: "bg-slate-100 text-slate-700 border-slate-200",
+      };
   }
 }
 
@@ -222,12 +239,26 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
+  const getCardGradient = (index) => {
+    const gradients = [
+      "from-indigo-300 to-indigo-500",
+      "from-pink-300 to-rose-500",
+      "from-emerald-300 to-teal-500",
+      "from-violet-300 to-purple-500",
+      "from-amber-300 to-orange-500",
+      "from-cyan-300 to-blue-500",
+    ];
+    return gradients[index % gradients.length];
+  };
+
   return (
     <div className="draft-manager">
       <div className="dm-draft-list">
         {filteredAndSortedDrafts.length === 0 ? (
           <div className="dm-empty-state">
-            <div className="dm-empty-icon">{/* SVG icon here if needed */}</div>
+            <div className="dm-empty-icon">
+              <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            </div>
             <h3 className="dm-empty-title">No drafts found</h3>
             <p className="dm-empty-description">
               {searchTerm || statusFilter !== "all"
@@ -236,73 +267,110 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
             </p>
           </div>
         ) : (
-          filteredAndSortedDrafts.map((draft, index) => {
-            const statusConfig = getStatusConfig(draft.status);
-            const isDeleting = deletingDraftId === draft.id;
-            const isAnimatingOut = animatingOutDraftId === draft.id;
-            const isHighlighted = highlightedDraftId === draft.id;
-            return (
-              <div
-                key={draft.id || index}
-                className={`dm-draft-card${isAnimatingOut ? " fade-out" : ""}${
-                  isHighlighted ? " highlight" : ""
-                }`}
-                ref={isHighlighted ? newDraftRef : null}
-                tabIndex={0}
-                aria-label={`Draft: ${draft.title}`}
-                style={{
-                  transition: `opacity ${FADE_DURATION}ms, box-shadow 0.3s`,
-                  opacity: isAnimatingOut ? 0 : 1,
-                  boxShadow: isHighlighted
-                    ? "0 0 0 3px var(--accent), 0 4px 12px rgba(59,130,246,0.15)"
-                    : undefined,
-                }}
-              >
-                <div className="dm-card-header">
-                  <h3 className="dm-draft-title">{draft.title}</h3>
-                  <span className={`dm-status-badge ${statusConfig.className}`}>
-                    {statusConfig.label}
-                  </span>
-                </div>
-                <p className="dm-draft-snippet">{draft.draftContent}</p>
-                <div className="dm-card-meta">
-                  <span className="dm-book-tag">{draft.tag}</span>
-                  <div className="dm-meta-info">
-                    <span className="dm-date">
-                      {formatDate(draft.lastEdited)}
-                    </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 xl:gap-8 2xl:gap-12 3xl:gap-16">
+            {filteredAndSortedDrafts.map((draft, index) => {
+              const statusConfig = getStatusConfig(draft.status);
+              const isDeleting = deletingDraftId === draft.id;
+              const isAnimatingOut = animatingOutDraftId === draft.id;
+              const isHighlighted = highlightedDraftId === draft.id;
+              return (
+                <div
+                  key={draft.id || index}
+                  className={`group rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 flex flex-col h-full overflow-hidden ${
+                    isAnimatingOut ? "fade-out" : ""
+                  } ${isHighlighted ? "highlight" : ""}`}
+                  ref={isHighlighted ? newDraftRef : null}
+                  tabIndex={0}
+                  aria-label={`Draft: ${draft.title}`}
+                  style={{
+                    transition: `opacity ${FADE_DURATION}ms, box-shadow 0.3s`,
+                    opacity: isAnimatingOut ? 0 : 1,
+                    boxShadow: isHighlighted
+                      ? "0 0 0 3px var(--accent), 0 4px 12px rgba(59,130,246,0.15)"
+                      : undefined,
+                  }}
+                >
+                  {/* Gradient Header */}
+                  <div
+                    className={`h-2 bg-gradient-to-r ${getCardGradient(index)}`}
+                  />
+
+                  <div className="p-4 sm:p-6 2xl:p-8 3xl:p-10 flex-1 flex flex-col">
+                    {/* Title and Status */}
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="dm-draft-title text-lg sm:text-xl lg:text-2xl font-serif text-[#0F1A2E] font-medium">
+                        {draft.title}
+                      </h3>
+                      <span
+                        className={`dm-status-badge ${statusConfig.color} border rounded-full px-2 py-1 text-xs font-medium`}
+                      >
+                        {statusConfig.label}
+                      </span>
+                    </div>
+
+                    {/* Content Snippet */}
+                    <p className="dm-draft-snippet text-slate-600 line-height-1.6 mb-6">
+                      {draft.draftContent}
+                    </p>
+
+                    {/* Meta Information */}
+                    <div className="space-y-3 text-sm flex-1 mb-6">
+                      <div className="flex items-center gap-2 text-slate-500">
+                        <BookOpen className="w-4 h-4" />
+                        <span className="dm-book-tag bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-1 rounded-lg text-xs font-medium">
+                          {draft.bookName || "Unassigned"}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-500">
+                        <FileText className="w-4 h-4" />
+                        <span className="font-medium text-slate-800 bg-slate-100 px-2 py-1 rounded-lg">
+                          {draft.wordCount?.toLocaleString() || 0} words
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-500">
+                        <Calendar className="w-4 h-4" />
+                        <span className="font-medium text-slate-800 bg-slate-100 px-2 py-1 rounded-lg">
+                          {formatDate(draft.lastEdited)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="space-y-3">
+                      <button
+                        className="dm-action-btn dm-view-btn w-full bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                        onClick={(e) => handleView(e, draft)}
+                        type="button"
+                        aria-label={`View ${draft.title}`}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View
+                      </button>
+                      <button
+                        className="dm-action-btn dm-edit-btn w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                        onClick={(e) => handleEdit(e, draft)}
+                        type="button"
+                        aria-label={`Edit ${draft.title}`}
+                      >
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit
+                      </button>
+                      <button
+                        className="dm-action-btn dm-delete-btn w-full bg-red-500 hover:bg-red-600 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                        onClick={(e) => handleDelete(e, draft)}
+                        type="button"
+                        aria-label={`Delete ${draft.title}`}
+                        disabled={isDeleting}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {isDeleting ? "Deleting..." : "Delete"}
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="dm-card-actions">
-                  <button
-                    className="dm-action-btn dm-view-btn"
-                    onClick={(e) => handleView(e, draft)}
-                    type="button"
-                    aria-label={`View ${draft.title}`}
-                  >
-                    View
-                  </button>
-                  <button
-                    className="dm-action-btn dm-edit-btn"
-                    onClick={(e) => handleEdit(e, draft)}
-                    type="button"
-                    aria-label={`Edit ${draft.title}`}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="dm-action-btn dm-delete-btn"
-                    onClick={(e) => handleDelete(e, draft)}
-                    type="button"
-                    aria-label={`Delete ${draft.title}`}
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? "Deleting..." : "Delete"}
-                  </button>
-                </div>
-              </div>
-            );
-          })
+              );
+            })}
+          </div>
         )}
       </div>
 
