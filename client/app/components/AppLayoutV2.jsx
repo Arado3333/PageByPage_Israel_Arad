@@ -21,6 +21,7 @@ import {
   Target,
   FolderOpen,
 } from "lucide-react";
+import { logout } from "../api/routes.js";
 
 export default function AppLayoutV2({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -62,9 +63,9 @@ export default function AppLayoutV2({ children }) {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const logout = () => {
+  const logoutHandler = () => {
     // Implement logout logic
-    console.log("Logout clicked");
+    logout();
   };
 
   // Navigation groups
@@ -207,7 +208,7 @@ export default function AppLayoutV2({ children }) {
               <div>{formattedDt.date}</div>
             </div>
             <button
-              onClick={() => logout()}
+              onClick={() => logoutHandler()}
               className="w-full flex items-center gap-3 px-3 py-2 2xl:px-4 2xl:py-3 3xl:px-5 3xl:py-4 text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors"
               aria-label="Sign Out"
             >

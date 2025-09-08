@@ -122,13 +122,13 @@ function PageEditor({ page, isPreviewMode, onUpdate, onFocus }) {
       }),
       Placeholder.configure({ placeholder: "Start writing your story..." }),
       TextStyle,
+      FontFamily.configure({
+        types: ["textStyle", "paragraph", "heading"],
+      }),
       Color,
       FontSize.configure({ types: ["textStyle", "paragraph", "heading"] }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       BackgroundColor,
-      FontFamily.configure({
-        types: ["textStyle", "paragraph", "heading"],
-      }),
     ],
     onUpdate: ({ editor }) => {
       // Clear existing timeout
@@ -1023,6 +1023,92 @@ export default function BookEditorPage() {
                   <Sparkles size={14} />
                   AI Tools
                 </button>
+
+                {useAiTools && (
+                  <div
+                    className="ai-tools-menu"
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: "0",
+                      zIndex: 1000,
+                      backgroundColor: "white",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                      padding: "8px",
+                      minWidth: "200px",
+                    }}
+                  >
+                    <button
+                      onClick={handleAiTextTool}
+                      className="ai-tool-btn"
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "8px 12px",
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        borderRadius: "4px",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      Improve
+                    </button>
+                    <button
+                      onClick={handleAiTextTool}
+                      className="ai-tool-btn"
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "8px 12px",
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        borderRadius: "4px",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      Rewrite
+                    </button>
+                    <button
+                      onClick={handleAiTextTool}
+                      className="ai-tool-btn"
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "8px 12px",
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        borderRadius: "4px",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      Summarize
+                    </button>
+                    <button
+                      onClick={handleAiTextTool}
+                      className="ai-tool-btn"
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        textAlign: "left",
+                        padding: "8px 12px",
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      Expand
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="toolbar-group ml-auto">
