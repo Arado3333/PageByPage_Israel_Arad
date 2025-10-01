@@ -1,10 +1,25 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useTransition } from "react";
+import { askAI } from "../../api/routes.js";
 import Card from "./shared/Card";
 
 export default function AISuggestionsSection({ aiSuggestionsPromise }) {
-  const aiSuggestions = use(aiSuggestionsPromise);
+  const initialSuggestions = use(aiSuggestionsPromise);
+  const [aiSuggestions, setAiSuggestions] = useState(initialSuggestions);
+  const [isPending, startTransition] = useTransition();
+
+  const handleRegenerate = async () => {
+    startTransition(async () => {
+      try {
+        const newSuggestions = await askAI();
+        setAiSuggestions(newSuggestions);
+      } catch (error) {
+        console.error("Failed to regenerate AI suggestions:", error);
+        // Keep current suggestions on error
+      }
+    });
+  };
 
   return (
     <div className="w-full">
@@ -39,14 +54,12 @@ export default function AISuggestionsSection({ aiSuggestionsPromise }) {
                 {aiSuggestions.map((s) => s.improveTip).join("\n")}
               </p>
               <div className="flex flex-wrap gap-2 2xl:gap-3 3xl:gap-4">
-                <button className="rounded-xl bg-emerald-600 text-white px-3 py-2 2xl:px-4 2xl:py-3 3xl:px-6 3xl:py-4 text-sm 2xl:text-base 3xl:text-lg">
-                  Insert
-                </button>
-                <button className="rounded-xl border border-slate-300 px-3 py-2 2xl:px-4 2xl:py-3 3xl:px-6 3xl:py-4 text-sm 2xl:text-base 3xl:text-lg">
-                  Undo
-                </button>
-                <button className="rounded-xl border border-slate-300 px-3 py-2 2xl:px-4 2xl:py-3 3xl:px-6 3xl:py-4 text-sm 2xl:text-base 3xl:text-lg">
-                  Regenerate
+                <button
+                  onClick={handleRegenerate}
+                  disabled={isPending}
+                  className="rounded-xl bg-emerald-600 text-white border border-slate-300 px-3 py-2 2xl:px-4 2xl:py-3 3xl:px-6 3xl:py-4 text-sm 2xl:text-base 3xl:text-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                >
+                  {isPending ? "Regenerating..." : "Regenerate"}
                 </button>
               </div>
             </>
@@ -60,8 +73,12 @@ export default function AISuggestionsSection({ aiSuggestionsPromise }) {
                   ? "There was an issue generating suggestions. Please try again later."
                   : "Start writing some content to get personalized AI suggestions!"}
               </p>
-              <button className="mt-3 2xl:mt-4 3xl:mt-6 rounded-xl bg-emerald-600 text-white px-4 py-2 2xl:px-6 2xl:py-3 3xl:px-8 3xl:py-4 text-sm 2xl:text-base 3xl:text-lg hover:opacity-90">
-                Try Again
+              <button
+                onClick={handleRegenerate}
+                disabled={isPending}
+                className="mt-3 2xl:mt-4 3xl:mt-6 rounded-xl bg-emerald-600 text-white px-4 py-2 2xl:px-6 2xl:py-3 3xl:px-8 3xl:py-4 text-sm 2xl:text-base 3xl:text-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              >
+                {isPending ? "Loading..." : "Try Again"}
               </button>
             </div>
           )}

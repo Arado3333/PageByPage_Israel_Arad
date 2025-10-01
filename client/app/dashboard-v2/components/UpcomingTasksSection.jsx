@@ -27,15 +27,6 @@ export default function UpcomingTasksSection({ upcomingTasksPromise }) {
             </div>
           )}
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 2xl:gap-3 3xl:gap-4">
-          <input
-            className="flex-1 rounded-xl border border-slate-300 px-4 py-3 2xl:px-6 2xl:py-4 3xl:px-8 3xl:py-6 text-base 2xl:text-lg 3xl:text-xl"
-            placeholder="Quick add (e.g., 'tomorrow 9pm')"
-          />
-          <button className="rounded-xl bg-indigo-600 text-white px-4 py-3 2xl:px-6 2xl:py-4 3xl:px-8 3xl:py-6 text-base 2xl:text-lg 3xl:text-xl sm:whitespace-nowrap">
-            Add
-          </button>
-        </div>
       </Card>
     </div>
   );

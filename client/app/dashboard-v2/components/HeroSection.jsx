@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { getMostRecentDraftInfo } from "../../lib/draftUtils";
 import DailyGoalCard from "../DailyGoalCard";
 
+
 export default function HeroSection({
   userPromise,
   recentDraftsPromise,
@@ -81,9 +82,6 @@ export default function HeroSection({
               className="rounded-2xl border border-slate-300 px-3 sm:px-4 lg:px-5 2xl:px-6 3xl:px-8 py-2 lg:py-3 2xl:py-4 3xl:py-6 text-sm lg:text-base 2xl:text-lg 3xl:text-xl hover:bg-white transition-colors"
             >
               Open Library
-            </button>
-            <button className="rounded-2xl border border-amber-300 text-amber-700 px-3 sm:px-4 lg:px-5 2xl:px-6 3xl:px-8 py-2 lg:py-3 2xl:py-4 3xl:py-6 text-sm lg:text-base 2xl:text-lg 3xl:text-xl hover:bg-amber-50 transition-colors">
-              Kids Story Mode
             </button>
           </div>
         </div>

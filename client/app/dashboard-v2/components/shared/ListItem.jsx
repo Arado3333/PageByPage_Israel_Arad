@@ -1,3 +1,5 @@
+import { BookDashed } from "lucide-react";
+
 export default function ListItem({
   title,
   titleDir = "auto",
@@ -9,9 +11,11 @@ export default function ListItem({
   return (
     <div className="group rounded-xl border border-slate-200 bg-white p-4 sm:p-5 2xl:p-6 3xl:p-8 mb-3 2xl:mb-4 3xl:mb-6 flex items-center gap-3 2xl:gap-4 3xl:gap-6 hover:ring-1 hover:ring-[#D6B778] cursor-pointer">
       <div
-        className="h-8 w-8 2xl:h-10 2xl:w-10 3xl:h-12 3xl:w-12 rounded-lg bg-slate-100"
+        className="h-8 w-8 2xl:h-10 2xl:w-10 3xl:h-12 3xl:w-12 rounded-lg bg-slate-100 flex items-center justify-center"
         aria-hidden
-      />
+      >
+        <BookDashed className="w-6 h-6" />
+      </div>
       <div className="min-w-0 flex-1">
         <div
           dir={titleDir}

@@ -299,7 +299,8 @@ export async function askAI() {
         });
       }
     }
-
+    console.log(allSuggestions);
+    
     return allSuggestions;
   } catch (error) {
     // Handle any top-level errors

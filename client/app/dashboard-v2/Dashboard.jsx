@@ -16,6 +16,7 @@ import AISuggestionsSectionSkeleton from "./components/skeletons/AISuggestionsSe
 import UpcomingTasksSectionSkeleton from "./components/skeletons/UpcomingTasksSectionSkeleton";
 import QuickStartTemplatesSectionSkeleton from "./components/skeletons/QuickStartTemplatesSectionSkeleton";
 
+
 export default function Dashboard({
   userPromise,
   goalsPromise,
@@ -72,17 +73,11 @@ export default function Dashboard({
           <Suspense fallback={<UpcomingTasksSectionSkeleton />}>
             <UpcomingTasksSection upcomingTasksPromise={upcomingTasksPromise} />
           </Suspense>
-
-          {/* Row 5 - Quick Start Templates */}
-          <Suspense fallback={<QuickStartTemplatesSectionSkeleton />}>
-            <QuickStartTemplatesSection templatesPromise={templatesPromise} />
-          </Suspense>
         </section>
 
         <section className="mt-8 2xl:mt-12 3xl:mt-16 text-center text-xs 2xl:text-sm 3xl:text-base text-slate-500 w-full">
           <span>
-            Tip: Hit ⌘K to run commands. Celebrate goal completion with a tiny
-            confetti toast ��
+            PageByPage is a smart and intuitive platform for writers to manage books, drafts, and creative work efficiently. Israel & Arad, 2025
           </span>
         </section>
       </div>

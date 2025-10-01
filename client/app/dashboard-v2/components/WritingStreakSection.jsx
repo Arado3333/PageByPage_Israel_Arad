@@ -1,18 +1,21 @@
 "use client";
 
 import { use } from "react";
+import { useRouter } from "next/navigation";
 import Card from "./shared/Card";
 
 export default function WritingStreakSection({ writingStreakPromise }) {
   const writingStreak = use(writingStreakPromise);
+  const router = useRouter();
+
+  const handleStartSprint = () => {
+    // Navigate to clean editor for writing sprint
+    router.push("/book-editor-v2");
+  };
 
   return (
     <div className="sm:col-span-1 lg:col-span-4 xl:col-span-4 h-full">
-      <Card
-        title="Writing Streak"
-        actionLabel="View details"
-        className="h-full"
-      >
+      <Card title="Writing Streak" className="h-full">
         <div className="flex flex-col justify-center items-center h-full text-center">
           <div className="w-full">
             <div className="text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl 3xl:text-6xl font-bold text-amber-600 mb-2">
@@ -68,7 +71,10 @@ export default function WritingStreakSection({ writingStreakPromise }) {
                 <>Start your writing streak today!</>
               )}
             </div>
-            <button className="w-full max-w-32 2xl:max-w-40 3xl:max-w-48 mx-auto rounded-xl bg-amber-600 text-white py-2 px-3 2xl:py-3 2xl:px-4 3xl:py-4 3xl:px-6 text-xs sm:text-sm 2xl:text-base 3xl:text-lg hover:opacity-90">
+            <button
+              onClick={handleStartSprint}
+              className="w-full max-w-32 2xl:max-w-40 3xl:max-w-48 mx-auto rounded-xl bg-amber-600 text-white py-2 px-3 2xl:py-3 2xl:px-4 3xl:py-4 3xl:px-6 text-xs sm:text-sm 2xl:text-base 3xl:text-lg hover:opacity-90 transition-opacity"
+            >
               Start sprint
             </button>
           </div>
