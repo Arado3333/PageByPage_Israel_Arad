@@ -1,5 +1,10 @@
-import AppLayout from "../components/AppLayout"
+import AdminLayout from "./AdminLayout";
+import AdminRoute from "../components/AdminRoute";
 
 export default function AdminDashboardLayout({ children }) {
-  return <AppLayout>{children}</AppLayout>
+  return (
+    <AdminRoute>
+      <AdminLayout>{children}</AdminLayout>
+    </AdminRoute>
+  );
 }

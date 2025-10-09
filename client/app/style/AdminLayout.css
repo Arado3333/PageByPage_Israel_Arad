@@ -1,0 +1,111 @@
+.admin-layout-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--background);
+}
+
+/* Admin Header */
+.admin-header {
+    height: 4rem;
+    background-color: var(--background);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-header-content {
+    height: 100%;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 100%;
+}
+
+.admin-header-left {
+    display: flex;
+    align-items: center;
+}
+
+.admin-logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.admin-logo-icon {
+    height: 1.5rem;
+    width: 1.5rem;
+    color: var(--foreground);
+}
+
+.admin-logo-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.admin-header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.admin-time-display {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: right;
+}
+
+.admin-logout-button {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--foreground);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.admin-logout-button:hover {
+    background-color: var(--input);
+}
+
+.admin-logout-icon {
+    margin-right: 0.5rem;
+    height: 1rem;
+    width: 1rem;
+}
+
+/* Main content */
+.admin-main-content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    max-width: 100%;
+    height: calc(100vh - 4rem);
+    /* Make it take remaining height */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .admin-header-content {
+        padding: 0 1rem;
+    }
+
+    .admin-header-right {
+        gap: 1rem;
+    }
+
+    .admin-time-display {
+        display: none;
+    }
+
+    .admin-main-content {
+        padding: 1rem;
+    }
+}

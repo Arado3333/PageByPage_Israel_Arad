@@ -4,41 +4,65 @@
 
 
 :root {
-  --background: #f9f7f4;
-  --foreground: #2e2e2e;
-  --muted: #ebe6df;
-  --muted-foreground: #726e6a;
+  --background: 0 0% 98%;
+  --foreground: 0 0% 18%;
+  --muted: 0 0% 92%;
+  --muted-foreground: 0 0% 45%;
 
-  --accent: #3b82f6;
-  /* כחול יוקרתי ונקי */
-  --accent-secondary: #60a5fa;
-  --accent-hover: #4a7ddb;
-  --accent-foreground: #ffffff;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 18%;
 
-  --success: #3dbf87;
-  --error: #e53935;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 18%;
 
-  --border: #ddd6ce;
-  --card-background: #ffffff;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
+
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 9%;
+
+  --accent: 221 83% 53%;
+  --accent-foreground: 0 0% 98%;
+  --accent-secondary: 221 83% 45%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 0 0% 87%;
+  --input: 0 0% 87%;
+  --ring: 0 0% 87%;
+
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: #121212;
-  --foreground: #e3e3e3;
-  --muted: #1f1f1f;
-  --muted-foreground: #999999;
+  --background: 0 0% 7%;
+  --foreground: 0 0% 89%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 60%;
 
-  --accent: #5a9bd8;
-  /* כחול רגוע */
-  --accent-secondary: #7fb7ff;
-  --accent-foreground: #0a0a0a;
+  --card: 0 0% 7%;
+  --card-foreground: 0 0% 89%;
 
-  --success: #3dbf87;
-  --error: #ff6b6b;
+  --popover: 0 0% 7%;
+  --popover-foreground: 0 0% 89%;
 
-  --border: #2c2c2c;
-  --card-background: #977d7d;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 0 0% 89%;
+
+  --accent: 0 0% 12%;
+  --accent-foreground: 0 0% 89%;
+  --accent-secondary: 0 0% 20%;
+
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 0 0% 17%;
+  --input: 0 0% 17%;
+  --ring: 0 0% 17%;
 }
 
 

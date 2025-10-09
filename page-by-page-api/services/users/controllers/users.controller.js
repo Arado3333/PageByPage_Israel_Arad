@@ -15,10 +15,40 @@ export async function getAllUsers(req, res) {
 }
 
 export async function getUserProfile(req, res) {
-  const { userId } = req.params;
-  const user = await User.getUserProfile(userId);
-  
-  res.status(200).json({ success: true, user: user });
+  try {
+    // If userId is in params, use it; otherwise use the authenticated user's ID
+    const userId = req.params.userId || req.user.userId;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required",
+      });
+    }
+
+    const user = await User.getUserProfile(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Remove password from user object before returning
+    const { password, ...userWithoutPassword } = user;
+
+    res.status(200).json({
+      success: true,
+      user: userWithoutPassword,
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching user profile",
+    });
+  }
 }
 
 export async function addUser(req, res) {
@@ -45,9 +75,13 @@ export async function login(req, res) {
     const user = await User.login(email, password);
 
     if (user) {
+      // Remove password from user object before returning
+      const { password: _, ...userWithoutPassword } = user;
+
       res.status(200).json({
         message: "Login successful",
         userID: user._id,
+        user: userWithoutPassword,
       });
     } else {
       res.status(401).json({ message: "Invalid email or password" });
@@ -71,15 +105,21 @@ export async function loginNative(req, res) {
           email: user.email,
           name: user.name,
           role: user.role,
+          permissions: user.permissions || [],
+          status: user.status || "active",
         },
         JWT_SECRET,
         { expiresIn: JWT_EXPIRES_IN, algorithm: "HS256" }
       );
 
+      // Remove password from user object before returning
+      const { password: _, ...userWithoutPassword } = user;
+
       res.status(200).json({
         message: "Login successful",
         userID: user._id,
         token: token,
+        user: userWithoutPassword,
       });
     } else {
       res.status(401).json({ message: "Invalid email or password" });

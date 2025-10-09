@@ -10,13 +10,12 @@ import DraftEditor from "./book_components/DraftEditor";
 import CharacterEditor from "./book_components/CharacterEditor";
 import AssetEditor from "./book_components/AssetEditor";
 import Draft from "../lib/models/draft.model.js";
-import LibraryHeader from "./LibraryHeader";
-
 
 import { createProject, updateBook } from "../api/routes.js";
 import LibraryLoader from "./book_components/LibraryLoader";
 import AssetViewer from "./book_components/AssetViewer";
 import { redirectTo } from "../lib/actions.js";
+import { logBookEvent } from "../lib/logManager";
 
 export default function WorkspaceMain({ booksPromise }) {
   const [currentView, setCurrentView] = useState("library");
@@ -91,6 +90,24 @@ export default function WorkspaceMain({ booksPromise }) {
       assets: [],
     };
     const result = await createProject(newBook);
+
+    // Log book creation
+    if (result?.success) {
+      logBookEvent(
+        "Book created",
+        null, // Auto-detect user ID
+        null, // Auto-detect user email
+        {
+          action: "create_book",
+          bookTitle: newBook.title,
+          bookAuthor: newBook.author,
+          bookStatus: newBook.status,
+          bookGenres: newBook.genres,
+          timestamp: new Date().toISOString(),
+        }
+      );
+    }
+
     sessionStorage.removeItem("bookDraft");
     setBooks([...books, newBook]);
     setCurrentView("library");
@@ -120,7 +137,19 @@ export default function WorkspaceMain({ booksPromise }) {
   async function updateBookToServer(updatedBook) {
     const result = await updateBook(updatedBook);
     if (result?.success) {
-      // updated successfully
+      // Log book update
+      logBookEvent(
+        "Book updated",
+        null, // Auto-detect user ID
+        null, // Auto-detect user email
+        {
+          action: "update_book",
+          bookTitle: updatedBook.title,
+          bookId: updatedBook._id,
+          lastEdited: updatedBook.lastEdited,
+          timestamp: new Date().toISOString(),
+        }
+      );
     } else {
       // failed to update
     }

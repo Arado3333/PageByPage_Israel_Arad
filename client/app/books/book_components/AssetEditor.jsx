@@ -9,6 +9,7 @@ import { Badge } from "../../books/ui/badge";
 import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import { uploadAction } from "../../lib/actions.js";
 import { useFormStatus } from "react-dom";
+import { logBookEvent } from "../../lib/logManager";
 
 export default function AssetEditor({ book, section, onBack, onSave }) {
   const [title, setTitle] = useState("");
@@ -20,8 +21,28 @@ export default function AssetEditor({ book, section, onBack, onSave }) {
   const bookObj = { ...book };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
     setHasChanges(true);
+
+    // Log file upload
+    if (selectedFile) {
+      logBookEvent(
+        "File uploaded",
+        null, // Auto-detect user ID
+        null, // Auto-detect user email
+        {
+          action: "upload_file",
+          bookTitle: book.title,
+          bookId: book._id,
+          fileName: selectedFile.name,
+          fileType: selectedFile.type,
+          fileSize: selectedFile.size,
+          assetName: title || "New Asset",
+          timestamp: new Date().toISOString(),
+        }
+      );
+    }
   };
 
   useEffect(() => {

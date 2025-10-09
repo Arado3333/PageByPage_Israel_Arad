@@ -14,8 +14,8 @@
 .auth-card {
   width: 100%;
   max-width: 400px;
-  background-color: var(--background);
-  border: 1px solid var(--border);
+  background-color: white;
+  border: 1px solid #e5e7eb;
   border-radius: var(--radius);
   padding: 2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -30,14 +30,14 @@
 .auth-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--foreground);
+  color: #374151;
   margin-bottom: 0.5rem;
 }
 
 .auth-subtitle {
   font-size: 0.875rem;
   font-weight: 400;
-  color: var(--foreground);
+  color: #6b7280;
 }
 
 .auth-error {
@@ -75,15 +75,15 @@
 .form-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--foreground);
+  color: #374151;
 }
 
 .form-input {
   padding: 0.75rem;
-  background-color: var(--input);
-  border: 1px solid var(--border);
+  background-color: white;
+  border: 1px solid #d1d5db;
   border-radius: var(--radius);
-  color: var(--foreground);
+  color: #374151;
   font-size: 0.875rem;
   width: 100%;
   transition: border-color 0.2s ease;
@@ -91,7 +91,7 @@
 
 .form-input:focus {
   outline: none;
-  border-color: var(--ring);
+  border-color: #3b82f6;
 }
 
 .password-input-container {
@@ -105,7 +105,7 @@
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: var(--muted);
+  color: #6b7280;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -113,7 +113,7 @@
 }
 
 .password-toggle:hover {
-  color: var(--foreground);
+  color: #374151;
 }
 
 .password-icon {
@@ -138,18 +138,18 @@
   width: 1rem;
   height: 1rem;
   border-radius: 0.25rem;
-  border: 1px solid var(--border);
-  background-color: var(--input);
+  border: 1px solid #d1d5db;
+  background-color: white;
   cursor: pointer;
 }
 
 .remember-label {
-  color: var(--foreground);
+  color: #374151;
   cursor: pointer;
 }
 
 .forgot-password {
-  color: var(--accent);
+  color: #3b82f6;
   text-decoration: none;
   transition: opacity 0.2s ease;
 }
@@ -160,8 +160,8 @@
 
 .auth-button {
   padding: 0.75rem;
-  background-color: var(--accent);
-  color: white;
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
@@ -169,11 +169,11 @@
 }
 
 .auth-button:hover {
-  background-color: var(--accent-secondary);
+  background-color: hsl(var(--accent-secondary));
 }
 
 .auth-button:disabled {
-  background-color: var( --accent-secondary);
+  background-color: hsl(var(--accent-secondary));
   opacity: 0.7;
 }
 
@@ -182,11 +182,11 @@
   margin-top: 2rem;
   text-align: center;
   font-size: 0.875rem;
-  color: var(--foreground);
+  color: hsl(var(--foreground));
 }
 
 .auth-link {
-  color: var(--accent);
+  color: hsl(var(--accent));
   text-decoration: none;
   transition: opacity 0.2s ease;
 }
@@ -208,6 +208,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

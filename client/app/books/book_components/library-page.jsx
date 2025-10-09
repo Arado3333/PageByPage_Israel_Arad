@@ -1,58 +1,80 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Button } from "../../books/ui/button"
-import { Input } from "../../books/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "../../books/ui/card"
-import { Badge } from "../../books/ui/badge"
-import { Search, Plus, Heart, Edit, Eye, Trash2 } from "lucide-react"
+import { useState, useMemo, useEffect } from "react";
+import { Button } from "../../books/ui/button";
+import { Input } from "../../books/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "../../books/ui/card";
+import { Badge } from "../../books/ui/badge";
+import { Search, Plus, Heart, Edit, Eye, Trash2 } from "lucide-react";
 
-export default function LibraryPage({ books, onNewBook, onEditBook, onViewBook, onDeleteBook, onToggleFavorite }) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("All")
-  const [sortBy, setSortBy] = useState("Last Updated")
+export default function LibraryPage({
+  books,
+  onNewBook,
+  onEditBook,
+  onViewBook,
+  onDeleteBook,
+  onToggleFavorite,
+}) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [sortBy, setSortBy] = useState("Last Updated");
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300); // 300ms delay
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const filteredAndSortedBooks = useMemo(() => {
     const filtered = books.filter((book) => {
       const matchesSearch =
-        book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        book.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+        book.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        book.tags.some((tag) =>
+          tag.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+        );
       const matchesStatus =
-        statusFilter === "All" || (statusFilter === "Favorites" ? book.isFavorite : book.status === statusFilter)
-      return matchesSearch && matchesStatus
-    })
+        statusFilter === "All" ||
+        (statusFilter === "Favorites"
+          ? book.isFavorite
+          : book.status === statusFilter);
+      return matchesSearch && matchesStatus;
+    });
 
     return filtered.sort((a, b) => {
       switch (sortBy) {
         case "A-Z":
-          return a.title.localeCompare(b.title)
+          return a.title.localeCompare(b.title);
         case "Progress":
-          return b.wordCount - a.wordCount
+          return b.wordCount - a.wordCount;
         case "Last Updated":
         default:
-          return new Date(b.lastEdited) - new Date(a.lastEdited)
+          return new Date(b.lastEdited) - new Date(a.lastEdited);
       }
-    })
-  }, [books, searchTerm, statusFilter, sortBy])
+    });
+  }, [books, debouncedSearchTerm, statusFilter, sortBy]);
 
   const getStatusColor = (status) => {
     switch (status) {
       case "Published":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "Archived":
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
       default:
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
     }
-  }
+  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
-    })
-  }
+    });
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -103,9 +125,13 @@ export default function LibraryPage({ books, onNewBook, onEditBook, onViewBook, 
       {filteredAndSortedBooks.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground mb-4">
-            {books.length === 0 ? "No books yet. Create your first book!" : "No books match your filters."}
+            {books.length === 0
+              ? "No books yet. Create your first book!"
+              : "No books match your filters."}
           </p>
-          {books.length === 0 && <Button onClick={onNewBook}>Create Your First Book</Button>}
+          {books.length === 0 && (
+            <Button onClick={onNewBook}>Create Your First Book</Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -113,14 +139,27 @@ export default function LibraryPage({ books, onNewBook, onEditBook, onViewBook, 
             <Card key={book.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
-                  <CardTitle className="text-lg line-clamp-2">{book.title}</CardTitle>
-                  <Button variant="ghost" size="sm" onClick={() => onToggleFavorite(book.id)} className="p-1">
+                  <CardTitle className="text-lg line-clamp-2">
+                    {book.title}
+                  </CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onToggleFavorite(book.id)}
+                    className="p-1"
+                  >
                     <Heart
-                      className={`w-4 h-4 ${book.isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"}`}
+                      className={`w-4 h-4 ${
+                        book.isFavorite
+                          ? "fill-red-500 text-red-500"
+                          : "text-muted-foreground"
+                      }`}
                     />
                   </Button>
                 </div>
-                <Badge className={getStatusColor(book.status)}>{book.status}</Badge>
+                <Badge className={getStatusColor(book.status)}>
+                  {book.status}
+                </Badge>
               </CardHeader>
 
               <CardContent className="space-y-3">
@@ -129,7 +168,9 @@ export default function LibraryPage({ books, onNewBook, onEditBook, onViewBook, 
                   <span>{book.chapterCount} chapters</span>
                 </div>
 
-                <p className="text-sm text-muted-foreground">Last edited: {formatDate(book.lastEdited)}</p>
+                <p className="text-sm text-muted-foreground">
+                  Last edited: {formatDate(book.lastEdited)}
+                </p>
 
                 {book.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1">
@@ -147,11 +188,21 @@ export default function LibraryPage({ books, onNewBook, onEditBook, onViewBook, 
                 )}
 
                 <div className="flex gap-2 pt-2">
-                  <Button variant="outline" size="sm" onClick={() => onViewBook(book)} className="flex-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onViewBook(book)}
+                    className="flex-1"
+                  >
                     <Eye className="w-4 h-4 mr-1" />
                     View
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => onEditBook(book)} className="flex-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onEditBook(book)}
+                    className="flex-1"
+                  >
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </Button>
@@ -170,5 +221,5 @@ export default function LibraryPage({ books, onNewBook, onEditBook, onViewBook, 
         </div>
       )}
     </div>
-  )
+  );
 }

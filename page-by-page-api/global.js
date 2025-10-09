@@ -3,7 +3,20 @@ import { fileURLToPath } from "url";
 
 export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
-export const ROLES = { USER: "user", ADMIN: "admin" };
+export const ROLES = { USER: "user", EDITOR: "editor", ADMIN: "admin" };
+export const USER_STATUS = {
+  ACTIVE: "active",
+  SUSPENDED: "suspended",
+  DELETED: "deleted",
+};
+export const PERMISSIONS = {
+  CREATE_USER: "create_user",
+  DELETE_USER: "delete_user",
+  EDIT_USER: "edit_user",
+  VIEW_LOGS: "view_logs",
+  MANAGE_AI_SETTINGS: "manage_ai_settings",
+  MANAGE_SYSTEM_SETTINGS: "manage_system_settings",
+};
 
 // JWT Configuration
 export const JWT_SECRET =

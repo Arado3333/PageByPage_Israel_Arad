@@ -2,7 +2,7 @@
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import BookPdf from "./BookPdf";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Button } from "../../books/ui/button";
 import { Input } from "../../books/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "../../books/ui/card";
@@ -25,6 +25,7 @@ import Note from "../../lib/models/note.model.js";
 import Draft from "../../lib/models/draft.model.js";
 import Character from "../../lib/models/character.model.js";
 import Asset from "../../lib/models/asset.model.js";
+import { logBookEvent } from "../../lib/logManager";
 
 export default function BookWorkspace({
   book,
@@ -34,6 +35,7 @@ export default function BookWorkspace({
   onUpdateBook,
 }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [tagFilter, setTagFilter] = useState("All");
   const [activeTab, setActiveTab] = useState("drafts");
   const [hasChapters, setHasChapters] = useState(true); //default is disabled
@@ -43,6 +45,15 @@ export default function BookWorkspace({
       setHasChapters(false);
     }
   }, [book.chapters]);
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300); // 300ms delay
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const allTags = [
     ...new Set([
@@ -56,12 +67,43 @@ export default function BookWorkspace({
       { id: 1, title: "", content: "", editorContent: null },
     ]); //initializes new empty draft object
 
+    // Log draft creation
+    logBookEvent(
+      "Draft created",
+      null, // Auto-detect user ID
+      null, // Auto-detect user email
+      {
+        action: "create_draft",
+        bookTitle: book.title,
+        bookId: book._id,
+        draftTitle: newDraft.title,
+        draftId: newDraft.id,
+        timestamp: new Date().toISOString(),
+      }
+    );
+
     // Immediately edit the new draft
     onEditSection(newDraft, "newDraft");
   };
 
   const handleAddNote = () => {
     const newNote = new Note(); //initializes new empty note --> model
+
+    // Log note creation
+    logBookEvent(
+      "Note created",
+      null, // Auto-detect user ID
+      null, // Auto-detect user email
+      {
+        action: "create_note",
+        bookTitle: book.title,
+        bookId: book._id,
+        noteTitle: newNote.title,
+        noteId: newNote.id,
+        timestamp: new Date().toISOString(),
+      }
+    );
+
     const updatedBook = {
       ...book,
       notes: [...book.notes, { ...newNote }],
@@ -76,6 +118,21 @@ export default function BookWorkspace({
     const newCharacter = new Character();
     console.log(newCharacter);
 
+    // Log character creation
+    logBookEvent(
+      "Character created",
+      null, // Auto-detect user ID
+      null, // Auto-detect user email
+      {
+        action: "create_character",
+        bookTitle: book.title,
+        bookId: book._id,
+        characterName: newCharacter.name,
+        characterId: newCharacter.id,
+        timestamp: new Date().toISOString(),
+      }
+    );
+
     const updatedBook = {
       ...book,
       characts: [...book.characts, { ...newCharacter }],
@@ -88,6 +145,22 @@ export default function BookWorkspace({
 
   const handleAddAsset = () => {
     const newAsset = new Asset("New Asset", "image", "");
+
+    // Log asset creation
+    logBookEvent(
+      "Asset created",
+      null, // Auto-detect user ID
+      null, // Auto-detect user email
+      {
+        action: "create_asset",
+        bookTitle: book.title,
+        bookId: book._id,
+        assetName: newAsset.name,
+        assetId: newAsset.id,
+        assetType: newAsset.type,
+        timestamp: new Date().toISOString(),
+      }
+    );
 
     // Immediately edit the new asset
     onEditSection(newAsset, "asset");
@@ -123,7 +196,7 @@ export default function BookWorkspace({
   const filteredDrafts = book.drafts.filter((draft) => {
     const matchesSearch = draft.title
       .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+      .includes(debouncedSearchTerm.toLowerCase());
     const matchesTag = tagFilter === "All" || draft.tag === tagFilter;
     return matchesSearch && matchesTag;
   });
@@ -131,7 +204,7 @@ export default function BookWorkspace({
   const filteredNotes = book.notes.filter((note) => {
     const matchesSearch = note.title
       .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+      .includes(debouncedSearchTerm.toLowerCase());
     const matchesTag = tagFilter === "All" || note.tag === tagFilter;
     return matchesSearch && matchesTag;
   });

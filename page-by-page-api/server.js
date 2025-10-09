@@ -8,6 +8,7 @@ import projectsRouter from "./services/book_projects/project.routes.js";
 import tasksRouter from "./services/tasks/tasks.routes.js";
 import versionsRouter from "./services/versions/versions.routes.js";
 import goalsRouter from "./services/goals/goals.routes.js";
+import adminRouter from "./services/admin/routes/admin.routes.js";
 import { authenticateToken } from "./middlewares/auth.js";
 
 const PORT = process.env.PORT || 5500;
@@ -25,8 +26,8 @@ server.use("/api/chat", authenticateToken, aiRouter);
 server.use("/api/tasks", tasksRouter);
 server.use("/api/goals", goalsRouter);
 server.use("/api/versions", versionsRouter);
+server.use("/api/admin", adminRouter);
 
 server.listen(PORT, () => {
   console.log(`Server running on port http://localhost:${PORT}`);
 });
-    

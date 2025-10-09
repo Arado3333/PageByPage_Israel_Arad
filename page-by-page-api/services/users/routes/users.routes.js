@@ -18,12 +18,7 @@ userRouter
   .post("/login", login)
   .post("/loginNative", loginNative)
   .put("/:id", updateUserDetails)
-  .get("/profile", authenticateToken, (req, res) => {
-    res.json({
-      message: "Profile accessed successfully",
-      user: req.user,
-    });
-  });
+  .get("/profile", authenticateToken, getUserProfile);
 // .delete("/:id", deleteUser);
 
 export default userRouter;

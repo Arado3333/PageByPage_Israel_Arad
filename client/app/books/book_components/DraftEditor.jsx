@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../books/ui/card";
 import { Badge } from "../../books/ui/badge";
 import { ArrowLeft, Save, Trash2, Plus, FileText } from "lucide-react";
 import Draft from "../../lib/models/draft.model.js";
+import { logBookEvent } from "../../lib/logManager";
 
 export default function DraftEditor({ book, section, onBack, onSave }) {
   const [title, setTitle] = useState("");
@@ -108,6 +109,23 @@ export default function DraftEditor({ book, section, onBack, onSave }) {
     }
 
     console.log(updatedBook);
+
+    // Log chapter creation if a new chapter was created
+    if (chapter) {
+      logBookEvent(
+        "Chapter created",
+        null, // Auto-detect user ID
+        null, // Auto-detect user email
+        {
+          action: "create_chapter",
+          bookTitle: book.title,
+          bookId: book._id,
+          chapterTitle: chapter.title,
+          chapterId: chapter.id,
+          timestamp: new Date().toISOString(),
+        }
+      );
+    }
 
     onSave(updatedBook);
     setHasChanges(false);

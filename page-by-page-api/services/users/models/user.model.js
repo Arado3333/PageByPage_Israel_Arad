@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { ROLES } from "../../../global.js";
+import { ROLES, USER_STATUS, PERMISSIONS } from "../../../global.js";
 import {
   getAll,
   getUserByEmail,
@@ -9,12 +9,39 @@ import {
 } from "../config/users.db.js";
 
 export default class User {
-  constructor(name, email, password, role = ROLES.USER, bio = "") {
+  constructor(
+    name,
+    email,
+    password,
+    role = ROLES.USER,
+    bio = "",
+    permissions = []
+  ) {
     this.role = role; // Default role is 'user'
     this.name = name;
     this.email = email;
     this.password = bcrypt.hashSync(password, 15);
     this.bio = bio;
+    this.status = USER_STATUS.ACTIVE;
+    this.permissions = this.getDefaultPermissions(role, permissions);
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
+    this.lastLogin = null;
+    this.deletedAt = null;
+  }
+
+  getDefaultPermissions(role, customPermissions = []) {
+    if (customPermissions.length > 0) return customPermissions;
+
+    switch (role) {
+      case ROLES.ADMIN:
+        return Object.values(PERMISSIONS);
+      case ROLES.EDITOR:
+        return [PERMISSIONS.EDIT_USER, PERMISSIONS.VIEW_LOGS];
+      case ROLES.USER:
+      default:
+        return [];
+    }
   }
 
   static async getAllUsers() {
@@ -74,5 +101,44 @@ export default class User {
     } catch (error) {
       throw new Error("An error occurred while saving the user.");
     }
+  }
+
+  // Update user status (active, suspended, deleted)
+  async updateStatus(status) {
+    this.status = status;
+    this.updatedAt = new Date();
+    if (status === USER_STATUS.DELETED) {
+      this.deletedAt = new Date();
+    }
+    return await updateUser(this._id, this);
+  }
+
+  // Update last login timestamp
+  async updateLastLogin() {
+    this.lastLogin = new Date();
+    return await updateUser(this._id, this);
+  }
+
+  // Check if user has specific permission
+  hasPermission(permission) {
+    return this.permissions.includes(permission);
+  }
+
+  // Check if user is active
+  isActive() {
+    return this.status === USER_STATUS.ACTIVE;
+  }
+
+  // Soft delete user
+  async softDelete() {
+    return await this.updateStatus(USER_STATUS.DELETED);
+  }
+
+  // Restore deleted user
+  async restore() {
+    this.status = USER_STATUS.ACTIVE;
+    this.deletedAt = null;
+    this.updatedAt = new Date();
+    return await updateUser(this._id, this);
   }
 }

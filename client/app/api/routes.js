@@ -300,7 +300,7 @@ export async function askAI() {
       }
     }
     console.log(allSuggestions);
-    
+
     return allSuggestions;
   } catch (error) {
     // Handle any top-level errors
@@ -592,7 +592,7 @@ export async function deleteTask(taskId) {
 export async function login(email, password) {
   try {
     let result = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVICE}/api/users/login`,
+      `${process.env.NEXT_PUBLIC_SERVICE}/api/users/loginNative`,
       {
         method: "POST",
         headers: {

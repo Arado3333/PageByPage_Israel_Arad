@@ -32,10 +32,16 @@ The JWT configuration is stored in `global.js`:
   "userID": "user_id_here",
   "token": "jwt_token_here",
   "user": {
-    "id": "user_id_here",
+    "_id": "user_id_here",
     "name": "User Name",
     "email": "user@example.com",
-    "role": "user"
+    "role": "user",
+    "status": "active",
+    "permissions": [],
+    "bio": "User bio",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z",
+    "lastLogin": "2024-01-01T00:00:00.000Z"
   }
 }
 ```
@@ -70,13 +76,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ```json
 {
-  "message": "Profile accessed successfully",
+  "success": true,
   "user": {
-    "userId": "user_id_here",
+    "_id": "user_id_here",
+    "name": "User Name",
     "email": "user@example.com",
     "role": "user",
-    "iat": 1234567890,
-    "exp": 1234654290
+    "status": "active",
+    "permissions": [],
+    "bio": "User bio",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z",
+    "lastLogin": "2024-01-01T00:00:00.000Z"
   }
 }
 ```
