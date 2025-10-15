@@ -112,25 +112,25 @@ export default function BookLibrary({
   };
 
   return (
-    <div className="min-h-screen text-slate-800">
+    <div className="min-h-screen text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900">
       {/* Decorative blobs */}
       <div className="pointer-events-none fixed -z-10 inset-0 overflow-hidden">
-        <div className="absolute -top-16 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-indigo-300 to-purple-300 blur-3xl opacity-40" />
-        <div className="absolute -bottom-24 -right-10 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-200 to-cyan-200 blur-3xl opacity-40" />
-        <div className="absolute top-1/2 left-1/2 h-64 w-64 rounded-full bg-gradient-to-tr from-pink-200 to-rose-300 blur-3xl opacity-30" />
+        <div className="absolute -top-16 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-indigo-300 to-purple-300 dark:from-indigo-600/20 dark:to-purple-600/20 blur-3xl opacity-40" />
+        <div className="absolute -bottom-24 -right-10 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-200 to-cyan-200 dark:from-emerald-600/20 dark:to-cyan-600/20 blur-3xl opacity-40" />
+        <div className="absolute top-1/2 left-1/2 h-64 w-64 rounded-full bg-gradient-to-tr from-pink-200 to-rose-300 dark:from-pink-600/20 dark:to-rose-600/20 blur-3xl opacity-30" />
       </div>
 
       <div className="mx-auto max-w-[1600px] 2xl:max-w-[1760px] 3xl:max-w-[1920px] px-2 lg:px-4 xl:px-6 2xl:px-8 3xl:px-10 py-8 2xl:py-12 3xl:py-16">
         {/* Hero Section */}
-        <section className="rounded-2xl bg-white shadow-md ring-1 ring-slate-200 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 mb-6 2xl:mb-8 3xl:mb-12 w-full">
+        <section className="rounded-2xl bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 mb-6 2xl:mb-8 3xl:mb-12 w-full">
           <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 text-sm 2xl:text-base 3xl:text-lg">
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 px-3 py-1 text-sm 2xl:text-base 3xl:text-lg">
               <Sparkles className="w-4 h-4" />
               Your Library
             </div>
             <Button
               data-testid="cypress-new-project-btn"
-              className="new-project-btn font-medium mobile-full bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+              className="new-project-btn font-medium mobile-full bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 hover:from-indigo-800 hover:to-violet-800 dark:hover:from-indigo-700 dark:hover:to-violet-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
               onClick={() => onNewProject()}
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -138,30 +138,30 @@ export default function BookLibrary({
             </Button>
           </div>
 
-          <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl font-serif text-[#0F1A2E] mb-2">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl font-serif text-[#0F1A2E] dark:text-slate-100 mb-2">
             Your Creative Projects
           </h1>
-          <p className="text-base sm:text-lg 2xl:text-xl 3xl:text-2xl text-slate-600 mb-6">
+          <p className="text-base sm:text-lg 2xl:text-xl 3xl:text-2xl text-slate-600 dark:text-slate-300 mb-6">
             Explore and manage your writing projects
           </p>
 
           {/* Search and Filter */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
               <Input
                 placeholder="Search projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 rounded-xl border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="pl-10 rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-slate-400" />
+              <Filter className="w-4 h-4 text-slate-400 dark:text-slate-500" />
               <select
                 value={tagFilter}
                 onChange={(e) => setTagFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="All">All Tags</option>
                 {allTags.map((tag) => (
@@ -176,8 +176,8 @@ export default function BookLibrary({
 
         {!isLoading && !isExist && (
           <div className="text-center py-12">
-            <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500 text-lg">
+            <BookOpen className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+            <p className="text-slate-500 dark:text-slate-400 text-lg">
               Nothing to show. Create your first project!
             </p>
           </div>
@@ -189,7 +189,7 @@ export default function BookLibrary({
             <div
               id={"c-" + index}
               key={index}
-              className={`group rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 flex flex-col h-full overflow-hidden`}
+              className={`group rounded-2xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 flex flex-col h-full overflow-hidden`}
             >
               {/* Gradient Header */}
               <div
@@ -201,11 +201,11 @@ export default function BookLibrary({
                 <div className="flex justify-between items-start mb-4">
                   <h3
                     id={"title-" + index}
-                    className="text-lg sm:text-xl lg:text-2xl font-serif text-[#0F1A2E] font-medium"
+                    className="text-lg sm:text-xl lg:text-2xl font-serif text-[#0F1A2E] dark:text-slate-100 font-medium"
                   >
                     {book.title}
                   </h3>
-                  <Badge className="bg-slate-100 text-slate-700 border border-slate-200 rounded-full px-2 py-1 text-xs">
+                  <Badge className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 rounded-full px-2 py-1 text-xs">
                     {book.status}
                   </Badge>
                 </div>
@@ -214,7 +214,7 @@ export default function BookLibrary({
                 <div className="flex flex-wrap gap-2 mb-6">
                   {book.genres.map((tag) => (
                     <Badge
-                      className="bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full px-2 py-1 text-xs"
+                      className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 rounded-full px-2 py-1 text-xs"
                       key={tag}
                     >
                       {tag}
@@ -225,26 +225,34 @@ export default function BookLibrary({
                 {/* Stats */}
                 <div className="space-y-3 text-sm flex-1 mb-6">
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-500">Drafts</span>
-                    <span className="font-medium text-slate-800 bg-slate-100 px-2 py-1 rounded-lg">
+                    <span className="text-slate-500 dark:text-slate-400">
+                      Drafts
+                    </span>
+                    <span className="font-medium text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">
                       {getDraftCount(book)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-500">Notes</span>
-                    <span className="font-medium text-slate-800 bg-slate-100 px-2 py-1 rounded-lg">
+                    <span className="text-slate-500 dark:text-slate-400">
+                      Notes
+                    </span>
+                    <span className="font-medium text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">
                       {getNotesCount(book)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-500">Characters</span>
-                    <span className="font-medium text-slate-800 bg-slate-100 px-2 py-1 rounded-lg">
+                    <span className="text-slate-500 dark:text-slate-400">
+                      Characters
+                    </span>
+                    <span className="font-medium text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">
                       {book.characters?.length || 0}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-500">Assets</span>
-                    <span className="font-medium text-slate-800 bg-slate-100 px-2 py-1 rounded-lg">
+                    <span className="text-slate-500 dark:text-slate-400">
+                      Assets
+                    </span>
+                    <span className="font-medium text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">
                       {book.assets?.length || 0}
                     </span>
                   </div>
@@ -253,7 +261,7 @@ export default function BookLibrary({
                 {/* Action Buttons */}
                 <div className="space-y-3">
                   <Button
-                    className="w-full bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                    className="w-full bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 hover:from-indigo-800 hover:to-violet-800 dark:hover:from-indigo-700 dark:hover:to-violet-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
                     onClick={() => onOpenBook(book)}
                   >
                     <FolderOpen className="w-4 h-4 mr-2" />
@@ -262,7 +270,7 @@ export default function BookLibrary({
                   <Button
                     onClick={handleDeleteClick}
                     id={index}
-                    className="w-full bg-red-400 hover:bg-red-500 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                    className="w-full bg-red-400 dark:bg-red-500 hover:bg-red-500 dark:hover:bg-red-600 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
                   >
                     Delete Project
                   </Button>

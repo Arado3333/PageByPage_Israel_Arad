@@ -98,24 +98,24 @@ export default function Header() {
   };
 
   return (
-    <div className="dm-header">
+    <div className="dm-header text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900">
       {/* Decorative blobs */}
       <div className="pointer-events-none fixed -z-10 inset-0 overflow-hidden">
-        <div className="absolute -top-16 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-indigo-300 to-purple-300 blur-3xl opacity-40" />
-        <div className="absolute -bottom-24 -right-10 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-200 to-cyan-200 blur-3xl opacity-40" />
-        <div className="absolute top-1/2 left-1/2 h-64 w-64 rounded-full bg-gradient-to-tr from-pink-200 to-rose-300 blur-3xl opacity-30" />
+        <div className="absolute -top-16 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-indigo-300 to-purple-300 dark:from-indigo-600/20 dark:to-purple-600/20 blur-3xl opacity-40" />
+        <div className="absolute -bottom-24 -right-10 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-200 to-cyan-200 dark:from-emerald-600/20 dark:to-cyan-600/20 blur-3xl opacity-40" />
+        <div className="absolute top-1/2 left-1/2 h-64 w-64 rounded-full bg-gradient-to-tr from-pink-200 to-rose-300 dark:from-pink-600/20 dark:to-rose-600/20 blur-3xl opacity-30" />
       </div>
 
       <div className="dm-header-content">
         {/* Hero Section */}
-        <section className="rounded-2xl bg-white shadow-md ring-1 ring-slate-200 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 mb-6 2xl:mb-8 3xl:mb-12 w-full">
+        <section className="rounded-2xl bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 mb-6 2xl:mb-8 3xl:mb-12 w-full">
           <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 text-sm 2xl:text-base 3xl:text-lg">
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 px-3 py-1 text-sm 2xl:text-base 3xl:text-lg">
               <Sparkles className="w-4 h-4" />
               Draft Manager
             </div>
             <button
-              className="dm-create-btn bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+              className="dm-create-btn bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 hover:from-indigo-800 hover:to-violet-800 dark:hover:from-indigo-700 dark:hover:to-violet-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
               onClick={handleCreateDraft}
               type="button"
             >
@@ -124,31 +124,31 @@ export default function Header() {
             </button>
           </div>
 
-          <h1 className="dm-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl font-serif text-[#0F1A2E] mb-2">
+          <h1 className="dm-title text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl font-serif text-[#0F1A2E] dark:text-slate-100 mb-2">
             Your Creative Drafts
           </h1>
-          <p className="dm-subtitle text-base sm:text-lg 2xl:text-xl 3xl:text-2xl text-slate-600 mb-6">
+          <p className="dm-subtitle text-base sm:text-lg 2xl:text-xl 3xl:text-2xl text-slate-600 dark:text-slate-300 mb-6">
             Manage all your drafts across all books
           </p>
 
           {/* Search and Filter */}
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
               <input
                 type="text"
                 placeholder="Search drafts by title, content, or book..."
                 value={searchTerm}
                 onChange={handleSearch}
-                className="dm-search-input pl-10 rounded-xl border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="dm-search-input pl-10 rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-slate-400" />
+              <Filter className="w-4 h-4 text-slate-400 dark:text-slate-500" />
               <select
                 value={statusFilter}
                 onChange={handleStatusFilter}
-                className="dm-filter-select px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="dm-filter-select px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="all">All Status</option>
                 <option value="draft">Draft</option>
@@ -159,7 +159,7 @@ export default function Header() {
               <select
                 value={sortBy}
                 onChange={handleSort}
-                className="dm-filter-select px-3 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="dm-filter-select px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>

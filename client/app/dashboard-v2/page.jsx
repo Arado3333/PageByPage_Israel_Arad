@@ -21,7 +21,10 @@ export default function Page() {
   const writingStreakPromise = calcWritingStreak();
   const aiSuggestionsPromise = askAI();
   const upcomingTasksPromise = getUpcomingTasks();
-  const templatesPromise = getTemplates();
+
+  // Debug logging
+  console.log("Page - aiSuggestionsPromise:", aiSuggestionsPromise);
+  console.log("Page - aiSuggestionsPromise type:", typeof aiSuggestionsPromise);
 
   return (
     <Suspense fallback={<DashboardSkeleton />}>
@@ -33,7 +36,6 @@ export default function Page() {
         writingStreakPromise={writingStreakPromise}
         aiSuggestionsPromise={aiSuggestionsPromise}
         upcomingTasksPromise={upcomingTasksPromise}
-        templatesPromise={templatesPromise}
       />
     </Suspense>
   );

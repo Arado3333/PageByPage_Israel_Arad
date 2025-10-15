@@ -4,14 +4,14 @@
   justify-content: center;
   min-height: 100vh;
   padding: 1.5rem;
-  background-color: #F5F5F5;
+  background-color: hsl(var(--background));
 }
 
 .auth-card {
   width: 100%;
   max-width: 400px;
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   padding: 2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -26,13 +26,13 @@
 .auth-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #374151;
+  color: hsl(var(--foreground));
   margin-bottom: 0.5rem;
 }
 
 .auth-subtitle {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: hsl(var(--muted-foreground));
 }
 
 .auth-error {
@@ -70,15 +70,15 @@
 .form-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: hsl(var(--foreground));
 }
 
 .form-input {
   padding: 0.75rem;
-  background-color: white;
-  border: 1px solid #d1d5db;
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
-  color: #374151;
+  color: hsl(var(--foreground));
   font-size: 0.875rem;
   width: 100%;
   transition: border-color 0.2s ease;
@@ -86,7 +86,7 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: hsl(var(--accent));
 }
 
 .password-input-container {
@@ -100,7 +100,7 @@
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: #6b7280;
+  color: hsl(var(--muted-foreground));
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -108,7 +108,7 @@
 }
 
 .password-toggle:hover {
-  color: #374151;
+  color: hsl(var(--foreground));
 }
 
 .password-icon {
@@ -121,8 +121,8 @@
   align-items: center;
   justify-content: center;
   padding: 0.75rem;
-  background-color: #3b82f6;
-  color: white;
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
   border: none;
   border-radius: var(--radius);
   font-weight: 500;
@@ -131,18 +131,18 @@
 }
 
 .auth-button:hover {
-  background-color: #2563eb;
+  background-color: hsl(var(--accent-secondary));
 }
 
 .auth-footer {
   margin-top: 2rem;
   text-align: center;
   font-size: 0.875rem;
-  color: #374151;
+  color: hsl(var(--foreground));
 }
 
 .auth-link {
-  color: #3b82f6;
+  color: hsl(var(--accent));
   text-decoration: none;
   transition: opacity 0.2s ease;
 }

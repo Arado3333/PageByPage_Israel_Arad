@@ -18,10 +18,10 @@ export default function WritingStreakSection({ writingStreakPromise }) {
       <Card title="Writing Streak" className="h-full">
         <div className="flex flex-col justify-center items-center h-full text-center">
           <div className="w-full">
-            <div className="text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl 3xl:text-6xl font-bold text-amber-600 mb-2">
+            <div className="text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl 3xl:text-6xl font-bold text-amber-600 dark:text-amber-400 mb-2">
               {writingStreak.currentStreak}
             </div>
-            <div className="text-sm 2xl:text-base 3xl:text-lg text-amber-700 mb-3">
+            <div className="text-sm 2xl:text-base 3xl:text-lg text-amber-700 dark:text-amber-300 mb-3">
               {writingStreak.currentStreak > 1 ? "days" : "day"}
             </div>
 
@@ -29,14 +29,14 @@ export default function WritingStreakSection({ writingStreakPromise }) {
             <div className="flex justify-center items-center gap-1 2xl:gap-2 mb-4">
               {writingStreak.lastWeek.map((dayData, index) => (
                 <div key={index} className="flex flex-col items-center">
-                  <div className="text-xs 2xl:text-sm text-slate-500 mb-1">
+                  <div className="text-xs 2xl:text-sm text-slate-500 dark:text-slate-400 mb-1">
                     {dayData.dayName}
                   </div>
                   <div
                     className={`w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 2xl:w-8 2xl:h-8 3xl:w-10 3xl:h-10 rounded-full flex items-center justify-center ${
                       dayData.hasWritten
-                        ? "bg-amber-500 text-white"
-                        : "bg-slate-100 text-slate-400"
+                        ? "bg-amber-500 dark:bg-amber-400 text-white"
+                        : "bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500"
                     }`}
                   >
                     {dayData.hasWritten ? (
@@ -52,14 +52,14 @@ export default function WritingStreakSection({ writingStreakPromise }) {
                         />
                       </svg>
                     ) : (
-                      <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 2xl:w-1.5 2xl:h-1.5 3xl:w-2 3xl:h-2 rounded-full bg-slate-300"></div>
+                      <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 2xl:w-1.5 2xl:h-1.5 3xl:w-2 3xl:h-2 rounded-full bg-slate-300 dark:bg-slate-600"></div>
                     )}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="text-xs sm:text-sm 2xl:text-base 3xl:text-lg text-amber-700/90 mb-4 px-2">
+            <div className="text-xs sm:text-sm 2xl:text-base 3xl:text-lg text-amber-700/90 dark:text-amber-300/90 mb-4 px-2">
               {writingStreak.currentStreak > 1 ? (
                 <>
                   🎉 Amazing! You've written for {writingStreak.currentStreak}{" "}
@@ -73,7 +73,7 @@ export default function WritingStreakSection({ writingStreakPromise }) {
             </div>
             <button
               onClick={handleStartSprint}
-              className="w-full max-w-32 2xl:max-w-40 3xl:max-w-48 mx-auto rounded-xl bg-amber-600 text-white py-2 px-3 2xl:py-3 2xl:px-4 3xl:py-4 3xl:px-6 text-xs sm:text-sm 2xl:text-base 3xl:text-lg hover:opacity-90 transition-opacity"
+              className="w-full max-w-32 2xl:max-w-40 3xl:max-w-48 mx-auto rounded-xl bg-amber-600 dark:bg-amber-500 text-white py-2 px-3 2xl:py-3 2xl:px-4 3xl:py-4 3xl:px-6 text-xs sm:text-sm 2xl:text-base 3xl:text-lg hover:opacity-90 transition-opacity"
             >
               Start sprint
             </button>

@@ -111,27 +111,27 @@ export default function SettingsPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen text-slate-800">
+      <div className="min-h-screen text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900">
         {/* Decorative blobs */}
         <div className="pointer-events-none fixed -z-10 inset-0 overflow-hidden">
-          <div className="absolute -top-16 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-indigo-300 to-purple-300 blur-3xl opacity-40" />
-          <div className="absolute -bottom-24 -right-10 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-200 to-cyan-200 blur-3xl opacity-40" />
-          <div className="absolute top-1/2 left-1/2 h-64 w-64 rounded-full bg-gradient-to-tr from-pink-200 to-rose-300 blur-3xl opacity-30" />
+          <div className="absolute -top-16 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-indigo-300 to-purple-300 dark:from-indigo-600/20 dark:to-purple-600/20 blur-3xl opacity-40" />
+          <div className="absolute -bottom-24 -right-10 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-200 to-cyan-200 dark:from-emerald-600/20 dark:to-cyan-600/20 blur-3xl opacity-40" />
+          <div className="absolute top-1/2 left-1/2 h-64 w-64 rounded-full bg-gradient-to-tr from-pink-200 to-rose-300 dark:from-pink-600/20 dark:to-rose-600/20 blur-3xl opacity-30" />
         </div>
 
         <div className="mx-auto max-w-[1600px] 2xl:max-w-[1760px] 3xl:max-w-[1920px] px-2 lg:px-4 xl:px-6 2xl:px-8 3xl:px-10 py-8 2xl:py-12 3xl:py-16 w-full">
           {/* Hero Section */}
-          <section className="rounded-2xl bg-white shadow-md ring-1 ring-slate-200 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 mb-6 2xl:mb-8 3xl:mb-12 w-full">
+          <section className="rounded-2xl bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 mb-6 2xl:mb-8 3xl:mb-12 w-full">
             <div className="flex items-center gap-3 mb-4">
-              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 text-sm 2xl:text-base 3xl:text-lg">
+              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 px-3 py-1 text-sm 2xl:text-base 3xl:text-lg">
                 <Sparkles className="w-4 h-4" />
                 Settings
               </div>
             </div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl font-serif text-[#0F1A2E] mb-2">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl font-serif text-[#0F1A2E] dark:text-slate-100 mb-2">
               Account Settings
             </h1>
-            <p className="text-base sm:text-lg 2xl:text-xl 3xl:text-2xl text-slate-600">
+            <p className="text-base sm:text-lg 2xl:text-xl 3xl:text-2xl text-slate-600 dark:text-slate-300">
               Manage your profile, security, and preferences
             </p>
           </section>
@@ -142,7 +142,7 @@ export default function SettingsPage() {
                 <button
                   className={`sidebar-button text-sm 2xl:text-base 3xl:text-lg ${
                     activeTab === "profile" ? "active" : ""
-                  }`}
+                  } text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100`}
                   onClick={() => setActiveTab("profile")}
                 >
                   <User className="sidebar-icon h-5 w-5 2xl:h-6 2xl:w-6 3xl:h-7 3xl:w-7" />
@@ -151,7 +151,7 @@ export default function SettingsPage() {
                 <button
                   className={`sidebar-button text-sm 2xl:text-base 3xl:text-lg ${
                     activeTab === "security" ? "active" : ""
-                  }`}
+                  } text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100`}
                   onClick={() => setActiveTab("security")}
                 >
                   <Lock className="sidebar-icon h-5 w-5 2xl:h-6 2xl:w-6 3xl:h-7 3xl:w-7" />
@@ -160,7 +160,7 @@ export default function SettingsPage() {
                 <button
                   className={`sidebar-button text-sm 2xl:text-base 3xl:text-lg ${
                     activeTab === "notifications" ? "active" : ""
-                  }`}
+                  } text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100`}
                   onClick={() => setActiveTab("notifications")}
                 >
                   <Bell className="sidebar-icon h-5 w-5 2xl:h-6 2xl:w-6 3xl:h-7 3xl:w-7" />
@@ -191,7 +191,7 @@ export default function SettingsPage() {
 
                 {activeTab === "profile" && (
                   <div className="profile-section">
-                    <h2 className="section-title text-lg 2xl:text-xl 3xl:text-2xl">
+                    <h2 className="section-title text-lg 2xl:text-xl 3xl:text-2xl text-slate-800 dark:text-slate-200">
                       Profile Settings
                     </h2>
                     <form
@@ -201,7 +201,7 @@ export default function SettingsPage() {
                       <div className="form-group">
                         <label
                           htmlFor="name"
-                          className="form-label text-sm 2xl:text-base 3xl:text-lg"
+                          className="form-label text-sm 2xl:text-base 3xl:text-lg text-slate-700 dark:text-slate-300"
                         >
                           Name
                         </label>
@@ -209,7 +209,7 @@ export default function SettingsPage() {
                           id="name"
                           name="name"
                           type="text"
-                          className="form-input text-sm 2xl:text-base 3xl:text-lg"
+                          className="form-input text-sm 2xl:text-base 3xl:text-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-600"
                           value={profileData.name}
                           onChange={handleProfileChange}
                           placeholder="Your name"
@@ -219,7 +219,7 @@ export default function SettingsPage() {
                       <div className="form-group">
                         <label
                           htmlFor="email"
-                          className="form-label text-sm 2xl:text-base 3xl:text-lg"
+                          className="form-label text-sm 2xl:text-base 3xl:text-lg text-slate-700 dark:text-slate-300"
                         >
                           Email
                         </label>
@@ -227,7 +227,7 @@ export default function SettingsPage() {
                           id="email"
                           name="email"
                           type="email"
-                          className="form-input text-sm 2xl:text-base 3xl:text-lg"
+                          className="form-input text-sm 2xl:text-base 3xl:text-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-600"
                           value={profileData.email}
                           onChange={handleProfileChange}
                           placeholder="Your email"
@@ -236,14 +236,14 @@ export default function SettingsPage() {
                       <div className="form-group">
                         <label
                           htmlFor="bio"
-                          className="form-label text-sm 2xl:text-base 3xl:text-lg"
+                          className="form-label text-sm 2xl:text-base 3xl:text-lg text-slate-700 dark:text-slate-300"
                         >
                           Bio
                         </label>
                         <textarea
                           id="bio"
                           name="bio"
-                          className="form-textarea text-sm 2xl:text-base 3xl:text-lg"
+                          className="form-textarea text-sm 2xl:text-base 3xl:text-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-600"
                           value={profileData.bio}
                           onChange={handleProfileChange}
                           placeholder="Tell us about yourself"
@@ -262,7 +262,7 @@ export default function SettingsPage() {
 
                 {activeTab === "security" && (
                   <div className="security-section">
-                    <h2 className="section-title text-lg 2xl:text-xl 3xl:text-2xl">
+                    <h2 className="section-title text-lg 2xl:text-xl 3xl:text-2xl text-slate-800 dark:text-slate-200">
                       Security Settings
                     </h2>
                     <form
@@ -272,7 +272,7 @@ export default function SettingsPage() {
                       <div className="form-group">
                         <label
                           htmlFor="currentPassword"
-                          className="form-label text-sm 2xl:text-base 3xl:text-lg"
+                          className="form-label text-sm 2xl:text-base 3xl:text-lg text-slate-700 dark:text-slate-300"
                         >
                           Current Password
                         </label>
@@ -281,7 +281,7 @@ export default function SettingsPage() {
                             id="currentPassword"
                             name="currentPassword"
                             type={showPassword ? "text" : "password"}
-                            className="form-input text-sm 2xl:text-base 3xl:text-lg"
+                            className="form-input text-sm 2xl:text-base 3xl:text-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-600"
                             value={passwordData.currentPassword}
                             onChange={handlePasswordChange}
                             placeholder="Enter current password"
@@ -289,7 +289,7 @@ export default function SettingsPage() {
                           />
                           <button
                             type="button"
-                            className="password-toggle"
+                            className="password-toggle text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                             onClick={() => setShowPassword(!showPassword)}
                             tabIndex="-1"
                           >
@@ -304,7 +304,7 @@ export default function SettingsPage() {
                       <div className="form-group">
                         <label
                           htmlFor="newPassword"
-                          className="form-label text-sm 2xl:text-base 3xl:text-lg"
+                          className="form-label text-sm 2xl:text-base 3xl:text-lg text-slate-700 dark:text-slate-300"
                         >
                           New Password
                         </label>
@@ -313,7 +313,7 @@ export default function SettingsPage() {
                             id="newPassword"
                             name="newPassword"
                             type={showPassword ? "text" : "password"}
-                            className="form-input text-sm 2xl:text-base 3xl:text-lg"
+                            className="form-input text-sm 2xl:text-base 3xl:text-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-600"
                             value={passwordData.newPassword}
                             onChange={handlePasswordChange}
                             placeholder="Enter new password"
@@ -324,7 +324,7 @@ export default function SettingsPage() {
                       <div className="form-group">
                         <label
                           htmlFor="confirmPassword"
-                          className="form-label text-sm 2xl:text-base 3xl:text-lg"
+                          className="form-label text-sm 2xl:text-base 3xl:text-lg text-slate-700 dark:text-slate-300"
                         >
                           Confirm Password
                         </label>
@@ -333,7 +333,7 @@ export default function SettingsPage() {
                             id="confirmPassword"
                             name="confirmPassword"
                             type={showPassword ? "text" : "password"}
-                            className="form-input text-sm 2xl:text-base 3xl:text-lg"
+                            className="form-input text-sm 2xl:text-base 3xl:text-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-600"
                             value={passwordData.confirmPassword}
                             onChange={handlePasswordChange}
                             placeholder="Confirm new password"
@@ -354,7 +354,7 @@ export default function SettingsPage() {
 
                 {activeTab === "notifications" && (
                   <div className="notifications-section">
-                    <h2 className="section-title text-lg 2xl:text-xl 3xl:text-2xl">
+                    <h2 className="section-title text-lg 2xl:text-xl 3xl:text-2xl text-slate-800 dark:text-slate-200">
                       Notification Settings
                     </h2>
                     <form
@@ -373,12 +373,12 @@ export default function SettingsPage() {
                           />
                           <label
                             htmlFor="emailNotifications"
-                            className="checkbox-label text-sm 2xl:text-base 3xl:text-lg"
+                            className="checkbox-label text-sm 2xl:text-base 3xl:text-lg text-slate-700 dark:text-slate-300"
                           >
                             Email Notifications
                           </label>
                         </div>
-                        <p className="form-help text-xs 2xl:text-sm 3xl:text-base">
+                        <p className="form-help text-xs 2xl:text-sm 3xl:text-base text-slate-500 dark:text-slate-400">
                           Receive notifications via email
                         </p>
                       </div>
@@ -394,12 +394,12 @@ export default function SettingsPage() {
                           />
                           <label
                             htmlFor="bookUpdates"
-                            className="checkbox-label text-sm 2xl:text-base 3xl:text-lg"
+                            className="checkbox-label text-sm 2xl:text-base 3xl:text-lg text-slate-700 dark:text-slate-300"
                           >
                             Book Updates
                           </label>
                         </div>
-                        <p className="form-help text-xs 2xl:text-sm 3xl:text-base">
+                        <p className="form-help text-xs 2xl:text-sm 3xl:text-base text-slate-500 dark:text-slate-400">
                           Receive notifications about book updates
                         </p>
                       </div>
@@ -415,12 +415,12 @@ export default function SettingsPage() {
                           />
                           <label
                             htmlFor="systemUpdates"
-                            className="checkbox-label text-sm 2xl:text-base 3xl:text-lg"
+                            className="checkbox-label text-sm 2xl:text-base 3xl:text-lg text-slate-700 dark:text-slate-300"
                           >
                             System Updates
                           </label>
                         </div>
-                        <p className="form-help text-xs 2xl:text-sm 3xl:text-base">
+                        <p className="form-help text-xs 2xl:text-sm 3xl:text-base text-slate-500 dark:text-slate-400">
                           Receive notifications about system updates
                         </p>
                       </div>

@@ -337,10 +337,10 @@ export default function GoalsProgress({ goalsPromise }) {
           key={day}
           className={`aspect-square rounded-xl border-2 transition-all duration-200 cursor-pointer hover:shadow-md ${
             isSelected
-              ? "border-indigo-500 bg-indigo-50"
+              ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30"
               : hasTask
-              ? `border-${taskColor}-300 bg-${taskColor}-50 hover:border-${taskColor}-400`
-              : "border-slate-200 bg-white hover:border-slate-300"
+              ? `border-${taskColor}-300 bg-${taskColor}-50 dark:bg-${taskColor}-900/20 hover:border-${taskColor}-400`
+              : "border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-500"
           }`}
           tabIndex={0}
           role="button"
@@ -356,7 +356,7 @@ export default function GoalsProgress({ goalsPromise }) {
           }}
         >
           <div className="p-2 h-full flex flex-col">
-            <div className="text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-800 mb-1">
+            <div className="text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-800 dark:text-slate-200 mb-1">
               {day}
             </div>
             {hasTask && (
@@ -371,7 +371,7 @@ export default function GoalsProgress({ goalsPromise }) {
                   </div>
                 ))}
                 {hasTask.length > 2 && (
-                  <div className="text-xs text-slate-500 text-center">
+                  <div className="text-xs text-slate-500 dark:text-slate-400 text-center">
                     +{hasTask.length - 2} more
                   </div>
                 )}
@@ -400,14 +400,14 @@ export default function GoalsProgress({ goalsPromise }) {
   return (
     <PageTransition>
       <main
-        className="mx-auto max-w-[1600px] 2xl:max-w-[1760px] 3xl:max-w-[1920px] px-2 lg:px-4 xl:px-6 2xl:px-8 3xl:px-10 py-8 2xl:py-12 3xl:py-16 w-full"
+        className="mx-auto max-w-[1600px] 2xl:max-w-[1760px] 3xl:max-w-[1920px] px-2 lg:px-4 xl:px-6 2xl:px-8 3xl:px-10 py-8 2xl:py-12 3xl:py-16 w-full text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900"
         onKeyDown={handleKeyDown}
       >
-        <GoalHeader  onNewTask={handleNewTask}/>
+        <GoalHeader onNewTask={handleNewTask} />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 xl:gap-8 2xl:gap-12 3xl:gap-16">
           {/* Calendar Section */}
           <section className="lg:col-span-2">
-            <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 h-full">
+            <div className="rounded-2xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 h-full">
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between mb-6 2xl:mb-8 3xl:mb-10">
                   <div className="flex items-center gap-3">
@@ -415,17 +415,17 @@ export default function GoalsProgress({ goalsPromise }) {
                       <Calendar className="w-5 h-5 lg:w-6 lg:h-6 2xl:w-7 2xl:h-7 3xl:w-8 3xl:h-8 text-white" />
                     </div>
                     <div>
-                      <h2 className="font-serif text-lg lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl text-[#0F1A2E]">
+                      <h2 className="font-serif text-lg lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl text-[#0F1A2E] dark:text-slate-100">
                         Calendar
                       </h2>
-                      <p className="text-sm 2xl:text-base 3xl:text-lg text-slate-600">
+                      <p className="text-sm 2xl:text-base 3xl:text-lg text-slate-600 dark:text-slate-300">
                         {monthNames[currentMonth]} {currentYear}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 sm:gap-3">
                     <select
-                      className="rounded-xl bg-white border border-slate-200 px-3 py-2 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      className="rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                       value={currentMonth}
                       onChange={handleMonthChange}
                       aria-label="Select month"
@@ -437,7 +437,7 @@ export default function GoalsProgress({ goalsPromise }) {
                       ))}
                     </select>
                     <select
-                      className="rounded-xl bg-white border border-slate-200 px-3 py-2 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      className="rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                       value={currentYear}
                       onChange={handleYearChange}
                       aria-label="Select year"
@@ -470,7 +470,7 @@ export default function GoalsProgress({ goalsPromise }) {
                       (day) => (
                         <div
                           key={day}
-                          className="text-center text-xs 2xl:text-sm 3xl:text-base font-medium text-slate-500 py-2"
+                          className="text-center text-xs 2xl:text-sm 3xl:text-base font-medium text-slate-500 dark:text-slate-400 py-2"
                         >
                           {day}
                         </div>
@@ -486,7 +486,7 @@ export default function GoalsProgress({ goalsPromise }) {
 
           {/* Goals Sidebar */}
           <aside className="lg:col-span-1">
-            <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 h-full">
+            <div className="rounded-2xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 h-full">
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between mb-6 2xl:mb-8 3xl:mb-10">
                   <div className="flex items-center gap-3">
@@ -494,10 +494,10 @@ export default function GoalsProgress({ goalsPromise }) {
                       <Target className="w-5 h-5 lg:w-6 lg:h-6 2xl:w-7 2xl:h-7 3xl:w-8 3xl:h-8 text-white" />
                     </div>
                     <div>
-                      <h2 className="font-serif text-lg lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl text-[#0F1A2E]">
+                      <h2 className="font-serif text-lg lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl text-[#0F1A2E] dark:text-slate-100">
                         Writing Goals
                       </h2>
-                      <p className="text-sm 2xl:text-base 3xl:text-lg text-slate-600">
+                      <p className="text-sm 2xl:text-base 3xl:text-lg text-slate-600 dark:text-slate-300">
                         {goals.filter((g) => !g.completed).length} remaining
                       </p>
                     </div>
@@ -510,8 +510,8 @@ export default function GoalsProgress({ goalsPromise }) {
                       key={goal.id}
                       className={`rounded-xl p-4 border transition-all duration-200 hover:shadow-md ${
                         goal.completed
-                          ? "bg-emerald-50 border-emerald-200"
-                          : "bg-white border-slate-200 hover:border-amber-300"
+                          ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700"
+                          : "bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 hover:border-amber-300 dark:hover:border-amber-500"
                       }`}
                       tabIndex={0}
                       role="button"
@@ -521,15 +521,15 @@ export default function GoalsProgress({ goalsPromise }) {
                     >
                       <div className="flex items-start gap-3">
                         <button
-                          className="flex-shrink-0 w-6 h-6 rounded-full border-2 border-slate-300 flex items-center justify-center hover:border-amber-500 transition-colors"
+                          className="flex-shrink-0 w-6 h-6 rounded-full border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center hover:border-amber-500 dark:hover:border-amber-400 transition-colors"
                           onClick={() => toggleGoalCompletion(goal.id)}
                         >
                           {goal.completed && (
-                            <CheckCircle className="w-4 h-4 text-emerald-600" />
+                            <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                           )}
                         </button>
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium text-slate-800 text-sm 2xl:text-base 3xl:text-lg">
+                          <div className="font-medium text-slate-800 dark:text-slate-200 text-sm 2xl:text-base 3xl:text-lg">
                             {goal.title}
                           </div>
                           <div
@@ -540,14 +540,17 @@ export default function GoalsProgress({ goalsPromise }) {
                           </div>
                         </div>
                         <button
-                          className="flex-shrink-0 w-8 h-8 rounded-lg bg-red-50 border border-red-200 flex items-center justify-center hover:bg-red-100 transition-colors"
+                          className="flex-shrink-0 w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeleteGoal(goal.id);
                           }}
                           aria-label="Delete goal"
                         >
-                          <X size={14} className="text-red-600" />
+                          <X
+                            size={14}
+                            className="text-red-600 dark:text-red-400"
+                          />
                         </button>
                       </div>
                     </div>
@@ -580,19 +583,19 @@ export default function GoalsProgress({ goalsPromise }) {
             onClick={() => setShowDayModal(false)}
           >
             <div
-              className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden"
+              className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between p-6 border-b border-slate-200">
-                <h3 className="font-serif text-xl 2xl:text-2xl 3xl:text-3xl text-[#0F1A2E]">
+              <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+                <h3 className="font-serif text-xl 2xl:text-2xl 3xl:text-3xl text-[#0F1A2E] dark:text-slate-100">
                   Tasks for {monthNames[currentMonth]} {selectedDayData.day},{" "}
                   {currentYear}
                 </h3>
                 <button
-                  className="w-8 h-8 rounded-lg bg-red-50 border border-red-200 flex items-center justify-center hover:bg-red-100 transition-colors"
+                  className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                   onClick={() => setShowDayModal(false)}
                 >
-                  <X size={16} className="text-red-600" />
+                  <X size={16} className="text-red-600 dark:text-red-400" />
                 </button>
               </div>
               <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
@@ -617,21 +620,24 @@ export default function GoalsProgress({ goalsPromise }) {
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="font-medium text-slate-800 text-sm 2xl:text-base 3xl:text-lg">
+                            <div className="font-medium text-slate-800 dark:text-slate-200 text-sm 2xl:text-base 3xl:text-lg">
                               {task.fullTitle || task.title}
                             </div>
-                            <div className="text-xs 2xl:text-sm 3xl:text-base text-slate-600 mt-1">
+                            <div className="text-xs 2xl:text-sm 3xl:text-base text-slate-600 dark:text-slate-400 mt-1">
                               {task.category}
                             </div>
                           </div>
                           <button
-                            className="w-8 h-8 rounded-lg bg-red-50 border border-red-200 flex items-center justify-center hover:bg-red-100 transition-colors ml-3"
+                            className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors ml-3"
                             onClick={() =>
                               handleDeleteTask(selectedDayData.day, task._id)
                             }
                             aria-label="Delete task"
                           >
-                            <X size={14} className="text-red-600" />
+                            <X
+                              size={14}
+                              className="text-red-600 dark:text-red-400"
+                            />
                           </button>
                         </div>
                       </div>
@@ -639,7 +645,7 @@ export default function GoalsProgress({ goalsPromise }) {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-slate-500 text-sm 2xl:text-base 3xl:text-lg">
+                    <p className="text-slate-500 dark:text-slate-400 text-sm 2xl:text-base 3xl:text-lg">
                       No tasks scheduled for this day
                     </p>
                   </div>
@@ -663,18 +669,18 @@ export default function GoalsProgress({ goalsPromise }) {
             onClick={() => setShowNewGoalModal(false)}
           >
             <div
-              className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden"
+              className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between p-6 border-b border-slate-200">
-                <h3 className="font-serif text-xl 2xl:text-2xl 3xl:text-3xl text-[#0F1A2E]">
+              <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+                <h3 className="font-serif text-xl 2xl:text-2xl 3xl:text-3xl text-[#0F1A2E] dark:text-slate-100">
                   Create New Goal
                 </h3>
                 <button
-                  className="w-8 h-8 rounded-lg bg-red-50 border border-red-200 flex items-center justify-center hover:bg-red-100 transition-colors"
+                  className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                   onClick={() => setShowNewGoalModal(false)}
                 >
-                  <X size={16} className="text-red-600" />
+                  <X size={16} className="text-red-600 dark:text-red-400" />
                 </button>
               </div>
               <div className="p-6">
@@ -682,7 +688,7 @@ export default function GoalsProgress({ goalsPromise }) {
                   <div>
                     <label
                       htmlFor="goal-title"
-                      className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 mb-2"
+                      className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 dark:text-slate-300 mb-2"
                     >
                       Goal Title
                     </label>
@@ -697,14 +703,14 @@ export default function GoalsProgress({ goalsPromise }) {
                           title: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                       required
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="goal-category"
-                      className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 mb-2"
+                      className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 dark:text-slate-300 mb-2"
                     >
                       Category
                     </label>
@@ -717,7 +723,7 @@ export default function GoalsProgress({ goalsPromise }) {
                           category: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                       required
                     >
                       <option value="">Select category</option>
@@ -731,7 +737,7 @@ export default function GoalsProgress({ goalsPromise }) {
                   <div>
                     <label
                       htmlFor="goal-date"
-                      className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 mb-2"
+                      className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 dark:text-slate-300 mb-2"
                     >
                       Target Date (Optional)
                     </label>
@@ -745,13 +751,13 @@ export default function GoalsProgress({ goalsPromise }) {
                           date: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                     />
                   </div>
                   <div className="flex gap-3 pt-4">
                     <button
                       type="button"
-                      className="flex-1 rounded-xl border border-slate-200 text-slate-700 py-3 px-4 font-medium text-sm 2xl:text-base 3xl:text-lg hover:bg-slate-50 transition-colors"
+                      className="flex-1 rounded-xl border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 py-3 px-4 font-medium text-sm 2xl:text-base 3xl:text-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                       onClick={() => setShowNewGoalModal(false)}
                     >
                       Cancel
@@ -776,20 +782,20 @@ export default function GoalsProgress({ goalsPromise }) {
             onClick={() => setShowNewTaskModal(false)}
           >
             <div
-              className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden"
+              className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between p-6 border-b border-slate-200">
-                <h3 className="font-serif text-xl 2xl:text-2xl 3xl:text-3xl text-[#0F1A2E]">
+              <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+                <h3 className="font-serif text-xl 2xl:text-2xl 3xl:text-3xl text-[#0F1A2E] dark:text-slate-100">
                   {newTaskForm.day
                     ? `Add Task to ${monthNames[currentMonth]} ${newTaskForm.day}`
                     : "Create New Task"}
                 </h3>
                 <button
-                  className="w-8 h-8 rounded-lg bg-red-50 border border-red-200 flex items-center justify-center hover:bg-red-100 transition-colors"
+                  className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                   onClick={() => setShowNewTaskModal(false)}
                 >
-                  <X size={16} className="text-red-600" />
+                  <X size={16} className="text-red-600 dark:text-red-400" />
                 </button>
               </div>
               <div className="p-6">
@@ -797,7 +803,7 @@ export default function GoalsProgress({ goalsPromise }) {
                   <div>
                     <label
                       htmlFor="task-title"
-                      className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 mb-2"
+                      className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 dark:text-slate-300 mb-2"
                     >
                       Task Title
                     </label>
@@ -812,14 +818,14 @@ export default function GoalsProgress({ goalsPromise }) {
                           title: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                       required
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="task-category"
-                      className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 mb-2"
+                      className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 dark:text-slate-300 mb-2"
                     >
                       Category
                     </label>
@@ -832,7 +838,7 @@ export default function GoalsProgress({ goalsPromise }) {
                           category: e.target.value,
                         })
                       }
-                      className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                      className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                       required
                     >
                       <option value="">Select category</option>
@@ -847,7 +853,7 @@ export default function GoalsProgress({ goalsPromise }) {
                     <div>
                       <label
                         htmlFor="task-day"
-                        className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 mb-2"
+                        className="block text-sm 2xl:text-base 3xl:text-lg font-medium text-slate-700 dark:text-slate-300 mb-2"
                       >
                         Day
                       </label>
@@ -860,7 +866,7 @@ export default function GoalsProgress({ goalsPromise }) {
                             day: Number.parseInt(e.target.value),
                           })
                         }
-                        className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                        className="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-4 py-3 text-sm 2xl:text-base 3xl:text-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                       >
                         {Array.from(
                           {
@@ -882,7 +888,7 @@ export default function GoalsProgress({ goalsPromise }) {
                   <div className="flex gap-3 pt-4">
                     <button
                       type="button"
-                      className="flex-1 rounded-xl border border-slate-200 text-slate-700 py-3 px-4 font-medium text-sm 2xl:text-base 3xl:text-lg hover:bg-slate-50 transition-colors"
+                      className="flex-1 rounded-xl border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 py-3 px-4 font-medium text-sm 2xl:text-base 3xl:text-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                       onClick={() => setShowNewTaskModal(false)}
                     >
                       Cancel

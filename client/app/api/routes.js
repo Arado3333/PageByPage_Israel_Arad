@@ -243,10 +243,11 @@ export async function askAI() {
         Chapter Title: ${chapter.title || "Untitled"}
         Pages: ${
           Array.isArray(chapter.pages)
-            ? chapter.pages.map((p, i) => `Page ${i + 1}: ${p}`).join("\n")
+            ? chapter.pages
+                .map((p, i) => `Page ${i + 1}: ${p.content}`)
+                .join("\n")
             : "No pages provided."
         }
-        Content: ${chapter.content || "No content provided."}
         `;
 
         // Call Gemini for this chapter
@@ -272,6 +273,8 @@ export async function askAI() {
             .replace(/```(?:json)?\s*([\s\S]*?)\s*```/gi, "$1")
             .trim();
           suggestion = JSON.parse(rawText);
+
+          console.log("suggestion:", suggestion);
         } catch (e) {
           suggestion = {
             error: "Invalid JSON from AI",
@@ -281,13 +284,14 @@ export async function askAI() {
           };
         }
 
-        allSuggestions.push({
-          chapterId: chapter._id,
-          improvementTitle: suggestion.improvementTitle || "No title",
-          improveTip: suggestion.improveTip || "No suggestion available",
-          tags: suggestion.tags || ["General"],
-          error: suggestion.error,
-        });
+        suggestion.map(s => (
+          allSuggestions.push({
+            chapterId: chapter._id,
+            improvementTitle: s.improvementTitle,
+            improveTip: s.improveTip,
+            tags: s.tags,
+          })
+        ));
       } catch (chapterError) {
         // Handle individual chapter errors
         allSuggestions.push({

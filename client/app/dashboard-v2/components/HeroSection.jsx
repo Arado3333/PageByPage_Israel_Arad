@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { getMostRecentDraftInfo } from "../../lib/draftUtils";
 import DailyGoalCard from "../DailyGoalCard";
 
-
 export default function HeroSection({
   userPromise,
   recentDraftsPromise,
@@ -42,16 +41,16 @@ export default function HeroSection({
   };
 
   return (
-    <section className="rounded-2xl bg-white shadow-md ring-1 ring-slate-200 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 mb-6 2xl:mb-8 3xl:mb-12 w-full">
+    <section className="rounded-2xl bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 mb-6 2xl:mb-8 3xl:mb-12 w-full">
       <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 xl:gap-8 2xl:gap-12 3xl:gap-16">
         <div className="lg:col-span-8 xl:col-span-8">
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 text-sm 2xl:text-base 3xl:text-lg">
+          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 px-3 py-1 text-sm 2xl:text-base 3xl:text-lg">
             ✨ Welcome back, {user.name}
           </div>
-          <h1 className="mt-2 text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl font-serif text-[#0F1A2E]">
+          <h1 className="mt-2 text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl font-serif text-[#0F1A2E] dark:text-slate-100">
             Pick up where you left off
           </h1>
-          <p className="mt-1 text-base sm:text-lg 2xl:text-xl 3xl:text-2xl text-slate-600">
+          <p className="mt-1 text-base sm:text-lg 2xl:text-xl 3xl:text-2xl text-slate-600 dark:text-slate-300">
             {recentDraftInfo ? (
               <>
                 Resume{" "}
@@ -67,19 +66,19 @@ export default function HeroSection({
           <div className="mt-4 sm:mt-5 2xl:mt-8 3xl:mt-10 flex flex-wrap items-center gap-2 sm:gap-3 2xl:gap-4 3xl:gap-6">
             <button
               onClick={handleResumeWriting}
-              className="rounded-2xl bg-gradient-to-r from-indigo-700 to-violet-700 text-white px-3 sm:px-4 lg:px-5 2xl:px-6 3xl:px-8 py-2 lg:py-3 2xl:py-4 3xl:py-6 text-sm lg:text-base 2xl:text-lg 3xl:text-xl shadow-sm hover:opacity-90 transition-opacity"
+              className="rounded-2xl bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 text-white px-3 sm:px-4 lg:px-5 2xl:px-6 3xl:px-8 py-2 lg:py-3 2xl:py-4 3xl:py-6 text-sm lg:text-base 2xl:text-lg 3xl:text-xl shadow-sm hover:opacity-90 transition-opacity"
             >
               {recentDraftInfo ? "Resume writing" : "Start writing"}
             </button>
             <button
               onClick={handleNewDraft}
-              className="rounded-2xl border border-indigo-200 text-indigo-700 px-3 sm:px-4 lg:px-5 2xl:px-6 3xl:px-8 py-2 lg:py-3 2xl:py-4 3xl:py-6 text-sm lg:text-base 2xl:text-lg 3xl:text-xl hover:bg-indigo-50 transition-colors"
+              className="rounded-2xl border border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-300 px-3 sm:px-4 lg:px-5 2xl:px-6 3xl:px-8 py-2 lg:py-3 2xl:py-4 3xl:py-6 text-sm lg:text-base 2xl:text-lg 3xl:text-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
             >
               New draft
             </button>
             <button
               onClick={handleOpenLibrary}
-              className="rounded-2xl border border-slate-300 px-3 sm:px-4 lg:px-5 2xl:px-6 3xl:px-8 py-2 lg:py-3 2xl:py-4 3xl:py-6 text-sm lg:text-base 2xl:text-lg 3xl:text-xl hover:bg-white transition-colors"
+              className="rounded-2xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 px-3 sm:px-4 lg:px-5 2xl:px-6 3xl:px-8 py-2 lg:py-3 2xl:py-4 3xl:py-6 text-sm lg:text-base 2xl:text-lg 3xl:text-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
               Open Library
             </button>

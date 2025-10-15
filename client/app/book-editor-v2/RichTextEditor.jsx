@@ -800,12 +800,12 @@ export default function BookEditorPage() {
   }
 
   return (
-    <div className="book-editor">
+    <div className="book-editor min-h-screen text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900">
       {/* Decorative blobs */}
       <div className="pointer-events-none fixed -z-10 inset-0 overflow-hidden">
-        <div className="absolute -top-16 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-indigo-300 to-purple-300 blur-3xl opacity-40" />
-        <div className="absolute -bottom-24 -right-10 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-200 to-cyan-200 blur-3xl opacity-40" />
-        <div className="absolute top-1/2 left-1/2 h-64 w-64 rounded-full bg-gradient-to-tr from-pink-200 to-rose-300 blur-3xl opacity-30" />
+        <div className="absolute -top-16 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-indigo-300 to-purple-300 dark:from-indigo-600/20 dark:to-purple-600/20 blur-3xl opacity-40" />
+        <div className="absolute -bottom-24 -right-10 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-200 to-cyan-200 dark:from-emerald-600/20 dark:to-cyan-600/20 blur-3xl opacity-40" />
+        <div className="absolute top-1/2 left-1/2 h-64 w-64 rounded-full bg-gradient-to-tr from-pink-200 to-rose-300 dark:from-pink-600/20 dark:to-rose-600/20 blur-3xl opacity-30" />
       </div>
 
       {savedBookStatus.message && (
@@ -834,23 +834,23 @@ export default function BookEditorPage() {
                   onClick={() =>
                     document.getElementById("my_modal_1").showModal()
                   }
-                  className="btn-primary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2 text-center"
+                  className="btn-primary bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 hover:from-indigo-800 hover:to-violet-800 dark:hover:from-indigo-700 dark:hover:to-violet-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2 text-center"
                 >
                   Save
                 </button>
                 <dialog id="my_modal_1" className="modal">
-                  <div className="modal-box">
+                  <div className="modal-box bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100">
                     <div className="modal-action">
                       <form method="dialog">
                         <button
                           onClick={handleSaveExistingProject}
-                          className="btn-primary mb-2 bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
+                          className="btn-primary mb-2 bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 hover:from-indigo-800 hover:to-violet-800 dark:hover:from-indigo-700 dark:hover:to-violet-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                         >
                           Save Existing Book
                         </button>
                         <button
                           onClick={handleCreateNewProject}
-                          className="btn-primary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
+                          className="btn-primary bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 hover:from-indigo-800 hover:to-violet-800 dark:hover:from-indigo-700 dark:hover:to-violet-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                         >
                           Create New Book
                         </button>
@@ -860,7 +860,7 @@ export default function BookEditorPage() {
                 </dialog>
 
                 <button
-                  className="btn-secondary preview-btn bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
+                  className="btn-secondary preview-btn bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 hover:from-indigo-800 hover:to-violet-800 dark:hover:from-indigo-700 dark:hover:to-violet-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                   onClick={() => setIsPreviewMode(!isPreviewMode)}
                 >
                   <Eye size={16} />
@@ -872,19 +872,19 @@ export default function BookEditorPage() {
                 <>
                   <div className="toolbar-group hidden md:flex">
                     <button
-                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
+                      className="toolbar-btn hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
                       onClick={() => formatText("bold")}
                     >
                       <Bold size={16} />
                     </button>
                     <button
-                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
+                      className="toolbar-btn hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
                       onClick={() => formatText("italic")}
                     >
                       <Italic size={16} />
                     </button>
                     <button
-                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
+                      className="toolbar-btn hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
                       onClick={() => formatText("underline")}
                     >
                       <UnderlineIcon size={16} />
@@ -896,7 +896,7 @@ export default function BookEditorPage() {
                       onChange={(e) =>
                         formatText("formatBlock", e.target.value)
                       }
-                      className="toolbar-select rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                      className="toolbar-select rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-600"
                     >
                       <option value="div">Normal</option>
                       <option value="h1">Heading 1</option>
@@ -911,7 +911,7 @@ export default function BookEditorPage() {
                       onChange={(e) =>
                         formatText("setFontFamily", e.target.value)
                       }
-                      className="toolbar-select rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                      className="toolbar-select rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-600"
                       style={{ minWidth: "120px" }}
                     >
                       <option value="">Font</option>
@@ -982,31 +982,31 @@ export default function BookEditorPage() {
 
                   <div className="toolbar-group hidden md:flex">
                     <button
-                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
+                      className="toolbar-btn hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
                       onClick={() => formatText("justifyLeft")}
                     >
                       <AlignLeft size={16} />
                     </button>
                     <button
-                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
+                      className="toolbar-btn hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
                       onClick={() => formatText("justifyRight")}
                     >
                       <AlignRight size={16} />
                     </button>
                     <button
-                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
+                      className="toolbar-btn hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
                       onClick={() => formatText("insertUnorderedList")}
                     >
                       <List size={16} />
                     </button>
                     <button
-                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
+                      className="toolbar-btn hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
                       onClick={() => formatText("insertOrderedList")}
                     >
                       <ListOrdered size={16} />
                     </button>
                     <button
-                      className="toolbar-btn hover:bg-slate-100 hover:border-slate-300 transition-all duration-200"
+                      className="toolbar-btn hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
                       onClick={() => formatText("formatBlock", "blockquote")}
                     >
                       <Quote size={16} />
@@ -1018,7 +1018,7 @@ export default function BookEditorPage() {
               <div className="toolbar-group">
                 <button
                   onClick={() => setUseAiTools(!useAiTools)}
-                  className="btn-primary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
+                  className="btn-primary bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 hover:from-indigo-800 hover:to-violet-800 dark:hover:from-indigo-700 dark:hover:to-violet-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                 >
                   <Sparkles size={14} />
                   AI Tools
@@ -1026,14 +1026,12 @@ export default function BookEditorPage() {
 
                 {useAiTools && (
                   <div
-                    className="ai-tools-menu"
+                    className="ai-tools-menu bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
                     style={{
                       position: "absolute",
                       top: "100%",
                       left: "0",
                       zIndex: 1000,
-                      backgroundColor: "white",
-                      border: "1px solid #e2e8f0",
                       borderRadius: "8px",
                       boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                       padding: "8px",
@@ -1042,7 +1040,7 @@ export default function BookEditorPage() {
                   >
                     <button
                       onClick={handleAiTextTool}
-                      className="ai-tool-btn"
+                      className="ai-tool-btn text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700"
                       style={{
                         display: "block",
                         width: "100%",
@@ -1059,7 +1057,7 @@ export default function BookEditorPage() {
                     </button>
                     <button
                       onClick={handleAiTextTool}
-                      className="ai-tool-btn"
+                      className="ai-tool-btn text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700"
                       style={{
                         display: "block",
                         width: "100%",
@@ -1076,7 +1074,7 @@ export default function BookEditorPage() {
                     </button>
                     <button
                       onClick={handleAiTextTool}
-                      className="ai-tool-btn"
+                      className="ai-tool-btn text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700"
                       style={{
                         display: "block",
                         width: "100%",
@@ -1093,7 +1091,7 @@ export default function BookEditorPage() {
                     </button>
                     <button
                       onClick={handleAiTextTool}
-                      className="ai-tool-btn"
+                      className="ai-tool-btn text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700"
                       style={{
                         display: "block",
                         width: "100%",
@@ -1114,7 +1112,7 @@ export default function BookEditorPage() {
               <div className="toolbar-group ml-auto">
                 <button
                   onClick={() => setShowBookmarkModal(true)}
-                  className="btn-secondary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2 hidden md:flex"
+                  className="btn-secondary bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 hover:from-indigo-800 hover:to-violet-800 dark:hover:from-indigo-700 dark:hover:to-violet-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2 hidden md:flex"
                 >
                   <Bookmark size={14} />
                   Bookmark
@@ -1123,7 +1121,7 @@ export default function BookEditorPage() {
                 <div className="dropdown hidden md:block">
                   <button
                     onClick={() => setShowBookmarks(!showBookmarks)}
-                    className="btn-secondary bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
+                    className="btn-secondary bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 hover:from-indigo-800 hover:to-violet-800 dark:hover:from-indigo-700 dark:hover:to-violet-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 px-4 py-2"
                   >
                     <BookOpen size={14} />
                     Page {currentPage}
@@ -1131,8 +1129,10 @@ export default function BookEditorPage() {
                   </button>
 
                   {showBookmarks && (
-                    <div className="dropdown-menu rounded-xl border border-slate-200">
-                      <div className="dropdown-header">Navigation</div>
+                    <div className="dropdown-menu rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                      <div className="dropdown-header text-slate-900 dark:text-slate-100">
+                        Navigation
+                      </div>
                       <div className="dropdown-section">
                         <div className="page-buttons">
                           {Array.from(
@@ -1143,7 +1143,7 @@ export default function BookEditorPage() {
                               <button
                                 key={i}
                                 onClick={() => scrollToPage(i + 1)}
-                                className="page-btn rounded-lg hover:bg-indigo-100 hover:text-indigo-900 transition-all duration-200"
+                                className="page-btn rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/30 hover:text-indigo-900 dark:hover:text-indigo-100 transition-all duration-200 text-slate-900 dark:text-slate-100"
                                 style={{
                                   backgroundColor:
                                     currentPage === i + 1

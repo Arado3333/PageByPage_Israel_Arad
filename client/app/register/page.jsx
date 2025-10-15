@@ -1,47 +1,55 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
+import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, RefreshCw } from "lucide-react"
-import "../style/Register.css"
+import { Eye, EyeOff, RefreshCw } from "lucide-react";
+import "../style/Register.css";
 
-export default function RegisterPage() { //TODO: Create server action for registeration and redirection to the dashboard page.
-  const [email, setEmail] = useState("")
-  const [name, setName] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [error, setError] = useState("")
+export default function RegisterPage() {
+  //TODO: Create server action for registeration and redirection to the dashboard page.
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   //For automatic routing after register success
   const router = useRouter();
 
-
-  const handleSubmit = async(e) => {
-    e.preventDefault()
-    setError("")
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      return
+      setError("Passwords do not match");
+      return;
     }
 
     if (password.length < 6) {
       setError("Password length must be at least 6 characters long");
-      return
+      return;
     }
 
-    if (!(password.includes('@') || password.includes('$') || password.includes('&') || password.includes('!')))
-    {
-      setError("Your password must contain at least one special character: '@', '$', '&', '!'");
-      return
+    if (
+      !(
+        password.includes("@") ||
+        password.includes("$") ||
+        password.includes("&") ||
+        password.includes("!")
+      )
+    ) {
+      setError(
+        "Your password must contain at least one special character: '@', '$', '&', '!'"
+      );
+      return;
     }
     setIsLoading(true);
-    
+
     try {
       let result = await fetch(`${process.env.NEXT_PUBLIC_SERVICE}/api/users`, {
         method: "POST",
@@ -51,21 +59,20 @@ export default function RegisterPage() { //TODO: Create server action for regist
         body: JSON.stringify({
           name: name,
           email: email,
-          password: password
-        })
+          password: password,
+        }),
       });
       const res = await result.json();
       setIsLoading(false);
       setSuccess(res.message);
       setTimeout(() => {
-        router.push('/signin');
+        router.push("/signin");
       }, 1500);
     } catch (error) {
       setIsLoading(false);
-      setError("An error occured while trying to register")
+      setError("An error occured while trying to register");
     }
-
-  }
+  };
 
   return (
     <div className="auth-container">
@@ -75,7 +82,11 @@ export default function RegisterPage() { //TODO: Create server action for regist
           <p className="auth-subtitle">Join Page by Page</p>
         </div>
 
-        {error !== "" ? <div className="auth-error">{error}</div> : success !== "" && <div className="auth-success">{success}</div>}
+        {error !== "" ? (
+          <div className="auth-error">{error}</div>
+        ) : (
+          success !== "" && <div className="auth-success">{success}</div>
+        )}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">
@@ -125,7 +136,11 @@ export default function RegisterPage() { //TODO: Create server action for regist
                 onClick={() => setShowPassword(!showPassword)}
                 tabIndex="-1"
               >
-                {showPassword ? <EyeOff color="black" className="password-icon" /> : <Eye color="black" className="password-icon" />}
+                {showPassword ? (
+                  <EyeOff className="password-icon" />
+                ) : (
+                  <Eye className="password-icon" />
+                )}
               </button>
             </div>
           </div>
@@ -149,17 +164,21 @@ export default function RegisterPage() { //TODO: Create server action for regist
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 tabIndex="-1"
               >
-                {showConfirmPassword ? <EyeOff color="black" className="password-icon" /> : <Eye color="black" className="password-icon" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="password-icon" />
+                ) : (
+                  <Eye className="password-icon" />
+                )}
               </button>
             </div>
           </div>
 
-          <button type="submit" className="auth-button"> 
-          {isLoading ? (
-            <>
-            <RefreshCw className="register-icon spinning"/> 
-            Loading...
-            </>
+          <button type="submit" className="auth-button">
+            {isLoading ? (
+              <>
+                <RefreshCw className="register-icon spinning" />
+                Loading...
+              </>
             ) : (
               <span className="register-icon">Register</span>
             )}
@@ -176,5 +195,5 @@ export default function RegisterPage() { //TODO: Create server action for regist
         </div>
       </div>
     </div>
-  )
+  );
 }

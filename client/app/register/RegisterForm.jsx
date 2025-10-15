@@ -1,129 +1,136 @@
 "use client";
 import SubmitButton from "../signin/SubmitButton";
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import "../style/Register.css";
 
-export default function RegisterForm() { //Add server action for registeration
-    const [formInput, setFormInput] = useState({
-        email: "",
-        name: "",
-        password: "",
-        confirmPassword: "",
-    });
-    const [showPassword, setShowPassword] = useState(false);
+export default function RegisterForm() {
+  //Add server action for registeration
+  const [formInput, setFormInput] = useState({
+    email: "",
+    name: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    return (
-        <form className="auth-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-                <label htmlFor="email" className="form-label">
-                    Email
-                </label>
-                <input
-                    data-testid="cypress-register-email"
-                    id="email"
-                    type="email"
-                    className="form-input"
-                    value={formInput.email}
-                    onChange={(e) => setFormInput((prev) => (
-                        {
-                            ...prev,
-                            email: e.target.value
-                        }
-                    ))}
-                    required
-                />
-            </div>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // TODO: Add registration logic here
+    console.log("Registration form submitted:", formInput);
+  };
 
-            <div className="form-group">
-                <label htmlFor="name" className="form-label">
-                    Name
-                </label>
-                <input
-                    data-testid="cypress-register-name"
-                    id="name"
-                    type="text"
-                    className="form-input"
-                    value={formInput.name}
-                    onChange={(e) => setFormInput((prev) => (
-                        {
-                            ...prev,
-                            name: e.target.value
-                        }
-                    ))}
-                    required
-                />
-            </div>
+  return (
+    <form className="auth-form" onSubmit={handleSubmit}>
+      <div className="form-group">
+        <label htmlFor="email" className="form-label">
+          Email
+        </label>
+        <input
+          data-testid="cypress-register-email"
+          id="email"
+          type="email"
+          className="form-input"
+          value={formInput.email}
+          onChange={(e) =>
+            setFormInput((prev) => ({
+              ...prev,
+              email: e.target.value,
+            }))
+          }
+          required
+        />
+      </div>
 
-            <div className="form-group">
-                <label htmlFor="password" className="form-label">
-                    Password
-                </label>
-                <div className="password-input-container">
-                    <input
-                        data-testid="cypress-register-password"
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        className="form-input"
-                        value={formInput.password}
-                        onChange={(e) => setFormInput((prev) => (
-                        {
-                            ...prev,
-                            password: e.target.value
-                        }
-                    ))}
-                        required
-                    />
-                    <button
-                        type="button"
-                        className="password-toggle"
-                        onClick={() => setShowPassword(!showPassword)}
-                        tabIndex="-1"
-                    >
-                        {showPassword ? (
-                            <EyeOff className="password-icon" />
-                        ) : (
-                            <Eye className="password-icon" />
-                        )}
-                    </button>
-                </div>
-            </div>
+      <div className="form-group">
+        <label htmlFor="name" className="form-label">
+          Name
+        </label>
+        <input
+          data-testid="cypress-register-name"
+          id="name"
+          type="text"
+          className="form-input"
+          value={formInput.name}
+          onChange={(e) =>
+            setFormInput((prev) => ({
+              ...prev,
+              name: e.target.value,
+            }))
+          }
+          required
+        />
+      </div>
 
-            <div className="form-group">
-                <label htmlFor="confirmPassword" className="form-label">
-                    Confirm Password
-                </label>
-                <div className="password-input-container">
-                    <input
-                        data-testid="cypress-register-confirmPassword"
-                        id="confirmPassword"
-                        type={showConfirmPassword ? "text" : "password"}
-                        className="form-input"
-                        value={formInput.confirmPassword}
-                        onChange={(e) => setFormInput((prev) => (
-                        {
-                            ...prev,
-                            confirmPassword: e.target.value
-                        }
-                    ))}
-                        required
-                    />
-                    <button
-                        type="button"
-                        className="password-toggle"
-                        onClick={() =>
-                            setShowPassword(!showPassword)
-                        }
-                        tabIndex="-1"
-                    >
-                        {showPassword ? (
-                            <EyeOff className="password-icon" />
-                        ) : (
-                            <Eye className="password-icon" />
-                        )}
-                    </button>
-                </div>
-            </div>
-            <SubmitButton />
-        </form>
-    );
+      <div className="form-group">
+        <label htmlFor="password" className="form-label">
+          Password
+        </label>
+        <div className="password-input-container">
+          <input
+            data-testid="cypress-register-password"
+            id="password"
+            type={showPassword ? "text" : "password"}
+            className="form-input"
+            value={formInput.password}
+            onChange={(e) =>
+              setFormInput((prev) => ({
+                ...prev,
+                password: e.target.value,
+              }))
+            }
+            required
+          />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowPassword(!showPassword)}
+            tabIndex="-1"
+          >
+            {showPassword ? (
+              <EyeOff className="password-icon" />
+            ) : (
+              <Eye className="password-icon" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="confirmPassword" className="form-label">
+          Confirm Password
+        </label>
+        <div className="password-input-container">
+          <input
+            data-testid="cypress-register-confirmPassword"
+            id="confirmPassword"
+            type={showConfirmPassword ? "text" : "password"}
+            className="form-input"
+            value={formInput.confirmPassword}
+            onChange={(e) =>
+              setFormInput((prev) => ({
+                ...prev,
+                confirmPassword: e.target.value,
+              }))
+            }
+            required
+          />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            tabIndex="-1"
+          >
+            {showConfirmPassword ? (
+              <EyeOff className="password-icon" />
+            ) : (
+              <Eye className="password-icon" />
+            )}
+          </button>
+        </div>
+      </div>
+      <SubmitButton text="Register" />
+    </form>
+  );
 }
-

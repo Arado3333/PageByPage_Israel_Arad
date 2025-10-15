@@ -24,12 +24,12 @@ export default function StatsSection({ statsPromise }) {
         ].map((x) => (
           <div
             key={x.label}
-            className={`rounded-xl bg-white p-4 sm:p-6 2xl:p-8 3xl:p-10 ring-1 ring-slate-200 border-l-4 border-${x.color}-500`}
+            className={`rounded-xl bg-white dark:bg-slate-800 p-4 sm:p-6 2xl:p-8 3xl:p-10 ring-1 ring-slate-200 dark:ring-slate-700 border-l-4 border-${x.color}-500 dark:border-${x.color}-400`}
           >
-            <div className="text-sm 2xl:text-base 3xl:text-lg text-slate-500">
+            <div className="text-sm 2xl:text-base 3xl:text-lg text-slate-500 dark:text-slate-400">
               {x.label}
             </div>
-            <div className="text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl font-semibold text-slate-800">
+            <div className="text-lg sm:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl font-semibold text-slate-800 dark:text-slate-200">
               {x.value}
             </div>
           </div>

@@ -33,36 +33,68 @@
   --ring: 0 0% 87%;
 
   --radius: 0.5rem;
+
+  /* Custom dashboard colors for light mode */
+  --dashboard-bg: 0 0% 98%;
+  --dashboard-card-bg: 0 0% 100%;
+  --dashboard-text-primary: 222 84% 4.9%;
+  --dashboard-text-secondary: 215 20.2% 35%;
+  --dashboard-text-muted: 215 20.2% 45%;
+  --dashboard-border: 0 0% 87%;
+  --dashboard-accent: 221 83% 53%;
+  --dashboard-accent-hover: 221 83% 43%;
+  --dashboard-indigo: 221 83% 53%;
+  --dashboard-violet: 262 83% 58%;
+  --dashboard-emerald: 142 76% 36%;
+  --dashboard-amber: 45 93% 47%;
+  --dashboard-gradient-start: 221 83% 15%;
+  --dashboard-gradient-end: 0 0% 100%;
 }
 
 .dark {
-  --background: 0 0% 7%;
-  --foreground: 0 0% 89%;
-  --muted: 0 0% 12%;
-  --muted-foreground: 0 0% 60%;
+  --background: 222 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --muted: 217 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
 
-  --card: 0 0% 7%;
-  --card-foreground: 0 0% 89%;
+  --card: 222 84% 4.9%;
+  --card-foreground: 210 40% 98%;
 
-  --popover: 0 0% 7%;
-  --popover-foreground: 0 0% 89%;
+  --popover: 222 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
 
-  --primary: 0 0% 98%;
-  --primary-foreground: 0 0% 9%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222 84% 4.9%;
 
-  --secondary: 0 0% 12%;
-  --secondary-foreground: 0 0% 89%;
+  --secondary: 217 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
 
-  --accent: 0 0% 12%;
-  --accent-foreground: 0 0% 89%;
-  --accent-secondary: 0 0% 20%;
+  --accent: 217 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --accent-secondary: 217 32.6% 25%;
 
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
 
-  --border: 0 0% 17%;
-  --input: 0 0% 17%;
-  --ring: 0 0% 17%;
+  --border: 217 32.6% 17.5%;
+  --input: 217 32.6% 17.5%;
+  --ring: 217 32.6% 17.5%;
+
+  /* Custom dashboard colors for dark mode */
+  --dashboard-bg: 222 84% 4.9%;
+  --dashboard-card-bg: 217 32.6% 8%;
+  --dashboard-text-primary: 210 40% 98%;
+  --dashboard-text-secondary: 215 20.2% 65.1%;
+  --dashboard-text-muted: 215 20.2% 45%;
+  --dashboard-border: 217 32.6% 17.5%;
+  --dashboard-accent: 262 83% 58%;
+  --dashboard-accent-hover: 262 83% 48%;
+  --dashboard-indigo: 262 83% 58%;
+  --dashboard-violet: 262 83% 58%;
+  --dashboard-emerald: 142 76% 36%;
+  --dashboard-amber: 45 93% 47%;
+  --dashboard-gradient-start: 262 83% 15%;
+  --dashboard-gradient-end: 217 32.6% 8%;
 }
 
 
@@ -73,6 +105,11 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 html,

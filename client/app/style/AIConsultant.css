@@ -146,7 +146,7 @@
 }
 
 .ai-button.primary {
-  background-color: var(--accent);
+  background-color: hsl(var(--accent));
   color: white;
   border: none;
 }

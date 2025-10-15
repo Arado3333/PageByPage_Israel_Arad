@@ -13,25 +13,29 @@ function getStatusConfig(status) {
       return {
         label: "Draft",
         className: "status-draft",
-        color: "bg-slate-100 text-slate-700 border-slate-200",
+        color:
+          "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600",
       };
     case "in-review":
       return {
         label: "In Review",
         className: "status-review",
-        color: "bg-amber-100 text-amber-700 border-amber-200",
+        color:
+          "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-700",
       };
     case "published":
       return {
         label: "Published",
         className: "status-published",
-        color: "bg-emerald-100 text-emerald-700 border-emerald-200",
+        color:
+          "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700",
       };
     default:
       return {
         label: "Draft",
         className: "status-draft",
-        color: "bg-slate-100 text-slate-700 border-slate-200",
+        color:
+          "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600",
       };
   }
 }
@@ -252,15 +256,17 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
   };
 
   return (
-    <div className="draft-manager">
+    <div className="draft-manager min-h-screen text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900">
       <div className="dm-draft-list">
         {filteredAndSortedDrafts.length === 0 ? (
           <div className="dm-empty-state">
             <div className="dm-empty-icon">
-              <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <BookOpen className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
             </div>
-            <h3 className="dm-empty-title">No drafts found</h3>
-            <p className="dm-empty-description">
+            <h3 className="dm-empty-title text-slate-800 dark:text-slate-200">
+              No drafts found
+            </h3>
+            <p className="dm-empty-description text-slate-500 dark:text-slate-400">
               {searchTerm || statusFilter !== "all"
                 ? "Try adjusting your search or filters"
                 : "No drafts yet. Start writing!"}
@@ -276,7 +282,7 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
               return (
                 <div
                   key={draft.id || index}
-                  className={`group rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 flex flex-col h-full overflow-hidden ${
+                  className={`group rounded-2xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 flex flex-col h-full overflow-hidden ${
                     isAnimatingOut ? "fade-out" : ""
                   } ${isHighlighted ? "highlight" : ""}`}
                   ref={isHighlighted ? newDraftRef : null}
@@ -298,7 +304,7 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
                   <div className="p-4 sm:p-6 2xl:p-8 3xl:p-10 flex-1 flex flex-col">
                     {/* Title and Status */}
                     <div className="flex justify-between items-start mb-4">
-                      <h3 className="dm-draft-title text-lg sm:text-xl lg:text-2xl font-serif text-[#0F1A2E] font-medium">
+                      <h3 className="dm-draft-title text-lg sm:text-xl lg:text-2xl font-serif text-[#0F1A2E] dark:text-slate-100 font-medium">
                         {draft.title}
                       </h3>
                       <span
@@ -309,27 +315,27 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
                     </div>
 
                     {/* Content Snippet */}
-                    <p className="dm-draft-snippet text-slate-600 line-height-1.6 mb-6">
+                    <p className="dm-draft-snippet text-slate-600 dark:text-slate-300 line-height-1.6 mb-6">
                       {draft.draftContent}
                     </p>
 
                     {/* Meta Information */}
                     <div className="space-y-3 text-sm flex-1 mb-6">
-                      <div className="flex items-center gap-2 text-slate-500">
+                      <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                         <BookOpen className="w-4 h-4" />
-                        <span className="dm-book-tag bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-1 rounded-lg text-xs font-medium">
+                        <span className="dm-book-tag bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700 px-2 py-1 rounded-lg text-xs font-medium">
                           {draft.bookName || "Unassigned"}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-slate-500">
+                      <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                         <FileText className="w-4 h-4" />
-                        <span className="font-medium text-slate-800 bg-slate-100 px-2 py-1 rounded-lg">
+                        <span className="font-medium text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">
                           {draft.wordCount?.toLocaleString() || 0} words
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-slate-500">
+                      <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                         <Calendar className="w-4 h-4" />
-                        <span className="font-medium text-slate-800 bg-slate-100 px-2 py-1 rounded-lg">
+                        <span className="font-medium text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">
                           {formatDate(draft.lastEdited)}
                         </span>
                       </div>
@@ -338,7 +344,7 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
                     {/* Action Buttons */}
                     <div className="space-y-3">
                       <button
-                        className="dm-action-btn dm-view-btn w-full bg-gradient-to-r from-indigo-700 to-violet-700 hover:from-indigo-800 hover:to-violet-800 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                        className="dm-action-btn dm-view-btn w-full bg-gradient-to-r from-indigo-700 to-violet-700 dark:from-indigo-600 dark:to-violet-600 hover:from-indigo-800 hover:to-violet-800 dark:hover:from-indigo-700 dark:hover:to-violet-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
                         onClick={(e) => handleView(e, draft)}
                         type="button"
                         aria-label={`View ${draft.title}`}
@@ -347,7 +353,7 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
                         View
                       </button>
                       <button
-                        className="dm-action-btn dm-edit-btn w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                        className="dm-action-btn dm-edit-btn w-full bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-500 dark:to-teal-500 hover:from-emerald-700 hover:to-teal-700 dark:hover:from-emerald-600 dark:hover:to-teal-600 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
                         onClick={(e) => handleEdit(e, draft)}
                         type="button"
                         aria-label={`Edit ${draft.title}`}
@@ -356,7 +362,7 @@ export default function DraftsContent({ draftsPromise, booksPromise }) {
                         Edit
                       </button>
                       <button
-                        className="dm-action-btn dm-delete-btn w-full bg-red-500 hover:bg-red-600 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                        className="dm-action-btn dm-delete-btn w-full bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white border-0 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
                         onClick={(e) => handleDelete(e, draft)}
                         type="button"
                         aria-label={`Delete ${draft.title}`}

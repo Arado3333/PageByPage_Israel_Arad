@@ -84,17 +84,17 @@ export default function AIConsultantPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen text-slate-800">
+      <div className="min-h-screen text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900">
         {/* Decorative blobs */}
         <div className="pointer-events-none fixed -z-10 inset-0 overflow-hidden">
-          <div className="absolute -top-16 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-indigo-300 to-purple-300 blur-3xl opacity-40" />
-          <div className="absolute -bottom-24 -right-10 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-200 to-cyan-200 blur-3xl opacity-40" />
-          <div className="absolute top-1/2 left-1/2 h-64 w-64 rounded-full bg-gradient-to-tr from-pink-200 to-rose-300 blur-3xl opacity-30" />
+          <div className="absolute -top-16 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-indigo-300 to-purple-300 dark:from-indigo-600/20 dark:to-purple-600/20 blur-3xl opacity-40" />
+          <div className="absolute -bottom-24 -right-10 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-200 to-cyan-200 dark:from-emerald-600/20 dark:to-cyan-600/20 blur-3xl opacity-40" />
+          <div className="absolute top-1/2 left-1/2 h-64 w-64 rounded-full bg-gradient-to-tr from-pink-200 to-rose-300 dark:from-pink-600/20 dark:to-rose-600/20 blur-3xl opacity-30" />
         </div>
 
         <div className="mx-auto max-w-[1600px] 2xl:max-w-[1760px] 3xl:max-w-[1920px] px-2 lg:px-4 xl:px-6 2xl:px-8 3xl:px-10 py-8 2xl:py-12 3xl:py-16 w-full">
           {/* Hero Section */}
-          <section className="rounded-2xl bg-white shadow-md ring-1 ring-slate-200 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 mb-6 2xl:mb-8 3xl:mb-12 w-full relative overflow-hidden">
+          <section className="rounded-2xl bg-white dark:bg-slate-800 shadow-md ring-1 ring-slate-200 dark:ring-slate-700 p-4 sm:p-6 lg:p-8 2xl:p-12 3xl:p-16 mb-6 2xl:mb-8 3xl:mb-12 w-full relative overflow-hidden">
             {/* Decorative gradient header */}
             <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-indigo-700 via-violet-700 to-pink-600"></div>
 
@@ -104,23 +104,23 @@ export default function AIConsultantPage() {
                 AI Assistant
               </div>
             </div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl font-serif text-[#0F1A2E] mb-2">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl font-serif text-[#0F1A2E] dark:text-slate-100 mb-2">
               AI Consultant
             </h1>
-            <p className="text-base sm:text-lg 2xl:text-xl 3xl:text-2xl text-slate-600">
+            <p className="text-base sm:text-lg 2xl:text-xl 3xl:text-2xl text-slate-600 dark:text-slate-300">
               Enhance your writing with AI-powered suggestions and improvements
             </p>
           </section>
 
           <div className="ai-container">
             <div className="ai-content">
-              <div className="ai-input-card group rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+              <div className="ai-input-card group rounded-2xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 hover:shadow-lg transition-all duration-300 overflow-hidden">
                 {/* Gradient header */}
                 <div className="h-2 bg-gradient-to-r from-indigo-700 to-violet-700"></div>
 
                 <div className="card-header">
-                  <h2 className="card-title text-lg lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl text-slate-800">
-                    <MessageSquare className="card-icon h-5 w-5 2xl:h-6 2xl:w-6 3xl:h-7 3xl:w-7 text-indigo-600" />
+                  <h2 className="card-title text-lg lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl text-slate-800 dark:text-slate-200">
+                    <MessageSquare className="card-icon h-5 w-5 2xl:h-6 2xl:w-6 3xl:h-7 3xl:w-7 text-indigo-600 dark:text-indigo-400" />
                     Your Text
                   </h2>
                 </div>
@@ -165,14 +165,14 @@ export default function AIConsultantPage() {
                   </div>
 
                   <textarea
-                    className="ai-textarea text-sm 2xl:text-base 3xl:text-lg rounded-xl border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                    className="ai-textarea text-sm 2xl:text-base 3xl:text-lg rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
                     placeholder="Enter your text here..."
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                   ></textarea>
 
                   <div className="ai-input-footer">
-                    <div className="word-count text-sm 2xl:text-base 3xl:text-lg bg-slate-100 px-3 py-1 rounded-lg text-slate-700 font-medium">
+                    <div className="word-count text-sm 2xl:text-base 3xl:text-lg bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-lg text-slate-700 dark:text-slate-300 font-medium">
                       {inputText.split(/\s+/).filter(Boolean).length} words
                     </div>
 
@@ -187,24 +187,24 @@ export default function AIConsultantPage() {
                 </div>
               </div>
 
-              <div className="ai-output-card group rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+              <div className="ai-output-card group rounded-2xl bg-white dark:bg-slate-800 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700 hover:shadow-lg transition-all duration-300 overflow-hidden">
                 {/* Gradient header */}
                 <div className="h-2 bg-gradient-to-r from-emerald-600 to-teal-600"></div>
 
                 <div className="card-header">
-                  <h2 className="card-title text-lg lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl text-slate-800">
-                    <Sparkles className="card-icon h-5 w-5 2xl:h-6 2xl:w-6 3xl:h-7 3xl:w-7 text-emerald-600" />
+                  <h2 className="card-title text-lg lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl text-slate-800 dark:text-slate-200">
+                    <Sparkles className="card-icon h-5 w-5 2xl:h-6 2xl:w-6 3xl:h-7 3xl:w-7 text-emerald-600 dark:text-emerald-400" />
                     AI Response
                   </h2>
                 </div>
                 <div className="card-content">
-                  <div className="ai-response overflow-auto text-sm 2xl:text-base 3xl:text-lg rounded-xl border-slate-200">
+                  <div className="ai-response overflow-auto text-sm 2xl:text-base 3xl:text-lg rounded-xl border-slate-200 dark:border-slate-600">
                     {messages.map(
                       (message, index) =>
                         message.role === "model" && (
                           <div
                             key={index}
-                            className="answer-bubble bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-200 rounded-xl p-4 text-slate-800 shadow-sm"
+                            className="answer-bubble bg-gradient-to-r from-indigo-50 to-violet-50 dark:from-indigo-900/20 dark:to-violet-900/20 border border-indigo-200 dark:border-indigo-700 rounded-xl p-4 text-slate-800 dark:text-slate-200 shadow-sm"
                           >
                             <Markdown>{message.parts[0].text}</Markdown>
                           </div>
